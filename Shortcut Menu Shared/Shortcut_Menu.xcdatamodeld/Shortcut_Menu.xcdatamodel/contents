@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Section" representedClassName="SectionMO" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="sequence64" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Shortcut" representedClassName="ShortcutMO" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="section" optional="YES" attributeType="String"/>
+        <attribute name="sequence" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="value" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="Section" positionX="-54" positionY="-9" width="128" height="73"/>
+        <element name="Shortcut" positionX="-27" positionY="36" width="128" height="103"/>
+    </elements>
+</model>
