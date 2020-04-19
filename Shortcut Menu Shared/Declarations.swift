@@ -9,10 +9,16 @@
 import Foundation
 import SwiftUI
 
-enum DetailMode: Int {
+public enum EditMode: Int {
     case none = 0
     case create = 1
     case amend = 2
+}
+
+public enum EditObject: Int {
+    case none = 0
+    case section = 1
+    case shortcut = 2
 }
 
 let rowHeight:CGFloat = 50.0
@@ -29,6 +35,7 @@ let listMessageColor = Color.gray
 
 let sectionSelectionBackgroundColor = Color.blue
 let sectionSelectionTextColor = Color.white
+let sectionDefaultTextColor = Color.gray
 
 let shortcutSelectionBackgroundColor = Color.blue
 let shortcutSelectionTextColor = Color.white

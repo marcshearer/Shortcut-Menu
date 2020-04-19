@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
+		B26F4429244B390C004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
+		B26F442B244B5E3C004D794E /* Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F442A244B5E3C004D794E /* Detail View.swift */; };
 		B28D41E92443538B00C2577E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D41E82443538B00C2577E /* AppDelegate.swift */; };
 		B28D41EB2443538B00C2577E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D41EA2443538B00C2577E /* SceneDelegate.swift */; };
 		B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */; };
@@ -21,7 +24,7 @@
 		B28D420824437F0A00C2577E /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D420724437F0A00C2577E /* Shortcut List View.swift */; };
 		B28D420A2444450C00C2577E /* Shortcut Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D42092444450C00C2577E /* Shortcut Detail View.swift */; };
 		B28D42682447515100C2577E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D42672447515100C2577E /* AppDelegate.swift */; };
-		B28D426A2447515100C2577E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D42692447515100C2577E /* ContentView.swift */; };
+		B28D426A2447515100C2577E /* Content View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D42692447515100C2577E /* Content View.swift */; };
 		B28D42722447515300C2577E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28D42712447515300C2577E /* Preview Assets.xcassets */; };
 		B28D42752447515300C2577E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B28D42732447515300C2577E /* Main.storyboard */; };
 		B28D427D244753F400C2577E /* Section View Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D420324435F8500C2577E /* Section View Model.swift */; };
@@ -34,11 +37,13 @@
 		B28D42872447578A00C2577E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28D41F12443538D00C2577E /* Assets.xcassets */; };
 		B28D428924475BB000C2577E /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428824475BB000C2577E /* Selection.swift */; };
 		B28D428A24475BB200C2577E /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428824475BB000C2577E /* Selection.swift */; };
-		B28D428C2447649F00C2577E /* Section List.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428B2447649F00C2577E /* Section List.swift */; };
-		B28D428E2447715600C2577E /* Shortcut List.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428D2447715600C2577E /* Shortcut List.swift */; };
+		B28D428C2447649F00C2577E /* Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428B2447649F00C2577E /* Section List View.swift */; };
+		B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428D2447715600C2577E /* Shortcut List View.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B26F4427244B3837004D794E /* CustomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViews.swift; sourceTree = "<group>"; };
+		B26F442A244B5E3C004D794E /* Detail View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Detail View.swift"; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41E82443538B00C2577E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B28D41EA2443538B00C2577E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -56,15 +61,15 @@
 		B28D42092444450C00C2577E /* Shortcut Detail View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Detail View.swift"; sourceTree = "<group>"; };
 		B28D42652447515100C2577E /* Shortcut Menu Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D42672447515100C2577E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B28D42692447515100C2577E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B28D42692447515100C2577E /* Content View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Content View.swift"; sourceTree = "<group>"; };
 		B28D42712447515300C2577E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B28D42742447515300C2577E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B28D42762447515300C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Shortcut_Menu_Mac.entitlements; sourceTree = "<group>"; };
 		B28D42812447542C00C2577E /* Declarations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Declarations.swift; sourceTree = "<group>"; };
 		B28D428824475BB000C2577E /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
-		B28D428B2447649F00C2577E /* Section List.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section List.swift"; sourceTree = "<group>"; };
-		B28D428D2447715600C2577E /* Shortcut List.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut List.swift"; sourceTree = "<group>"; };
+		B28D428B2447649F00C2577E /* Section List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section List View.swift"; sourceTree = "<group>"; };
+		B28D428D2447715600C2577E /* Shortcut List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				B28D42862447573900C2577E /* Shortcut Menu Shared */,
-				B28D41E72443538B00C2577E /* Shortcut Menu */,
+				B28D41E72443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42662447515100C2577E /* Shortcut Menu Mac */,
 				B28D41E62443538B00C2577E /* Products */,
 			);
@@ -104,7 +109,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B28D41E72443538B00C2577E /* Shortcut Menu */ = {
+		B28D41E72443538B00C2577E /* Shortcut Menu iOS */ = {
 			isa = PBXGroup;
 			children = (
 				B28D41E82443538B00C2577E /* AppDelegate.swift */,
@@ -116,7 +121,7 @@
 				B28D42092444450C00C2577E /* Shortcut Detail View.swift */,
 				B28D41F32443538D00C2577E /* Preview Content */,
 			);
-			path = "Shortcut Menu";
+			path = "Shortcut Menu iOS";
 			sourceTree = "<group>";
 		};
 		B28D41F32443538D00C2577E /* Preview Content */ = {
@@ -135,9 +140,10 @@
 				B28D42762447515300C2577E /* Info.plist */,
 				B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */,
 				B28D42702447515300C2577E /* Preview Content */,
-				B28D42692447515100C2577E /* ContentView.swift */,
-				B28D428B2447649F00C2577E /* Section List.swift */,
-				B28D428D2447715600C2577E /* Shortcut List.swift */,
+				B28D42692447515100C2577E /* Content View.swift */,
+				B28D428B2447649F00C2577E /* Section List View.swift */,
+				B28D428D2447715600C2577E /* Shortcut List View.swift */,
+				B26F442A244B5E3C004D794E /* Detail View.swift */,
 			);
 			path = "Shortcut Menu Mac";
 			sourceTree = "<group>";
@@ -159,6 +165,7 @@
 				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
 				B28D420324435F8500C2577E /* Section View Model.swift */,
 				B28D420524437C3B00C2577E /* Shortcut View Model.swift */,
+				B26F4427244B3837004D794E /* CustomViews.swift */,
 				B28D42812447542C00C2577E /* Declarations.swift */,
 				B28D428824475BB000C2577E /* Selection.swift */,
 			);
@@ -279,6 +286,7 @@
 				B28D42822447542C00C2577E /* Declarations.swift in Sources */,
 				B28D420824437F0A00C2577E /* Shortcut List View.swift in Sources */,
 				B28D420424435F8500C2577E /* Section View Model.swift in Sources */,
+				B26F4428244B3837004D794E /* CustomViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,12 +299,14 @@
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
 				B28D42852447566B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
 				B28D42832447545000C2577E /* Declarations.swift in Sources */,
-				B28D426A2447515100C2577E /* ContentView.swift in Sources */,
+				B28D426A2447515100C2577E /* Content View.swift in Sources */,
 				B28D428A24475BB200C2577E /* Selection.swift in Sources */,
-				B28D428C2447649F00C2577E /* Section List.swift in Sources */,
+				B28D428C2447649F00C2577E /* Section List View.swift in Sources */,
 				B28D42682447515100C2577E /* AppDelegate.swift in Sources */,
+				B26F4429244B390C004D794E /* CustomViews.swift in Sources */,
+				B26F442B244B5E3C004D794E /* Detail View.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
-				B28D428E2447715600C2577E /* Shortcut List.swift in Sources */,
+				B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

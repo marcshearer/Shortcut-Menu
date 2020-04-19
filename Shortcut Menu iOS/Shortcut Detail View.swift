@@ -12,7 +12,7 @@ struct ShortcutDetailView: View {
     
     @ObservedObject var shortcut: ShortcutViewModel
     public var title: String
-    public var mode: DetailMode
+    public var mode: editMode
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -32,7 +32,6 @@ struct ShortcutDetailView: View {
                 
                 ShortcutDetailSection(header: "Shortcut section") {
                     Picker(selection: self.$shortcut.section, label: Text("")) {
-                        Text("No section").tag("")
                         ForEach(sections) { (section) in
                             Text(section.name).tag(section.name)
                         }

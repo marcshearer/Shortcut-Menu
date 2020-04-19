@@ -14,7 +14,7 @@ struct ShortcutListView: View {
          
     @State var selectedShortcut: ShortcutViewModel?
     @State var detailTitle: String = ""
-    @State var detailMode: DetailMode = .none
+    @State var editMode: editMode = .none
     @State var resequenceMode: Bool = false
             
     var body: some View {
@@ -25,7 +25,7 @@ struct ShortcutListView: View {
                         .onTapGesture {
                             self.selectedShortcut = shortcut
                             self.detailTitle = "Shortcut Detail"
-                            self.detailMode = .amend
+                            self.editMode = .amend
                     }
                 }
                 .onMove { (indexSet, index) in
@@ -37,12 +37,12 @@ struct ShortcutListView: View {
             .navigationBarTitle("Shortcuts", displayMode: .inline)
             .navigationBarItems(trailing:
                 HStack {
-                    ShortcutListNewShortcutButton(resequenceMode: $resequenceMode, selectedShortcut: $selectedShortcut, detailTitle: $detailTitle, detailMode: $detailMode)
+                    ShortcutListNewShortcutButton(resequenceMode: $resequenceMode, selectedShortcut: $selectedShortcut, detailTitle: $detailTitle, editMode: $editMode)
                     ShortcutListEditModeButton(editMode: $resequenceMode)
                 }
             )
                 .sheet(item: self.$selectedShortcut) { (shortcut) in
-                    ShortcutDetailView(shortcut: shortcut, title: self.detailTitle, mode: self.detailMode)
+                    ShortcutDetailView(shortcut: shortcut, title: self.detailTitle, mode: self.editMode)
                         .onDisappear {
                         self.selectedShortcut = nil
                     }
@@ -101,13 +101,13 @@ struct ShortcutListNewShortcutButton: View {
     @Binding var resequenceMode: Bool
     @Binding var selectedShortcut: ShortcutViewModel?
     @Binding var detailTitle: String
-    @Binding var detailMode: DetailMode
+    @Binding var editMode: editMode
     
     var body: some View {
         Button(action: {
             self.selectedShortcut = ShortcutViewModel(id: UUID(), name: "", value: "", section: "", sequence: shortcuts.count)
             self.detailTitle = "New Shortcut"
-            self.detailMode = .create
+            self.editMode = .create
         },
                label: {
                 Image("plus.circle.fill")
