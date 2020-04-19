@@ -57,7 +57,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public var itemProvider: NSItemProvider {
-        return NSItemProvider(object: SectionItemProvider(id: self.id))
+        return NSItemProvider(object: ShortcutItemProvider(id: self.id))
     }
     
     public func toManagedObject(shortcutMO: ShortcutMO) {
