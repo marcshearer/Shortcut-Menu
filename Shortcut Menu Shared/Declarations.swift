@@ -25,7 +25,7 @@ let rowHeight:CGFloat = 50.0
 let sectionWidth: CGFloat = 200.0
 let shortcutWidth: CGFloat = 300.0
 let detailWidth: CGFloat = 400.0
-let formHeight: CGFloat = 500.0
+let formHeight: CGFloat = 600.0
 
 let defaultFont = Font.system(size: 20.0)
 

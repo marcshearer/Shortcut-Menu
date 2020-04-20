@@ -109,6 +109,8 @@ struct DetailView: View {
                 textField("Must be non-blank", value: $selection.editSection.name)
             }
             .foregroundColor(.secondary)
+
+            self.message(text: self.selection.editSection.nameError)
         }
     }
     
@@ -118,11 +120,13 @@ struct DetailView: View {
                 textField("Must be non-blank", value: $selection.editShortcut.name)
             }
             .foregroundColor(.secondary)
-            
+            self.message(text: self.selection.editShortcut.nameError)
+
             DetailViewSection(header: "Shortcut value", content: {
                 textField("Must be non-blank", value: $selection.editShortcut.value)
             })
             .foregroundColor(.secondary)
+            self.message(text: self.selection.editShortcut.valueError)
         }
     }
     
@@ -137,6 +141,17 @@ struct DetailView: View {
             return "Nothing Selected"
         }
         
+    }
+    
+    private func message(text: String) -> some View {
+        return HStack {
+                    Spacer()
+                    Text(text)
+                        .font(Font.system(size: 12.0))
+                        .foregroundColor(.red)
+                    Spacer()
+                        .frame(width: 20)
+                }
     }
     
     private func textField(_ placeholder: String, value: Binding<String>) -> some View {

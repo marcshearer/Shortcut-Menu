@@ -11,7 +11,7 @@ import Combine
 
 public class Selection : ObservableObject {
     
-    @Published private var master: Master
+    private var master: MasterData = MasterData()
     @Published public var sections: [SectionViewModel]
     @Published public var selectedSection: SectionViewModel?
     @Published public var editSection = SectionViewModel()
@@ -22,9 +22,8 @@ public class Selection : ObservableObject {
     @Published public var editMode: EditMode = .none
     @Published public var editObject: EditObject = .none
     
-    init(master: Master) {
-        self.master = master
-        self.sections = master.sections
+    init() {
+        self.sections = self.master.sections
     }
     
     func selectSection(section: SectionViewModel) {
@@ -37,7 +36,7 @@ public class Selection : ObservableObject {
         if self.selectedSection != nil {
             
             self.editSection = self.selectedSection!.copy()
-            self.shortcuts = self.master.shortcuts.filter { $0.section == self.selectedSection?.name}
+            self.shortcuts = self.master.shortcuts.filter { $0.section?.name == self.selectedSection?.name}
             self.shortcutsTitle = "\(self.selectedSection!.displayName) Shortcuts"
             self.editObject = (section.name == "" ? .none : .section)
             
@@ -60,20 +59,40 @@ public class Selection : ObservableObject {
     
     func updateSection(section: SectionViewModel) {
         
+        var oldName: String?
+        
         if let updateIndex = self.master.sections.firstIndex(where: {$0.id == section.id}) {
+            oldName = self.master.sections[updateIndex].name
             self.master.sections[updateIndex] = section
         } else {
             self.master.sections.append(section)
         }
+        section.save()
+
         self.sections = master.sections
+
+        // Need to update section names on shortcuts in this section
+        for shortcut in self.master.shortcuts.filter({$0.section?.name == oldName}) {
+            shortcut.section = section
+            if oldName != section.name {
+                self.updateShortcut(shortcut: shortcut)
+            }
+        }
+
         self.selectSection(section: section)
         
     }
     
     func removeSection(section: SectionViewModel) {
         
+        for shortcut in self.master.shortcuts.filter({$0.section?.name == section.name}) {
+            self.removeShortcut(shortcut: shortcut)
+        }
+        
         if let removeIndex = self.master.sections.firstIndex(where: {$0.id == section.id}) {
             self.master.sections.remove(at: removeIndex)
+            section.remove()
+            
             self.sections = master.sections
             self.deselectSection()
             
@@ -82,7 +101,7 @@ public class Selection : ObservableObject {
     
     func newSection() {
         self.deselectSection()
-        self.editSection = SectionViewModel()
+        self.editSection = SectionViewModel(master: self.master)
         self.editSection.sequence = master.nextSectionSequence()
         self.editMode = .create
         self.editObject = .section
@@ -96,6 +115,7 @@ public class Selection : ObservableObject {
                 if section.id == self.editSection.id && section.sequence != self.editSection.sequence {
                     self.editSection.sequence = section.sequence
                 }
+                section.save()
             }
             last = section.sequence
         }
@@ -126,16 +146,19 @@ public class Selection : ObservableObject {
 }
     
     func updateShortcut(shortcut: ShortcutViewModel) {
+        var new = false
         
         if let updateIndex = self.master.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
             self.master.shortcuts[updateIndex] = shortcut
         } else {
             self.master.shortcuts.append(shortcut)
+            new = true
         }
+        shortcut.save()
         
-        if let section = self.getSection(name: shortcut.section) {
+        if let section = shortcut.section {
             
-            let updateSelected: Bool = (self.selectedShortcut?.id == shortcut.id)
+            let updateSelected: Bool = (new || self.selectedShortcut?.id == shortcut.id)
             
             self.selectSection(section: section)
             
@@ -148,19 +171,18 @@ public class Selection : ObservableObject {
     func removeShortcut(shortcut: ShortcutViewModel) {
         if let removeIndex = self.master.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
             self.master.shortcuts.remove(at: removeIndex)
+            shortcut.remove()
             if self.selectedSection != nil {
                 self.selectSection(section: self.selectedSection!)
             }
         }
     }
     
-    func newShortcut(section: SectionViewModel? = nil) {
+    func newShortcut(section: SectionViewModel) {
         self.deselectShortcut()
-        self.editShortcut = ShortcutViewModel()
-        if let section = section {
-            self.editShortcut.section = section.name
-            self.editShortcut.sequence = master.nextShortcutSequence(section: section)
-        }
+        self.editShortcut = ShortcutViewModel(master: self.master)
+        self.editShortcut.section = section
+        self.editShortcut.sequence = master.nextShortcutSequence(section: section)
         self.editMode = .create
         self.editObject = .shortcut
        }
@@ -175,6 +197,7 @@ public class Selection : ObservableObject {
             for shortcut in shortcuts {
                 if shortcut.sequence != last + 1 {
                     shortcut.sequence = last + 1
+                    shortcut.save()
                     if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
                         self.editShortcut.sequence = shortcut.sequence
                     }
@@ -201,39 +224,3 @@ public class Selection : ObservableObject {
     }
 }
 
-public class Master : ObservableObject {
-    
-    @Published public var sections: [SectionViewModel] = []
-    @Published public var shortcuts: [ShortcutViewModel] = []
-    
-    init(sections: [SectionViewModel], shortcuts: [ShortcutViewModel]) {
-        self.sections = sections
-        self.shortcuts = shortcuts
-    }
-    
-    public func nextSectionSequence() -> Int {
-        return self.sections.map { $0.sequence }.reduce(0) {max($0, $1)} + 1
-    }
-
-    public func nextShortcutSequence(section: SectionViewModel) -> Int {
-        return self.shortcuts.filter {$0.section == section.name}.map { $0.sequence }.reduce(0) {max($0, $1)} + 1
-    }
-
-    
-}
-
-var sections: [SectionViewModel] =
-    [SectionViewModel(id: UUID(), name: "", sequence: 1),
-     SectionViewModel(id: UUID(), name: "Bridge", sequence: 2),
-     SectionViewModel(id: UUID(), name: "Models", sequence: 3),
-     SectionViewModel(id: UUID(), name: "Whist", sequence: 4),
-     SectionViewModel(id: UUID(), name: "Fishing", sequence: 5)]
-
-var shortcuts: [ShortcutViewModel] =
-[ ShortcutViewModel(id: UUID(), name: "Email", value: "marc@sheareronline.com", section: "", sequence: 1),
-  ShortcutViewModel(id: UUID(), name: "Name", value: "Marc Shearer", section: "", sequence: 2),
-  ShortcutViewModel(id: UUID(), name: "Hi Opps", value: "Hi opps - we're weak & benji", section: "Bridge", sequence: 1),
-  ShortcutViewModel(id: UUID(), name: "Hi There", value: "Hi opps", section: "Bridge", sequence: 2),
-  ShortcutViewModel(id: UUID(), name: "Please explain", value: "Please explain your partners last bid", section: "Bridge", sequence: 3)]
-
-var master = Master(sections: sections, shortcuts: shortcuts)

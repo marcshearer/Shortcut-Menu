@@ -8,32 +8,48 @@
 
 import Foundation
 import Combine
+import SwiftUI
+import CoreData
 
 public class SectionViewModel : ObservableObject, Identifiable {
+
+    // Managed object context
+    let context: NSManagedObjectContext! = MasterData.context
 
     // Properties in core data model
     public let id: UUID
     @Published public var name:String
     @Published public var sequence: Int
     
-    // Enabled properties
+    // Linked managed object
+    private var sectionMO: SectionMO?
+    
+    // Link to master data (required for checking duplicates)
+    private var master: MasterData?
     
     // Other properties
+    @Published public var nameError: String = ""
     @Published public var canSave: Bool = false
     
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    convenience init() {
-        self.init(id: UUID(), name: "", sequence: 0)
-    }
-    
-    init(id: UUID, name: String, sequence: Int) {
+    init(id: UUID = UUID(), name: String = "", sequence: Int = 0, sectionMO: SectionMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
         self.sequence = sequence
-               
+        self.sectionMO = sectionMO
+        self.master = master
+        
         self.setupMappings()
+    }
+
+    convenience init(master: MasterData? = nil) {
+        self.init(id: UUID(), name: "", sequence: 0, master: master)
+    }
+    
+    convenience init(sectionMO: SectionMO, master: MasterData) {
+        self.init(id: sectionMO.id, name: sectionMO.name, sequence: sectionMO.sequence, sectionMO: sectionMO, master: master)
     }
     
     private func setupMappings() {
@@ -41,15 +57,27 @@ public class SectionViewModel : ObservableObject, Identifiable {
         $name
             .receive(on: RunLoop.main)
             .map { name in
-                return !name.isEmpty
+                return (name.isEmpty ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
+            }
+        .assign(to: \.nameError, on: self)
+        .store(in: &cancellableSet)
+        
+        $nameError
+            .receive(on: RunLoop.main)
+            .map { (nameError) in
+                return nameError == ""
             }
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
-        
+
+    }
+    
+    private func exists(name: String) -> Bool {
+        return self.master?.sections.contains(where: {$0.name == name && $0.id != self.id}) ?? false
     }
     
     public func copy() -> SectionViewModel {
-        return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence)
+        return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence, sectionMO: self.sectionMO, master: self.master)
     }
     
     public var displayName: String {
@@ -62,6 +90,32 @@ public class SectionViewModel : ObservableObject, Identifiable {
     
     public var itemProvider: NSItemProvider {
         return NSItemProvider(object: SectionItemProvider(id: self.id))
+    }
+    
+    public func save() {
+        self.toManagedObject()
+        do {
+            try context.save()
+        } catch {
+            fatalError("Error writing section")
+        }
+    }
+    
+    public func remove() {
+        self.toManagedObject()
+        context.delete(self.sectionMO!)
+        self.save()
+        self.sectionMO = nil
+    }
+    
+    private func toManagedObject() {
+        if self.sectionMO == nil {
+            // No managed object - create one
+            self.sectionMO = SectionMO(context: context)
+        }
+        self.sectionMO!.id = self.id
+        self.sectionMO!.name = self.name
+        self.sectionMO!.sequence = self.sequence
     }
 }
 

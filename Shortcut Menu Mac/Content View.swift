@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @ObservedObject var selection = Selection(master: master)
+    @ObservedObject var selection = Selection()
        
     var body: some View {
         

@@ -8,7 +8,7 @@
 
 import CoreData
 
-public class SectionMO : NSManagedObject, Identifiable {
+public class SectionMO : NSManagedObject {
 
     @NSManaged public var idString: String
     @NSManaged public var name: String
@@ -16,7 +16,7 @@ public class SectionMO : NSManagedObject, Identifiable {
 
 }
 
-extension SectionMO {
+extension SectionMO: Identifiable {
     
     public var id: UUID {
         get {

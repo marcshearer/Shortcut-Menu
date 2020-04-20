@@ -32,7 +32,7 @@ struct ShortcutListView: View {
                     }
                     if self.selection.selectedSection != nil {
                         ToolbarButton("plus.circle.fill") {
-                            self.selection.newShortcut(section: self.selection.selectedSection)
+                            self.selection.newShortcut(section: self.selection.selectedSection!)
                         }
                     }
                 }

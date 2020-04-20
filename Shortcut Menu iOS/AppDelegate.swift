@@ -15,6 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        // Cache main context for core data
+        MasterData.context = self.persistentContainer.viewContext
+        
         // Override point for customization after application launch.
         return true
     }

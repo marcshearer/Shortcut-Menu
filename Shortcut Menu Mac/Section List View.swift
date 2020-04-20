@@ -29,7 +29,7 @@ struct SectionListView: View {
                 Spacer()
                 
                 if self.selection.editMode == .none {
-                    if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
+                    if self.selection.selectedSection != nil { // ToDo restore } && self.selection.selectedSection?.name != "" {
                         ToolbarButton("minus.circle.fill") {
                             self.selection.removeSection(section: self.selection.selectedSection!)
                         }
@@ -67,7 +67,8 @@ struct SectionListView: View {
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        return Text(section.displayName)
+        return
+            Text(section.displayName)
             .frame(width: sectionWidth, height: rowHeight, alignment: .leading)
             .font(defaultFont)
             .listRowBackground((section.id == self.selection.selectedSection?.id ? sectionSelectionBackgroundColor : listBackgroundColor))
@@ -90,7 +91,8 @@ struct SectionListView: View {
     
     func dropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
-            self.selection.shortcuts![from].section = self.selection.sections[to].name
+            self.selection.shortcuts![from].section = self.selection.sections[to]
+            self.selection.shortcuts![from].save()
             self.selection.selectSection(section: self.selection.selectedSection!)
             self.selection.updateShortcutSequence()
             self.selection.deselectShortcut()

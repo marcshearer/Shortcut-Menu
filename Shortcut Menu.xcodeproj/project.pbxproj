@@ -39,6 +39,7 @@
 		B28D428A24475BB200C2577E /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428824475BB000C2577E /* Selection.swift */; };
 		B28D428C2447649F00C2577E /* Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428B2447649F00C2577E /* Section List View.swift */; };
 		B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428D2447715600C2577E /* Shortcut List View.swift */; };
+		B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46C9244D718F0001F984 /* Master Data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 		B28D428824475BB000C2577E /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		B28D428B2447649F00C2577E /* Section List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section List View.swift"; sourceTree = "<group>"; };
 		B28D428D2447715600C2577E /* Shortcut List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
+		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				B28D420324435F8500C2577E /* Section View Model.swift */,
 				B28D420524437C3B00C2577E /* Shortcut View Model.swift */,
 				B26F4427244B3837004D794E /* CustomViews.swift */,
+				B29D46C9244D718F0001F984 /* Master Data.swift */,
 				B28D42812447542C00C2577E /* Declarations.swift */,
 				B28D428824475BB000C2577E /* Selection.swift */,
 			);
@@ -304,6 +307,7 @@
 				B28D428C2447649F00C2577E /* Section List View.swift in Sources */,
 				B28D42682447515100C2577E /* AppDelegate.swift in Sources */,
 				B26F4429244B390C004D794E /* CustomViews.swift in Sources */,
+				B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */,
 				B26F442B244B5E3C004D794E /* Detail View.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
 				B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */,

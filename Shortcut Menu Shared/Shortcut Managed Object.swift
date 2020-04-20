@@ -8,7 +8,7 @@
 
 import CoreData
 
-public class ShortcutMO : NSManagedObject, Identifiable {
+public class ShortcutMO : NSManagedObject {
 
     @NSManaged public var idString: String
     @NSManaged public var name: String
@@ -18,7 +18,7 @@ public class ShortcutMO : NSManagedObject, Identifiable {
 
 }
 
-extension ShortcutMO {
+extension ShortcutMO: Identifiable {
     
     public var id: UUID {
         get {
