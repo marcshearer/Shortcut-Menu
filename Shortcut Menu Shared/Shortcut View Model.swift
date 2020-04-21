@@ -103,7 +103,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         if type != .url {
             return true
         } else {
-            return URL(string: value) != nil
+            return URL(string: value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") != nil
         }
     }
     

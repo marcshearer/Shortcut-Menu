@@ -226,6 +226,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     @objc private func changeSection(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
             self.currentSection = menuItem.title
+            UserDefaults.standard.set(self.currentSection, forKey: "currentSection")
             self.update()
         }
     }
@@ -243,7 +244,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
      @objc private func executeUrl(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
             if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title}) {
-                if let url = URL(string: shortcut.value) {
+                if let url = URL(string: shortcut.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
                     NSWorkspace.shared.open(url)
                 }
             }
