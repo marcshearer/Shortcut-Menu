@@ -35,5 +35,4 @@ extension SectionMO: Identifiable {
             self.sequence64 = Int64(newValue)
         }
     }
-    
 }

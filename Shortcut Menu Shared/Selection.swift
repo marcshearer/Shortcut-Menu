@@ -11,7 +11,7 @@ import Combine
 
 public class Selection : ObservableObject {
     
-    private var master: MasterData = MasterData()
+    private var master: MasterData = MasterData.shared
     @Published public var sections: [SectionViewModel]
     @Published public var selectedSection: SectionViewModel?
     @Published public var editSection = SectionViewModel()

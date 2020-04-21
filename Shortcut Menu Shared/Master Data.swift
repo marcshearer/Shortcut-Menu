@@ -13,6 +13,9 @@ import Combine
 
 public class MasterData : ObservableObject {
     
+    // Singleton for master data
+    public static let shared = MasterData()
+    
     // Core data context - set up in AppDelegate
      static var context: NSManagedObjectContext!
 

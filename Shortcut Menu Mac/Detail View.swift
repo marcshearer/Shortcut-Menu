@@ -120,13 +120,33 @@ struct DetailView: View {
                 textField("Must be non-blank", value: $selection.editShortcut.name)
             }
             .foregroundColor(.secondary)
+
             self.message(text: self.selection.editShortcut.nameError)
 
+            
             DetailViewSection(header: "Shortcut value", content: {
                 textField("Must be non-blank", value: $selection.editShortcut.value)
             })
             .foregroundColor(.secondary)
+            
             self.message(text: self.selection.editShortcut.valueError)
+            
+            DetailViewSection(header: "Shortcut Type") {
+                HStack() {
+                    Picker(selection: $selection.editShortcut.type, label: EmptyView()) {
+                        ForEach(ShortcutType.allCases, id: \.self) { type in
+                            Text(type.description)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .disabled(self.selection.editMode == .none)
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+
+                    Spacer()
+                        .frame(width: 20)
+                }
+
+            }
         }
     }
     
@@ -181,7 +201,5 @@ struct DetailViewSection <Content> : View where Content : View {
         .font(.system(size: 20, weight: .light, design: .default))
         .foregroundColor(.secondary)
         .multilineTextAlignment(.leading)
-        .padding(.top, 0)
-        .padding(.bottom, 0)
     }
 }

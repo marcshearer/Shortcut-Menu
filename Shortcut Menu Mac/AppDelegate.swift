@@ -16,22 +16,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        
         // Cache main context for core data
         MasterData.context = self.persistentContainer.viewContext
-
-        // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
-        // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = ContentView().environment(\.managedObjectContext, persistentContainer.viewContext)
         
-        // Create the window and set the content view.
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-            backing: .buffered, defer: false)
-        window.center()
-        window.setFrameAutosaveName("Main Window")
-        window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
+        // Build status menu
+        StatusMenu.shared.update()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

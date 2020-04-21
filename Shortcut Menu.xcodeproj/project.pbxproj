@@ -40,6 +40,8 @@
 		B28D428C2447649F00C2577E /* Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428B2447649F00C2577E /* Section List View.swift */; };
 		B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D428D2447715600C2577E /* Shortcut List View.swift */; };
 		B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46C9244D718F0001F984 /* Master Data.swift */; };
+		B29D46CD244DD7730001F984 /* Status Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46CC244DD7730001F984 /* Status Menu.swift */; };
+		B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46CE244DD9170001F984 /* Constraint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +74,8 @@
 		B28D428B2447649F00C2577E /* Section List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section List View.swift"; sourceTree = "<group>"; };
 		B28D428D2447715600C2577E /* Shortcut List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
+		B29D46CC244DD7730001F984 /* Status Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Status Menu.swift"; sourceTree = "<group>"; };
+		B29D46CE244DD9170001F984 /* Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constraint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,15 +141,17 @@
 		B28D42662447515100C2577E /* Shortcut Menu Mac */ = {
 			isa = PBXGroup;
 			children = (
+				B29D46CC244DD7730001F984 /* Status Menu.swift */,
 				B28D42672447515100C2577E /* AppDelegate.swift */,
 				B28D42732447515300C2577E /* Main.storyboard */,
 				B28D42762447515300C2577E /* Info.plist */,
-				B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */,
-				B28D42702447515300C2577E /* Preview Content */,
+				B29D46CE244DD9170001F984 /* Constraint.swift */,
 				B28D42692447515100C2577E /* Content View.swift */,
 				B28D428B2447649F00C2577E /* Section List View.swift */,
 				B28D428D2447715600C2577E /* Shortcut List View.swift */,
 				B26F442A244B5E3C004D794E /* Detail View.swift */,
+				B28D42702447515300C2577E /* Preview Content */,
+				B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */,
 			);
 			path = "Shortcut Menu Mac";
 			sourceTree = "<group>";
@@ -297,6 +303,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */,
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
 				B28D427F244753FC00C2577E /* Section Managed Object.swift in Sources */,
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
@@ -307,6 +314,7 @@
 				B28D428C2447649F00C2577E /* Section List View.swift in Sources */,
 				B28D42682447515100C2577E /* AppDelegate.swift in Sources */,
 				B26F4429244B390C004D794E /* CustomViews.swift in Sources */,
+				B29D46CD244DD7730001F984 /* Status Menu.swift in Sources */,
 				B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */,
 				B26F442B244B5E3C004D794E /* Detail View.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
@@ -523,7 +531,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu Mac/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Shortcut Menu Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -20,8 +20,18 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     public var id: UUID
     @Published public var name:String
     @Published public var value: String
+    @Published public var type: ShortcutType
     @Published public var section: SectionViewModel?
     @Published public var sequence: Int
+    
+    public var stringType: String {
+        get {
+            return self.type.rawValue
+        }
+        set {
+            self.type = ShortcutType(rawValue: newValue) ?? .clipboard
+        }
+    }
     
     // Linked managed object
     private var shortcutMO: ShortcutMO?
@@ -37,10 +47,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, value: String, section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, value: String, type: ShortcutType, section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
         self.value = value
+        self.type = type
         self.section = section
         self.sequence = sequence
         self.shortcutMO = shortcutMO
@@ -50,11 +61,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, value: shortcutMO.value, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+        self.init(id: shortcutMO.id, name: shortcutMO.name, value: shortcutMO.value, type: shortcutMO.type, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", value: "", section: nil, sequence: 0, master: master)
+        self.init(id: UUID(), name: "", value: "", type: ShortcutType.clipboard, section: nil, sequence: 0, master: master)
     }
      
     private func setupMappings() {
@@ -67,10 +78,10 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         .assign(to: \.nameError, on: self)
         .store(in: &cancellableSet)
         
-        $value
+        Publishers.CombineLatest($value, $type)
             .receive(on: RunLoop.main)
-            .map { value in
-                return (value.isEmpty ? "Value must be non-blank" : "")
+            .map { (value, type) in
+                return (value.isEmpty ? "Value must be non-blank" : (!self.validUrl(value: value, type: type) ? "Invalid URL" : ""))
             }
         .assign(to: \.valueError, on: self)
         .store(in: &cancellableSet)
@@ -84,11 +95,20 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         .store(in: &cancellableSet)
     }
     
-    private func exists(name: String) -> Bool {        return self.master?.shortcuts.contains(where: {$0.name == name && $0.id != self.id}) ?? false
+    private func exists(name: String) -> Bool {
+        return self.master?.shortcuts.contains(where: {$0.name == name && $0.id != self.id}) ?? false
+    }
+    
+    private func validUrl(value: String, type: ShortcutType) -> Bool {
+        if type != .url {
+            return true
+        } else {
+            return URL(string: value) != nil
+        }
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, value: self.value, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        return ShortcutViewModel(id: self.id, name: self.name, value: self.value, type: self.type, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
     }
     
     public var itemProvider: NSItemProvider {
@@ -119,6 +139,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.shortcutMO!.id = self.id
         self.shortcutMO!.name = self.name
         self.shortcutMO!.value = self.value
+        self.shortcutMO!.type = self.type
         self.shortcutMO!.section = self.section?.name ?? ""
         self.shortcutMO!.sequence = self.sequence
     }

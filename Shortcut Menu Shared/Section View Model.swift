@@ -88,6 +88,14 @@ public class SectionViewModel : ObservableObject, Identifiable {
         }
     }
     
+    public var menuName: String {
+        if self.name == "" {
+            return "Defaults only"
+        } else {
+            return self.name
+        }
+    }
+    
     public var itemProvider: NSItemProvider {
         return NSItemProvider(object: SectionItemProvider(id: self.id))
     }
