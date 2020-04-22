@@ -34,6 +34,7 @@ public class MasterData : ObservableObject {
         
         self.shortcutMOs = self.fetch(from: "Shortcut", sort: [(key: "section", ascending: true),
                                                                (key: "sequence64", ascending: true)])
+ 
         
         // Build section list
         for sectionMO in self.sectionMOs {
@@ -61,6 +62,10 @@ public class MasterData : ObservableObject {
             sections.insert(defaultSection, at: 0)
             defaultSection.save()
         }
+    }
+    
+    public func sectionsWithShortcuts(excludeDefault: Bool = false) -> Int {
+        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != "" || !excludeDefault) }).count
     }
     
     public func nextSectionSequence() -> Int {

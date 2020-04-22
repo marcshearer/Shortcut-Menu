@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B262366324502644009D5DC3 /* Default-568h@2x.png */; };
 		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
 		B26F4429244B390C004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
 		B26F442B244B5E3C004D794E /* Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F442A244B5E3C004D794E /* Detail View.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B262366324502644009D5DC3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* CustomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViews.swift; sourceTree = "<group>"; };
 		B26F442A244B5E3C004D794E /* Detail View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Detail View.swift"; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 		B28D41DC2443538B00C2577E = {
 			isa = PBXGroup;
 			children = (
+				B262366324502644009D5DC3 /* Default-568h@2x.png */,
 				B28D42862447573900C2577E /* Shortcut Menu Shared */,
 				B28D41E72443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42662447515100C2577E /* Shortcut Menu Mac */,
@@ -261,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B28D41F82443538D00C2577E /* LaunchScreen.storyboard in Resources */,
+				B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */,
 				B28D41F52443538D00C2577E /* Preview Assets.xcassets in Resources */,
 				B28D41F22443538D00C2577E /* Assets.xcassets in Resources */,
 			);

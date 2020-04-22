@@ -28,7 +28,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
 
     private var menuItemList: [String: NSMenuItem] = [:]
     
-    private var currentSection: String?
+    private var currentSection: String = ""
     private var popover: NSPopover!
     
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
@@ -44,16 +44,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
 
             Constraint.anchor(view: button.superview!, control: button, attributes: .top, .bottom)
             
-            self.statusButtonImage.image = NSImage(named: "doc.on.clipboard")!
             self.statusButtonImage.translatesAutoresizingMaskIntoConstraints = false
             button.addSubview(self.statusButtonImage)
-
+          
             self.statusButtonText = NSTextField(labelWithString: "Shortcuts")
             self.statusButtonText.translatesAutoresizingMaskIntoConstraints = false
             self.statusButtonText.sizeToFit()
             self.statusButtonText.textColor = NSColor.black
             self.statusButtonText.font = NSFont.systemFont(ofSize: 12)
             button.addSubview(self.statusButtonText)
+          
+            self.menuClosedTitle()
             
             _ = Constraint.setHeight(control: button, height: NSApp.mainMenu!.menuBarHeight)
             
@@ -66,7 +67,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
          }
         
         // Menu for current section and default section
-        self.currentSection = UserDefaults.standard.string(forKey: "currentSection")
+        self.currentSection = UserDefaults.standard.string(forKey: "currentSection") ?? ""
         self.update()
         
         self.statusMenu.delegate = self
@@ -81,13 +82,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         self.popover?.performClose(self)
         
         // Show dropdown menu
-        self.statusButtonText.textColor = NSColor.white
-        self.statusButtonImage.image = NSImage(named: "xmark.circle.fill")!
+        self.menuOpenTitle()
     }
     
     internal func menuDidClose(_ menu: NSMenu) {
-        self.statusButtonText.textColor = NSColor.black
-        self.statusButtonImage.image = NSImage(named: "doc.on.clipboard")!
+        self.menuClosedTitle()
     }
     
     // MARK: - Popover delegate handlers =========================================================== -
@@ -106,24 +105,28 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         
         self.statusMenu.removeAllItems()
         
-        self.setTitle(((self.currentSection ?? "") == "" ? "Shortcuts" : self.currentSection!))
+        self.setTitle((self.currentSection == "" ? "Shortcuts" : self.currentSection))
         
-        if let currentSection = self.currentSection {
-            self.addShortcuts(section: currentSection)
+         if currentSection != "" {
+            if self.addShortcuts(section: currentSection) > 0 {
+                self.addSeparator()
+            }
         }
-
-        self.addSeparator()
-        
-        self.addShortcuts(section: "")
-        
-        if self.master.sections.count > 1 {
+       
+        if self.addShortcuts(section: "") > 0 {
             self.addSeparator()
-            let sectionMenu = self.addSubmenu("Choose section")
-            self.addSections(to: sectionMenu)
         }
         
-        self.addSeparator()
-        
+        let nonEmptySections = self.master.sectionsWithShortcuts(excludeDefault: true)
+        if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
+            
+            if self.addOtherShortcuts() > 0 {
+                self.addSeparator()
+            }
+            
+            let sectionMenu = self.addSubmenu("Choose section")
+            _ = self.addSections(to: sectionMenu)
+        }
         self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d")
         
         self.addSeparator()
@@ -132,25 +135,50 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
 
     }
     
-    private func addShortcuts(section: String) {
+    private func addShortcuts(section: String, to subMenu: NSMenu? = nil) -> Int {
+        var added = 0
+        
         for shortcut in master.shortcuts.filter({ $0.section?.name == section }).sorted(by: {$0.sequence < $1.sequence}) {
-
-            var action: Selector?
-            switch shortcut.type {
-            case .clipboard:
-                action = #selector(StatusMenu.copyToClipboard(_:))
-            case .url:
-                action = #selector(StatusMenu.executeUrl(_:))
-            }
-
-            self.addItem(shortcut.name, action: action)
+            self.addShortcut(shortcut: shortcut, to: subMenu)
+            added += 1
         }
+        return added
     }
     
-    private func addSections(to subMenu: NSMenu) {
-        for section in master.sections.filter({ $0.name != currentSection }).sorted(by: {$0.sequence < $1.sequence}) {
-            self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
+    private func addShortcut(shortcut: ShortcutViewModel, to subMenu: NSMenu?) {
+        var action: Selector?
+        switch shortcut.type {
+        case .clipboard:
+            action = #selector(StatusMenu.copyToClipboard(_:))
+        case .url:
+            action = #selector(StatusMenu.executeUrl(_:))
         }
+
+        self.addItem(shortcut.name, action: action, to: subMenu)
+    }
+    
+    private func addSections(to subMenu: NSMenu) -> Int {
+        var added = 0
+        for section in master.sections.filter({ $0.name != currentSection && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
+            self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
+            added += 1
+        }
+        return added
+    }
+    
+    private func addOtherShortcuts() -> Int {
+        var added = 0
+        let subMenu = self.addSubmenu("Other shortcuts")
+        for section in master.sections.filter({ $0.name != currentSection && $0.name != "" && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
+            
+            if section.shortcuts > 1 {
+                let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
+                added += self.addShortcuts(section: section.menuName, to: sectionMenu)
+            } else {
+                added += self.addShortcuts(section: section.name, to: subMenu)
+            }
+        }
+        return added
     }
     
     private func setTitle(_ title: String) {
@@ -160,6 +188,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         self.statusButtonText.stringValue = title
         self.statusButtonText.sizeToFit()
         self.statusButtonTextWidthConstraint = Constraint.setWidth(control: self.statusButtonText, width: self.statusButtonText.frame.size.width)
+    }
+    
+    private func menuOpenTitle() {
+        self.statusButtonText.textColor = NSColor.white
+        self.statusButtonImage.image = NSImage(named: "xmark.circle.fill")!
+    }
+    
+    private func menuClosedTitle() {
+        self.statusButtonText.textColor = menuBarTextColor
+        self.statusButtonImage.image = NSImage(named: "shortcut")!
     }
     
     private func attributedString(_ string: String, fontSize: CGFloat? = nil) -> NSAttributedString {
@@ -194,11 +232,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         }
     }
     
-    private func addSubmenu(_ text: String) -> NSMenu {
-        let menu = NSMenu(title: text)
-        let menuItem = self.statusMenu.addItem(withTitle: text, action: nil, keyEquivalent: "")
-        self.statusMenu.setSubmenu(menu, for: menuItem)
-        return menu
+    private func addSubmenu(_ text: String, to menu: NSMenu? = nil) -> NSMenu {
+        var menu = menu
+        if menu == nil {
+            menu = self.statusMenu
+        }
+        let subMenu = NSMenu(title: text)
+        let menuItem = menu!.addItem(withTitle: text, action: nil, keyEquivalent: "")
+        menu!.setSubmenu(subMenu, for: menuItem)
+        return subMenu
     }
     
     private func addSeparator() {
@@ -225,7 +267,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     @objc private func changeSection(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            self.currentSection = menuItem.title
+            if menuItem.title == defaultSectionMenuName {
+                self.currentSection = ""
+            } else {
+                self.currentSection = menuItem.title
+            }
             UserDefaults.standard.set(self.currentSection, forKey: "currentSection")
             self.update()
         }

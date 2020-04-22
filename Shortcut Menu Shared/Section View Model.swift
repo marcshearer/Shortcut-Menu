@@ -30,7 +30,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Other properties
     @Published public var nameError: String = ""
     @Published public var canSave: Bool = false
-    
+
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
@@ -76,13 +76,17 @@ public class SectionViewModel : ObservableObject, Identifiable {
         return self.master?.sections.contains(where: {$0.name == name && $0.id != self.id}) ?? false
     }
     
+    public var shortcuts: Int {
+        return self.master?.shortcuts.filter({ $0.section?.id == self.id } ).count ?? 0
+    }
+    
     public func copy() -> SectionViewModel {
         return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence, sectionMO: self.sectionMO, master: self.master)
     }
     
     public var displayName: String {
         if self.name == "" {
-            return "No section"
+            return defaultSectionDisplayName
         } else {
             return self.name
         }
@@ -90,7 +94,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     
     public var menuName: String {
         if self.name == "" {
-            return "Defaults only"
+            return defaultSectionMenuName
         } else {
             return self.name
         }

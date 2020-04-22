@@ -29,7 +29,7 @@ struct SectionListView: View {
                 Spacer()
                 
                 if self.selection.editMode == .none {
-                    if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
+                    if self.selection.selectedSection != nil /* && self.selection.selectedSection?.name != "" TODO */ {
                         ToolbarButton("minus.circle.fill") {
                             self.selection.removeSection(section: self.selection.selectedSection!)
                         }
