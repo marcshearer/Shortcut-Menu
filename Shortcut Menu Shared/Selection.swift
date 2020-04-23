@@ -15,7 +15,7 @@ public class Selection : ObservableObject {
     @Published public var sections: [SectionViewModel]
     @Published public var selectedSection: SectionViewModel?
     @Published public var editSection = SectionViewModel()
-    @Published public var shortcuts: [ShortcutViewModel]?
+    @Published public var shortcuts: [ShortcutViewModel] = []
     @Published public var shortcutsTitle: String = "No Section Selected"
     @Published public var selectedShortcut: ShortcutViewModel?
     @Published public var editShortcut = ShortcutViewModel()
@@ -36,7 +36,7 @@ public class Selection : ObservableObject {
         if self.selectedSection != nil {
             
             self.editSection = self.selectedSection!.copy()
-            self.shortcuts = self.master.shortcuts.filter { $0.section?.name == self.selectedSection?.name}
+            self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
             self.shortcutsTitle = "\(self.selectedSection!.displayName) Shortcuts"
             self.editObject = (section.name == "" ? .none : .section)
             
@@ -51,7 +51,7 @@ public class Selection : ObservableObject {
         
         self.selectedSection = nil
         self.editSection = SectionViewModel()
-        self.shortcuts = nil
+        self.shortcuts = []
         self.shortcutsTitle = "No Section Selected"
         self.editObject = .none
         
@@ -123,7 +123,7 @@ public class Selection : ObservableObject {
     
     func selectShortcut(shortcut: ShortcutViewModel) {
         
-        self.selectedShortcut = self.shortcuts?.first(where: {$0.id == shortcut.id})
+        self.selectedShortcut = self.shortcuts.first(where: {$0.id == shortcut.id})
         
         if self.selectedShortcut != nil {
             
@@ -193,17 +193,15 @@ public class Selection : ObservableObject {
     
     public func updateShortcutSequence() {
         var last = 0
-        if let shortcuts = self.shortcuts {
-            for shortcut in shortcuts {
-                if shortcut.sequence != last + 1 {
-                    shortcut.sequence = last + 1
-                    shortcut.save()
-                    if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
-                        self.editShortcut.sequence = shortcut.sequence
-                    }
+        for shortcut in self.shortcuts {
+            if shortcut.sequence != last + 1 {
+                shortcut.sequence = last + 1
+                shortcut.save()
+                if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
+                    self.editShortcut.sequence = shortcut.sequence
                 }
-                last = shortcut.sequence
             }
+            last = shortcut.sequence
         }
     }
     
@@ -212,7 +210,7 @@ public class Selection : ObservableObject {
     }
     
     func getShortcut(id: UUID) -> ShortcutViewModel? {
-        return self.shortcuts?.first(where: { $0.id == id })
+        return self.shortcuts.first(where: { $0.id == id })
     }
     
     func getSectionIndex(id: UUID) -> Int? {
@@ -220,7 +218,7 @@ public class Selection : ObservableObject {
     }
     
     func getShortcutIndex(id: UUID) -> Int? {
-        return self.shortcuts?.firstIndex(where: { $0.id == id })
+        return self.shortcuts.firstIndex(where: { $0.id == id })
     }
 }
 

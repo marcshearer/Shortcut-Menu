@@ -11,21 +11,17 @@ import SwiftUI
 struct SectionListView: View {
     
     @ObservedObject public var selection: Selection
-    
-    private var defaultSection: SectionViewModel?
-    
-    init(selection: Selection) {
-        self.selection = selection
-        self.defaultSection = self.selection.sections.first(where: {$0.name == ""})
-    }
-    
+        
     var body: some View {
+        
         VStack(spacing: 0.0) {
             HStack(spacing: 0.0) {
                 Spacer()
                     .frame(width: 10.0)
+                
                 Text("Sections")
                     .font(defaultFont)
+                
                 Spacer()
                 
                 if self.selection.editMode == .none {
@@ -79,7 +75,7 @@ struct SectionListView: View {
                     self.selection.selectSection(section: section)
                 }
             }
-            .onDrop(of: ShortcutItemProvider.writableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
+            .onDrop(of: ShortcutItemProvider.readableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
     }
     
     func dropSectionAction(to: Int, from: Int) {
@@ -91,11 +87,12 @@ struct SectionListView: View {
     
     func dropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
-            self.selection.shortcuts![from].section = self.selection.sections[to]
-            self.selection.shortcuts![from].save()
+            self.selection.shortcuts[from].section = self.selection.sections[to]
+            self.selection.shortcuts[from].sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[to])
+            self.selection.shortcuts[from].save()
+            self.selection.deselectShortcut()
             self.selection.selectSection(section: self.selection.selectedSection!)
             self.selection.updateShortcutSequence()
-            self.selection.deselectShortcut()
         }
     }
 }

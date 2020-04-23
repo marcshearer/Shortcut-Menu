@@ -16,11 +16,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
+
         // Cache main context for core data
         MasterData.context = self.persistentContainer.viewContext
-        
-        // Build status menu
+    
+         // Build status menu
         StatusMenu.shared.update()
     }
 

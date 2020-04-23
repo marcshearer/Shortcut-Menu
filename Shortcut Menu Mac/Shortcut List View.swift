@@ -30,6 +30,7 @@ struct ShortcutListView: View {
                             self.selection.removeShortcut(shortcut: self.selection.selectedShortcut!)
                         }
                     }
+                    
                     if self.selection.selectedSection != nil {
                         ToolbarButton("plus.circle.fill") {
                             self.selection.newShortcut(section: self.selection.selectedSection!)
@@ -43,7 +44,7 @@ struct ShortcutListView: View {
             .frame(width: shortcutWidth, height: rowHeight)
             .background(titleBackgroundColor)
             .foregroundColor(titleTextColor)
-            if self.selection.shortcuts?.isEmpty ?? false {
+            /*if self.selection.shortcuts?.isEmpty ?? false {
                 VStack{
                     HStack(alignment: .top) {
                         Spacer()
@@ -54,16 +55,14 @@ struct ShortcutListView: View {
                     }
                     Spacer()
                 }
-            } else {
+            } else {*/
                 List {
-                    ForEach (self.selection.shortcuts ?? []) { (shortcut) in
-                        if self.selection.editMode == .none {
-                            self.sectionRow(shortcut)
-                                .onDrag {
-                                    return NSItemProvider(object: ShortcutItemProvider(id: shortcut.id))
-                                }
+                    ForEach (self.selection.shortcuts) { (shortcut) in
+                        if self.selection.editMode != .none {
+                            self.shortcutRow(shortcut)
                         } else {
-                            self.sectionRow(shortcut)
+                            self.shortcutRow(shortcut)
+                                .onDrag({shortcut.itemProvider})
                         }
                     }
                     .onInsert(of: ShortcutItemProvider.writableTypeIdentifiersForItemProvider) { (index, items) in
@@ -72,28 +71,26 @@ struct ShortcutListView: View {
                 }
                 .opacity((self.selection.editMode != .none ? 0.2 : 1.0))
                 .environment(\.defaultMinListRowHeight, rowHeight)
-            }
         }
     }
     
-    fileprivate func sectionRow(_ shortcut: ShortcutViewModel) -> some View {
+    fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
         return Text(shortcut.name)
         .frame(width: shortcutWidth, height: rowHeight, alignment: .leading)
         .font(defaultFont)
-        .contentShape(Rectangle())
         .listRowBackground((shortcut.id == self.selection.selectedShortcut?.id ? shortcutSelectionBackgroundColor : listBackgroundColor))
         .foregroundColor((shortcut.id == self.selection.selectedShortcut?.id ? shortcutSelectionTextColor : listTextColor))
+        .contentShape(Rectangle())
         .onTapGesture {
             if self.selection.editMode == .none {
                 self.selection.selectShortcut(shortcut: shortcut)
             }
         }
-
     }
 
     func dropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
-            self.selection.shortcuts?.move(fromOffsets: [from], toOffset: to)
+            self.selection.shortcuts.move(fromOffsets: [from], toOffset: to)
             self.selection.updateShortcutSequence()
         }
     }

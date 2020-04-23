@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
 		B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B262366324502644009D5DC3 /* Default-568h@2x.png */; };
 		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
 		B26F4429244B390C004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B21E6A4E24507E7A0004220B /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
 		B262366324502644009D5DC3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* CustomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViews.swift; sourceTree = "<group>"; };
 		B26F442A244B5E3C004D794E /* Detail View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Detail View.swift"; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				B28D42762447515300C2577E /* Info.plist */,
 				B29D46CE244DD9170001F984 /* Constraint.swift */,
 				B28D42692447515100C2577E /* Content View.swift */,
+				B21E6A4E24507E7A0004220B /* Whisper View.swift */,
 				B28D428B2447649F00C2577E /* Section List View.swift */,
 				B28D428D2447715600C2577E /* Shortcut List View.swift */,
 				B26F442A244B5E3C004D794E /* Detail View.swift */,
@@ -311,6 +314,7 @@
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
 				B28D427F244753FC00C2577E /* Section Managed Object.swift in Sources */,
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
+				B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */,
 				B28D42852447566B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
 				B28D42832447545000C2577E /* Declarations.swift in Sources */,
 				B28D426A2447515100C2577E /* Content View.swift in Sources */,

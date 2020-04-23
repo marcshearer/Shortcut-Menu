@@ -124,28 +124,25 @@ struct DetailView: View {
             self.message(text: self.selection.editShortcut.nameError)
 
             
-            DetailViewSection(header: "Shortcut value", content: {
-                textField("Must be non-blank", value: $selection.editShortcut.value)
+            DetailViewSection(header: "Shortcut URL to link to", content: {
+                textField("URL or text ust be non-blank", value: $selection.editShortcut.url)
             })
             .foregroundColor(.secondary)
             
-            self.message(text: self.selection.editShortcut.valueError)
+            self.message(text: self.selection.editShortcut.urlError)
             
-            DetailViewSection(header: "Shortcut Type") {
-                HStack() {
-                    Picker(selection: $selection.editShortcut.type, label: EmptyView()) {
-                        ForEach(ShortcutType.allCases, id: \.self) { type in
-                            Text(type.description)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .disabled(self.selection.editMode == .none)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-
-                    Spacer()
-                        .frame(width: 20)
-                }
-
+            DetailViewSection(header: "Text to copy to clipboard", content: {
+                textField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+            })
+            .foregroundColor(.secondary)
+            
+            self.message(text: self.selection.editShortcut.copyTextError)
+            
+            if self.selection.editShortcut.canEditCopyMessage {
+                DetailViewSection(header: "Message to show instead of copied text", content: {
+                    textField("Blank to show copied text", value: $selection.editShortcut.copyMessage)
+                })
+                .foregroundColor(.secondary)
             }
         }
     }
@@ -167,7 +164,7 @@ struct DetailView: View {
         return HStack {
                     Spacer()
                     Text(text)
-                        .font(Font.system(size: 12.0))
+                        .font(messageFont)
                         .foregroundColor(.red)
                     Spacer()
                         .frame(width: 20)

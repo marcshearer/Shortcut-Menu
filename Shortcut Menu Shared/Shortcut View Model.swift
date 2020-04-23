@@ -19,19 +19,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     // Properties in core data model
     public var id: UUID
     @Published public var name:String
-    @Published public var value: String
-    @Published public var type: ShortcutType
+    @Published public var url: String
+    @Published public var copyText: String
+    @Published public var copyMessage: String
     @Published public var section: SectionViewModel?
     @Published public var sequence: Int
-    
-    public var stringType: String {
-        get {
-            return self.type.rawValue
-        }
-        set {
-            self.type = ShortcutType(rawValue: newValue) ?? .clipboard
-        }
-    }
     
     // Linked managed object
     private var shortcutMO: ShortcutMO?
@@ -41,17 +33,20 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     
     // Other properties
     @Published public var nameError: String = ""
-    @Published public var valueError: String = ""
+    @Published public var urlError: String = ""
+    @Published public var copyTextError: String = ""
     @Published public var canSave: Bool = false
+    @Published public var canEditCopyMessage: Bool = false
     
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, value: String, type: ShortcutType, section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, url: String, copyText: String = "", copyMessage: String = "", section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
-        self.value = value
-        self.type = type
+        self.url = url
+        self.copyText = copyText
+        self.copyMessage = copyMessage
         self.section = section
         self.sequence = sequence
         self.shortcutMO = shortcutMO
@@ -61,35 +56,67 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, value: shortcutMO.value, type: shortcutMO.type, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", value: "", type: ShortcutType.clipboard, section: nil, sequence: 0, master: master)
+        self.init(id: UUID(), name: "", url: "", copyText: "", copyMessage: "", section: nil, sequence: 0, master: master)
     }
      
     private func setupMappings() {
         
+        // Set copy message to blank if copy text is blank
+        Publishers.CombineLatest($copyText, $copyMessage)
+            .receive(on: RunLoop.main)
+            .map { (copyText, copyMessage) in
+                return (copyText.isEmpty ? "" : copyMessage)
+            }
+        .assign(to: \.copyMessage, on: self)
+        .store(in: &cancellableSet)
+        
+        // Prevent copy message edit if copy text is blank
+        Publishers.CombineLatest($copyText, $copyMessage)
+            .receive(on: RunLoop.main)
+            .map { (copyText, copyMessage) in
+                return !copyText.isEmpty
+            }
+        .assign(to: \.canEditCopyMessage, on: self)
+        .store(in: &cancellableSet)
+        
+        // Check name is non-blank
         $name
             .receive(on: RunLoop.main)
-            .map { name in
+            .map { (name) in
                 return (name.isEmpty ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
             }
         .assign(to: \.nameError, on: self)
         .store(in: &cancellableSet)
         
-        Publishers.CombineLatest($value, $type)
+        // Check url or copy text non-blank and url valid
+        Publishers.CombineLatest($url, $copyText)
             .receive(on: RunLoop.main)
-            .map { (value, type) in
-                return (value.isEmpty ? "Value must be non-blank" : (!self.validUrl(value: value, type: type) ? "Invalid URL" : ""))
+            .map { (url, copyText) in
+                let bothEmpty = (url.isEmpty && copyText.isEmpty)
+                return (bothEmpty ? "URL or text to copy must be non-blank" : (!self.validUrl(value: url) ? "Invalid URL" : ""))
             }
-        .assign(to: \.valueError, on: self)
+        .assign(to: \.urlError, on: self)
         .store(in: &cancellableSet)
         
-        Publishers.CombineLatest($nameError, $valueError)
+        // Check url or copy text non-blank
+        Publishers.CombineLatest($url, $copyText)
             .receive(on: RunLoop.main)
-            .map { (nameError, valueError) in
-                return (nameError == "" && valueError == "")
+            .map { (url, copyText) in
+                let bothEmpty = (url.isEmpty && copyText.isEmpty)
+                return (bothEmpty ? "URL or text to copy must be non-blank" :  "")
+            }
+        .assign(to: \.copyTextError, on: self)
+        .store(in: &cancellableSet)
+        
+        // Check no errors
+        Publishers.CombineLatest3($nameError, $urlError, $copyTextError)
+            .receive(on: RunLoop.main)
+            .map { (nameError, urlError, copyTextError) in
+                return (nameError.isEmpty && urlError.isEmpty && copyTextError.isEmpty)
             }
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
@@ -99,8 +126,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         return self.master?.shortcuts.contains(where: {$0.name == name && $0.id != self.id}) ?? false
     }
     
-    private func validUrl(value: String, type: ShortcutType) -> Bool {
-        if type != .url {
+    private func validUrl(value: String) -> Bool {
+        if value == "" {
             return true
         } else {
             return URL(string: value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") != nil
@@ -108,7 +135,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, value: self.value, type: self.type, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, copyText: copyText, copyMessage: self.copyMessage, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
     }
     
     public var itemProvider: NSItemProvider {
@@ -138,8 +165,9 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         }
         self.shortcutMO!.id = self.id
         self.shortcutMO!.name = self.name
-        self.shortcutMO!.value = self.value
-        self.shortcutMO!.type = self.type
+        self.shortcutMO!.url = self.url
+        self.shortcutMO!.copyText = self.copyText
+        self.shortcutMO!.copyMessage = self.copyMessage
         self.shortcutMO!.section = self.section?.name ?? ""
         self.shortcutMO!.sequence = self.sequence
     }
@@ -153,12 +181,12 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.id = id
     }
         
-    static let itemProviderType: String = "com.shortcut" //kUTTypeData as String
-    static let type = "shortcut"
+    static let itemProviderType: String = "com.sheareronline.shortcuts.shortcut"
+    static let type: String = "shortcut"
     
-    public static var writableTypeIdentifiersForItemProvider: [String] = [ShortcutItemProvider.itemProviderType, kUTTypeData as String]
+    public static var writableTypeIdentifiersForItemProvider: [String] = [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
     
-    public static var readableTypeIdentifiersForItemProvider: [String] = [ShortcutItemProvider.itemProviderType, kUTTypeData as String]
+    public static var readableTypeIdentifiersForItemProvider: [String] = [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
         
@@ -193,7 +221,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
                 _ = item.loadObject(ofClass: ShortcutItemProvider.self) { (droppedItem, error) in
                     if error == nil {
                         if let droppedItem = droppedItem as? ShortcutItemProvider {
-                            if let droppedIndex = selection.shortcuts?.firstIndex(where: {$0.id == droppedItem.id}) {
+                            if let droppedIndex = selection.shortcuts.firstIndex(where: {$0.id == droppedItem.id}) {
                                 action(index, droppedIndex)
                             }
                         }

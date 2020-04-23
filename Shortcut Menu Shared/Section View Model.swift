@@ -139,7 +139,8 @@ public class SectionViewModel : ObservableObject, Identifiable {
         self.id = id
     }
         
-    static let itemProviderType: String = kUTTypeData as String
+    static let itemProviderType: String = "com.sheareronline.shortcuts.section"
+    static let type: String = "section"
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
         return [SectionItemProvider.itemProviderType]
@@ -154,7 +155,8 @@ public class SectionViewModel : ObservableObject, Identifiable {
         let progress = Progress(totalUnitCount: 1)
         
         do {
-            let data = try JSONSerialization.data(withJSONObject: ["id" : self.id.uuidString], options: .prettyPrinted)
+            let data = try JSONSerialization.data(withJSONObject: ["type" : ShortcutItemProvider.type,
+                                                                   "id" : self.id.uuidString], options: .prettyPrinted)
             progress.completedUnitCount = 1
             completionHandler(data, nil)
         } catch {
@@ -165,8 +167,14 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public static func object(withItemProviderData data: Data, typeIdentifier: String) throws ->SectionItemProvider {
+        var id: UUID
         let propertyList: [String : String] = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
-        return SectionItemProvider(id: UUID(uuidString: propertyList["id"] ?? "") ?? UUID())
+        if propertyList["type"] == ShortcutItemProvider.type {
+            id = UUID(uuidString: propertyList["id"] ?? "") ?? UUID()
+        } else {
+            id = UUID()
+        }
+        return SectionItemProvider(id: id)
     }
     
     static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {

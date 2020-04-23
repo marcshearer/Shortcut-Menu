@@ -21,15 +21,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     private let master = MasterData.shared
     
-    private var statusButtonText: NSTextField!
-    private var statusButtonTextWidthConstraint: NSLayoutConstraint!
-    private var statusButtonImage = NSImageView()
+    private var statusButton: NSButton!
     private var statusMenu: NSMenu
 
     private var menuItemList: [String: NSMenuItem] = [:]
     
     private var currentSection: String = ""
-    private var popover: NSPopover!
+    private var definePopover: NSPopover!
+    private var whisperPopover: NSPopover!
     
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
     
@@ -39,33 +38,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         self.statusMenu.autoenablesItems = false
         super.init()
         
-        if let button = self.statusItem.button {
-            // Re-purpose the status button since standard view didn't give the right vertical alignment
+        self.statusButton = self.statusItem.button
+        self.statusButton.image = NSImage(named: "shortcut")!
 
-            Constraint.anchor(view: button.superview!, control: button, attributes: .top, .bottom)
-            
-            self.statusButtonImage.translatesAutoresizingMaskIntoConstraints = false
-            button.addSubview(self.statusButtonImage)
-          
-            self.statusButtonText = NSTextField(labelWithString: "Shortcuts")
-            self.statusButtonText.translatesAutoresizingMaskIntoConstraints = false
-            self.statusButtonText.sizeToFit()
-            self.statusButtonText.textColor = NSColor.black
-            self.statusButtonText.font = NSFont.systemFont(ofSize: 12)
-            button.addSubview(self.statusButtonText)
-          
-            self.menuClosedTitle()
-            
-            _ = Constraint.setHeight(control: button, height: NSApp.mainMenu!.menuBarHeight)
-            
-            Constraint.anchor(view: button, control: self.statusButtonImage, attributes: .leading, .top, .bottom)
-            _ = Constraint.setWidth(control: self.statusButtonImage, width: 30)
-            
-            Constraint.anchor(view: button, control: self.statusButtonText, attributes: .centerY)
-            Constraint.anchor(view: button, control: self.statusButtonText, to: self.statusButtonImage, toAttribute: .trailing, attributes: .leading)
-            Constraint.anchor(view: button, control: self.statusButtonText, attributes: .trailing)
-         }
-        
         // Menu for current section and default section
         self.currentSection = UserDefaults.standard.string(forKey: "currentSection") ?? ""
         self.update()
@@ -79,20 +54,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     internal func menuWillOpen(_ menu: NSMenu) {
         // Close definition window
-        self.popover?.performClose(self)
-        
-        // Show dropdown menu
-        self.menuOpenTitle()
+        self.definePopover?.performClose(self)
     }
     
     internal func menuDidClose(_ menu: NSMenu) {
-        self.menuClosedTitle()
     }
     
     // MARK: - Popover delegate handlers =========================================================== -
 
     internal func popoverDidShow(_ notification: Notification) {
-        
     }
     
     internal func popoverDidClose(_ notification: Notification) {
@@ -105,10 +75,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         
         self.statusMenu.removeAllItems()
         
-        self.setTitle((self.currentSection == "" ? "Shortcuts" : self.currentSection))
+        if self.currentSection != "" {
+            if let section = self.master.sections.first(where: { $0.name == self.currentSection }) {
+                if section.shortcuts > 0 {
+                    self.addItem(id: "sectionTitle", (self.currentSection == "" ? "Shortcuts" : self.currentSection))
+                    self.menuItemList["sectionTitle"]?.isEnabled = false
+                }
+            }
+        }
         
          if currentSection != "" {
-            if self.addShortcuts(section: currentSection) > 0 {
+            if self.addShortcuts(section: currentSection, inset: 5) > 0 {
                 self.addSeparator()
             }
         }
@@ -135,26 +112,18 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
 
     }
     
-    private func addShortcuts(section: String, to subMenu: NSMenu? = nil) -> Int {
+    private func addShortcuts(section: String, inset: Int = 0, to subMenu: NSMenu? = nil) -> Int {
         var added = 0
         
         for shortcut in master.shortcuts.filter({ $0.section?.name == section }).sorted(by: {$0.sequence < $1.sequence}) {
-            self.addShortcut(shortcut: shortcut, to: subMenu)
+            self.addShortcut(shortcut: shortcut, inset: inset, to: subMenu)
             added += 1
         }
         return added
     }
     
-    private func addShortcut(shortcut: ShortcutViewModel, to subMenu: NSMenu?) {
-        var action: Selector?
-        switch shortcut.type {
-        case .clipboard:
-            action = #selector(StatusMenu.copyToClipboard(_:))
-        case .url:
-            action = #selector(StatusMenu.executeUrl(_:))
-        }
-
-        self.addItem(shortcut.name, action: action, to: subMenu)
+    private func addShortcut(shortcut: ShortcutViewModel, inset: Int = 0, to subMenu: NSMenu?) {
+        self.addItem(String(repeating: " ", count: inset) + shortcut.name, action: #selector(StatusMenu.actionShortcut(_:)), to: subMenu)
     }
     
     private func addSections(to subMenu: NSMenu) -> Int {
@@ -181,23 +150,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         return added
     }
     
-    private func setTitle(_ title: String) {
-        if let constraint = self.statusButtonTextWidthConstraint {
-            self.statusButtonText.removeConstraint(constraint)
+    func showPopover(popover: inout NSPopover?, view: AnyView) {
+        if popover == nil {
+            let newPopover = NSPopover()
+            newPopover.behavior = .applicationDefined
+            newPopover.contentSize = NSSize(width: 400, height: 500)
+            newPopover.delegate = self
+            popover = newPopover
         }
-        self.statusButtonText.stringValue = title
-        self.statusButtonText.sizeToFit()
-        self.statusButtonTextWidthConstraint = Constraint.setWidth(control: self.statusButtonText, width: self.statusButtonText.frame.size.width)
-    }
-    
-    private func menuOpenTitle() {
-        self.statusButtonText.textColor = NSColor.white
-        self.statusButtonImage.image = NSImage(named: "xmark.circle.fill")!
-    }
-    
-    private func menuClosedTitle() {
-        self.statusButtonText.textColor = menuBarTextColor
-        self.statusButtonImage.image = NSImage(named: "shortcut")!
+        popover?.contentViewController = NSHostingController(rootView: view)
+        popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
     }
     
     private func attributedString(_ string: String, fontSize: CGFloat? = nil) -> NSAttributedString {
@@ -248,21 +210,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     }
     
     @objc private func define(_ sender: Any?) {
+        // Create the window and set the content view.
         let contentView = ContentView().environment(\.managedObjectContext, MasterData.context)
-
-         // Create the window and set the content view.
-        
-        if self.popover == nil {
-            // Create the popover
-            let popover = NSPopover()
-            popover.contentSize = NSSize(width: 400, height: 500)
-            popover.behavior = .transient
-            popover.delegate = self
-            popover.contentViewController = NSHostingController(rootView: contentView)
-            self.popover = popover
-        }
-        self.popover.show(relativeTo: statusItem.button!.bounds, of: statusItem.button!, preferredEdge: NSRectEdge.minY)
-        self.popover.contentViewController?.view.window?.becomeKey()
+        self.showPopover(popover: &self.definePopover, view: AnyView(contentView))
+        self.definePopover.contentViewController?.view.window?.becomeKey()
     }
     
     @objc private func changeSection(_ sender: Any?) {
@@ -277,21 +228,31 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         }
     }
     
-    @objc private func copyToClipboard(_ sender: Any?) {
+    @objc private func actionShortcut(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title}) {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(shortcut.value, forType: .string)
-            }
-        }
-    }
-    
-     @objc private func executeUrl(_ sender: Any?) {
-        if let menuItem = sender as? NSMenuItem {
-            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title}) {
-                if let url = URL(string: shortcut.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
-                    NSWorkspace.shared.open(url)
+            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trimmingCharacters(in: .whitespacesAndNewlines)}) {
+                
+                // URL if non-blank
+                if !shortcut.url.isEmpty {
+                    if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                
+                // Copy text to clipboard if non-blank
+                if !shortcut.copyText.isEmpty {
+                    let pasteboard = NSPasteboard.general
+                    pasteboard.clearContents()
+                    pasteboard.setString(shortcut.copyText, forType: .string)
+                    
+                    // Create the window and set the content view.
+                    self.showPopover(popover: &self.whisperPopover,
+                                     view: AnyView(WhisperView(header: (shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage),
+                                                               caption: "Copied to clipboard") ))
+                    
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, qos: .userInteractive) {
+                        self.whisperPopover.close()
+                    }
                 }
             }
         }

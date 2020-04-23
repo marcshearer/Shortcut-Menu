@@ -8,26 +8,13 @@
 
 import CoreData
 
-public enum ShortcutType: String, CaseIterable {
-    case clipboard = "clipboard"
-    case url = "url"
-    
-    public var description: String {
-        switch self {
-        case .clipboard:
-            return "Copy to clipboard"
-        case .url:
-            return "Open URL"
-        }
-    }
-}
-
 public class ShortcutMO : NSManagedObject {
 
     @NSManaged public var idString: String
     @NSManaged public var name: String
-    @NSManaged public var value: String
-    @NSManaged public var typeString: String
+    @NSManaged public var url: String
+    @NSManaged public var copyText: String
+    @NSManaged public var copyMessage: String
     @NSManaged public var section: String
     @NSManaged public var sequence64: Int64
 
@@ -50,15 +37,6 @@ extension ShortcutMO: Identifiable {
         }
         set {
             self.sequence64 = Int64(newValue)
-        }
-    }
-    
-    public var type: ShortcutType {
-        get {
-            return ShortcutType(rawValue: self.typeString) ?? ShortcutType.clipboard
-        }
-        set {
-            self.typeString = newValue.rawValue
         }
     }
     

@@ -32,6 +32,8 @@ let detailWidth: CGFloat = 400.0
 let formHeight: CGFloat = 600.0
 
 let defaultFont = Font.system(size: 20.0)
+let captionFont = Font.system(size: 16.0)
+let messageFont = Font.system(size: 12.0)
 
 // Colours
 
@@ -39,17 +41,17 @@ let listBackgroundColor = Color.clear
 let listTextColor = Color.black
 let listMessageColor = Color.gray
 
-let sectionSelectionBackgroundColor = Color.blue
+let sectionSelectionBackgroundColor = Color(red: 0.65, green: 0.65, blue: 1.0)
 let sectionSelectionTextColor = Color.white
 let sectionDefaultTextColor = Color.gray
 
-let shortcutSelectionBackgroundColor = Color.blue
-let shortcutSelectionTextColor = Color.white
+let shortcutSelectionBackgroundColor = sectionSelectionBackgroundColor
+let shortcutSelectionTextColor = sectionSelectionTextColor
 
 let titleBackgroundColor = Color.gray
 let titleTextColor = Color.white
 
-let menuBarTextColor = NSColor(calibratedRed: 0, green: 0, blue: 200, alpha: 1.0)
+let menuBarTextColor = NSColor(red: 0, green: 0, blue: 200, alpha: 1.0)
 
 // Text for default section
 let defaultSectionDisplayName = "Default Section"

@@ -26,7 +26,6 @@ struct ContentView: View {
             
             Divider()
             .background(Color.white)
-            .frame(width: 2.0)
             
             DetailView(selection: selection).frame(width: detailWidth, height: formHeight, alignment: .leading)
         }
