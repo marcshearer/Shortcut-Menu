@@ -13,6 +13,7 @@ public class ShortcutMO : NSManagedObject {
     @NSManaged public var idString: String
     @NSManaged public var name: String
     @NSManaged public var url: String
+    @NSManaged public var copyPrivate: Bool
     @NSManaged public var copyText: String
     @NSManaged public var copyMessage: String
     @NSManaged public var section: String

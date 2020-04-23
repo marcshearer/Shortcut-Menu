@@ -22,6 +22,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var url: String
     @Published public var copyText: String
     @Published public var copyMessage: String
+    @Published public var copyPrivate: Bool
     @Published public var section: SectionViewModel?
     @Published public var sequence: Int
     
@@ -35,18 +36,20 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var nameError: String = ""
     @Published public var urlError: String = ""
     @Published public var copyTextError: String = ""
+    @Published public var copyMessageError: String = ""
     @Published public var canSave: Bool = false
     @Published public var canEditCopyMessage: Bool = false
     
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, url: String, copyText: String = "", copyMessage: String = "", section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, url: String, copyText: String = "", copyMessage: String = "", copyPrivate: Bool, section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
         self.url = url
         self.copyText = copyText
         self.copyMessage = copyMessage
+        self.copyPrivate = copyPrivate
         self.section = section
         self.sequence = sequence
         self.shortcutMO = shortcutMO
@@ -56,11 +59,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", url: "", copyText: "", copyMessage: "", section: nil, sequence: 0, master: master)
+        self.init(id: UUID(), name: "", url: "", copyText: "", copyMessage: "", copyPrivate: false, section: nil, sequence: 0, master: master)
     }
      
     private func setupMappings() {
@@ -112,11 +115,20 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         .assign(to: \.copyTextError, on: self)
         .store(in: &cancellableSet)
         
-        // Check no errors
-        Publishers.CombineLatest3($nameError, $urlError, $copyTextError)
+        // Check message non-blank if private
+        Publishers.CombineLatest($copyMessage, $copyPrivate)
             .receive(on: RunLoop.main)
-            .map { (nameError, urlError, copyTextError) in
-                return (nameError.isEmpty && urlError.isEmpty && copyTextError.isEmpty)
+            .map { (copyMessage, copyPrivate) in
+                return (copyMessage.isEmpty && copyPrivate ? "Message must not be blank if private" :  "")
+            }
+        .assign(to: \.copyMessageError, on: self)
+        .store(in: &cancellableSet)
+        
+        // Check no errors
+        Publishers.CombineLatest4($nameError, $urlError, $copyTextError, $copyMessageError)
+            .receive(on: RunLoop.main)
+            .map { (nameError, urlError, copyTextError, copyMessageError) in
+                return (nameError.isEmpty && urlError.isEmpty && copyTextError.isEmpty && copyMessageError.isEmpty)
             }
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
@@ -135,7 +147,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, copyText: copyText, copyMessage: self.copyMessage, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
     }
     
     public var itemProvider: NSItemProvider {
@@ -168,6 +180,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.shortcutMO!.url = self.url
         self.shortcutMO!.copyText = self.copyText
         self.shortcutMO!.copyMessage = self.copyMessage
+        self.shortcutMO!.copyPrivate = self.copyPrivate
         self.shortcutMO!.section = self.section?.name ?? ""
         self.shortcutMO!.sequence = self.sequence
     }

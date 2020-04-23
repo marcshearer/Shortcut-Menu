@@ -131,8 +131,21 @@ struct DetailView: View {
             
             self.message(text: self.selection.editShortcut.urlError)
             
+            DetailViewSection(header: "Copy text is private", content: {
+                Toggle(isOn: $selection.editShortcut.copyPrivate) {
+                    Text("")
+                }
+                .disabled(self.selection.editMode == .none)
+                .toggleStyle(SwitchToggleStyle())
+            })
+            
+           
             DetailViewSection(header: "Text to copy to clipboard", content: {
-                textField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                if self.selection.editShortcut.copyPrivate {
+                    secureField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                } else {
+                    textField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                }
             })
             .foregroundColor(.secondary)
             
@@ -144,6 +157,9 @@ struct DetailView: View {
                 })
                 .foregroundColor(.secondary)
             }
+            
+            self.message(text: self.selection.editShortcut.copyMessageError)
+            
         }
     }
     
@@ -173,6 +189,15 @@ struct DetailView: View {
     
     private func textField(_ placeholder: String, value: Binding<String>) -> some View {
         return TextField(placeholder, text: value)
+            .disabled(self.selection.editMode == .none)
+            .opacity((self.selection.editMode == .none ? 0.5 : 1.0))
+            .font(.system(size: 20, weight: .semibold, design: .rounded))
+            .lineLimit(nil)
+            .padding(.horizontal)
+    }
+    
+    private func secureField(_ placeholder: String, value: Binding<String>) -> some View {
+        return SecureField(placeholder, text: value)
             .disabled(self.selection.editMode == .none)
             .opacity((self.selection.editMode == .none ? 0.5 : 1.0))
             .font(.system(size: 20, weight: .semibold, design: .rounded))

@@ -12,6 +12,7 @@
     </entity>
     <entity name="Shortcut" representedClassName=".ShortcutMO" syncable="YES">
         <attribute name="copyMessage" optional="YES" attributeType="String"/>
+        <attribute name="copyPrivate" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="copyText" optional="YES" attributeType="String"/>
         <attribute name="idString" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -26,6 +27,6 @@
     </entity>
     <elements>
         <element name="Section" positionX="-54" positionY="-9" width="128" height="88"/>
-        <element name="Shortcut" positionX="-27" positionY="36" width="128" height="148"/>
+        <element name="Shortcut" positionX="-27" positionY="36" width="128" height="163"/>
     </elements>
 </model>
