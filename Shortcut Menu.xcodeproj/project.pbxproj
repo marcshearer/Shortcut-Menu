@@ -44,6 +44,8 @@
 		B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46C9244D718F0001F984 /* Master Data.swift */; };
 		B29D46CD244DD7730001F984 /* Status Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46CC244DD7730001F984 /* Status Menu.swift */; };
 		B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46CE244DD9170001F984 /* Constraint.swift */; };
+		B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AA94A82452DC3A00664AAB /* Local Authentication.swift */; };
+		B2AA94AA2452DDA100664AAB /* Local Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AA94A82452DC3A00664AAB /* Local Authentication.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +82,7 @@
 		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
 		B29D46CC244DD7730001F984 /* Status Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Status Menu.swift"; sourceTree = "<group>"; };
 		B29D46CE244DD9170001F984 /* Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constraint.swift; sourceTree = "<group>"; };
+		B2AA94A82452DC3A00664AAB /* Local Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Local Authentication.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,6 +178,7 @@
 			children = (
 				B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */,
 				B28D41F12443538D00C2577E /* Assets.xcassets */,
+				B2AA94A82452DC3A00664AAB /* Local Authentication.swift */,
 				B28D41FF2443562C00C2577E /* Section Managed Object.swift */,
 				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
 				B28D420324435F8500C2577E /* Section View Model.swift */,
@@ -292,6 +296,7 @@
 			files = (
 				B28D428924475BB000C2577E /* Selection.swift in Sources */,
 				B28D41E92443538B00C2577E /* AppDelegate.swift in Sources */,
+				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */,
 				B28D41EB2443538B00C2577E /* SceneDelegate.swift in Sources */,
 				B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */,
@@ -326,6 +331,7 @@
 				B29D46CB244D79DE0001F984 /* Master Data.swift in Sources */,
 				B26F442B244B5E3C004D794E /* Detail View.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
+				B2AA94AA2452DDA100664AAB /* Local Authentication.swift in Sources */,
 				B28D428E2447715600C2577E /* Shortcut List View.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

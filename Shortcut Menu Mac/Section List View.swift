@@ -60,6 +60,7 @@ struct SectionListView: View {
             .opacity((self.selection.editMode != .none ? 0.2 : 1.0))
             .environment(\.defaultMinListRowHeight, rowHeight)
         }
+        .moveDisabled(false)
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {

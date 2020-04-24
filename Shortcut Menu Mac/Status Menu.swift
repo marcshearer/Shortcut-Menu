@@ -232,27 +232,48 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         if let menuItem = sender as? NSMenuItem {
             if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trimmingCharacters(in: .whitespacesAndNewlines)}) {
                 
-                // URL if non-blank
-                if !shortcut.url.isEmpty {
-                    if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
-                        NSWorkspace.shared.open(url)
+                func copyAction() {
+                    
+                    // Copy text to clipboard if non-blank
+                    if !shortcut.copyText.isEmpty {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(shortcut.copyText, forType: .string)
+                        
+                        // Create the window and set the content view.
+                        self.showPopover(popover: &self.whisperPopover,
+                                         view: AnyView(WhisperView(header: (shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage),
+                                                                   caption: "Copied to clipboard") ))
+                        
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, qos: .userInteractive) {
+                            self.whisperPopover.close()
+                        }
                     }
                 }
                 
-                // Copy text to clipboard if non-blank
-                if !shortcut.copyText.isEmpty {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.setString(shortcut.copyText, forType: .string)
+                func urlAction(wait: Bool) {
                     
-                    // Create the window and set the content view.
-                    self.showPopover(popover: &self.whisperPopover,
-                                     view: AnyView(WhisperView(header: (shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage),
-                                                               caption: "Copied to clipboard") ))
-                    
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, qos: .userInteractive) {
-                        self.whisperPopover.close()
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
+                        // URL if non-blank
+                        if !shortcut.url.isEmpty {
+                            if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                                NSWorkspace.shared.open(url)
+                            }
+                        }
                     }
+                }
+                
+                if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
+                    
+                    LocalAuthentication.authenticate(reason: "reveal private data", completion: {
+                        copyAction()
+                        urlAction(wait: true)
+                    }, failure: {
+                        urlAction(wait: false)
+                    })
+                } else {
+                    copyAction()
+                    urlAction(wait: true)
                 }
             }
         }

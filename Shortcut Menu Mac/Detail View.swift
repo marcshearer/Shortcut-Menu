@@ -11,7 +11,9 @@ import SwiftUI
 struct DetailView: View {
     
     @ObservedObject public var selection: Selection
-
+    @State var lockImage: String = ""
+    @State var lockColor: Color = .red
+    
     var body: some View {
         
         VStack(spacing: 0) {
@@ -43,7 +45,7 @@ struct DetailView: View {
             Spacer()
                 .frame(width: 10.0)
             
-            Text(self.title() )
+            Text(self.detailTitle() )
                 .font(defaultFont)
             
             Spacer()
@@ -89,6 +91,7 @@ struct DetailView: View {
         .frame(width: detailWidth, height: rowHeight)
         .background(titleBackgroundColor)
         .foregroundColor(titleTextColor)
+        .onAppear(perform: { self.formatLockButton()})
     }
     
     fileprivate func canSave() -> Bool {
@@ -122,7 +125,6 @@ struct DetailView: View {
             .foregroundColor(.secondary)
 
             self.message(text: self.selection.editShortcut.nameError)
-
             
             DetailViewSection(header: "Shortcut URL to link to", content: {
                 textField("URL or text ust be non-blank", value: $selection.editShortcut.url)
@@ -131,20 +133,19 @@ struct DetailView: View {
             
             self.message(text: self.selection.editShortcut.urlError)
             
-            DetailViewSection(header: "Copy text is private", content: {
-                Toggle(isOn: $selection.editShortcut.copyPrivate) {
-                    Text("")
-                }
-                .disabled(self.selection.editMode == .none)
-                .toggleStyle(SwitchToggleStyle())
-            })
-            
-           
             DetailViewSection(header: "Text to copy to clipboard", content: {
-                if self.selection.editShortcut.copyPrivate {
-                    secureField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
-                } else {
-                    textField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                HStack {
+                    if self.selection.editShortcut.copyPrivate {
+                        secureField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                    } else {
+                        textField("URL or text must be non-blank", value: $selection.editShortcut.copyText)
+                    }
+                    
+                    if self.selection.editMode != .none && self.selection.editShortcut.copyText != "" {
+                        Spacer()
+                        self.lockButton()
+                        Spacer()
+                    }
                 }
             })
             .foregroundColor(.secondary)
@@ -156,14 +157,14 @@ struct DetailView: View {
                     textField("Blank to show copied text", value: $selection.editShortcut.copyMessage)
                 })
                 .foregroundColor(.secondary)
-            }
             
-            self.message(text: self.selection.editShortcut.copyMessageError)
+                self.message(text: self.selection.editShortcut.copyMessageError)
+            }
             
         }
     }
     
-    private func title() -> String {
+    private func detailTitle() -> String {
         
         switch self.selection.editObject {
         case .section:
@@ -173,7 +174,6 @@ struct DetailView: View {
         case .none:
             return "Nothing Selected"
         }
-        
     }
     
     private func message(text: String) -> some View {
@@ -185,6 +185,34 @@ struct DetailView: View {
                     Spacer()
                         .frame(width: 20)
                 }
+    }
+    
+    private func formatLockButton() {
+        let locked = selection.editShortcut.copyPrivate
+        self.lockImage = (locked ? "unlock" : "lock")
+        self.lockColor = (locked ? .green : .red)
+    }
+    
+    private func lockButton() -> some View {
+        return Button(action: {
+            if self.selection.editShortcut.copyPrivate {
+                LocalAuthentication.authenticate(reason: "show private data",completion: { self.selection.editShortcut.copyPrivate.toggle() ; self.formatLockButton() }, failure: {})
+            } else {
+                self.selection.editShortcut.copyPrivate.toggle()
+                self.formatLockButton()
+            }
+        },label: {
+            Image(self.lockImage)
+                .font(defaultFont)
+                .padding()
+                .frame(width: 30, height: 30)
+                .background(self.lockColor)
+                .clipShape(Circle())
+                .foregroundColor(.white)
+                .scaledToFit()
+        })
+        .buttonStyle(PlainButtonStyle())
+        .disabled(self.selection.editMode == .none)
     }
     
     private func textField(_ placeholder: String, value: Binding<String>) -> some View {

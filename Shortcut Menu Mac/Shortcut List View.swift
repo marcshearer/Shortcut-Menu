@@ -44,7 +44,7 @@ struct ShortcutListView: View {
             .frame(width: shortcutWidth, height: rowHeight)
             .background(titleBackgroundColor)
             .foregroundColor(titleTextColor)
-            /*if self.selection.shortcuts?.isEmpty ?? false {
+            if self.selection.shortcuts.isEmpty {
                 VStack{
                     HStack(alignment: .top) {
                         Spacer()
@@ -55,7 +55,7 @@ struct ShortcutListView: View {
                     }
                     Spacer()
                 }
-            } else {*/
+            } else {
                 List {
                     ForEach (self.selection.shortcuts) { (shortcut) in
                         if self.selection.editMode != .none {
@@ -71,7 +71,9 @@ struct ShortcutListView: View {
                 }
                 .opacity((self.selection.editMode != .none ? 0.2 : 1.0))
                 .environment(\.defaultMinListRowHeight, rowHeight)
+            }
         }
+        .moveDisabled(false)
     }
     
     fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
