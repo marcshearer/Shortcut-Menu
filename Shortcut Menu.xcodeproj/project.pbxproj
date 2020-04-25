@@ -149,8 +149,8 @@
 		B28D42662447515100C2577E /* Shortcut Menu Mac */ = {
 			isa = PBXGroup;
 			children = (
-				B29D46CC244DD7730001F984 /* Status Menu.swift */,
 				B28D42672447515100C2577E /* AppDelegate.swift */,
+				B29D46CC244DD7730001F984 /* Status Menu.swift */,
 				B28D42732447515300C2577E /* Main.storyboard */,
 				B28D42762447515300C2577E /* Info.plist */,
 				B29D46CE244DD9170001F984 /* Constraint.swift */,

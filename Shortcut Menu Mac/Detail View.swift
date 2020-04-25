@@ -53,6 +53,7 @@ struct DetailView: View {
             if self.selection.editObject != .none && self.selection.editMode == .none {
                 ToolbarButton("pencil.circle.fill") {
                     self.selection.editMode = .amend
+                    self.formatLockButton()
                 }
             }
             
@@ -91,8 +92,7 @@ struct DetailView: View {
         .frame(width: detailWidth, height: rowHeight)
         .background(titleBackgroundColor)
         .foregroundColor(titleTextColor)
-        .onAppear(perform: { self.formatLockButton()})
-    }
+     }
     
     fileprivate func canSave() -> Bool {
         var result = false
@@ -196,7 +196,13 @@ struct DetailView: View {
     private func lockButton() -> some View {
         return Button(action: {
             if self.selection.editShortcut.copyPrivate {
-                LocalAuthentication.authenticate(reason: "show private data",completion: { self.selection.editShortcut.copyPrivate.toggle() ; self.formatLockButton() }, failure: {})
+                LocalAuthentication.authenticate(reason: "show private data",completion: {
+                    self.selection.editShortcut.copyPrivate.toggle()
+                    self.formatLockButton()
+                    StatusMenu.shared.bringToFront()
+                }, failure: {
+                    StatusMenu.shared.bringToFront()
+                })
             } else {
                 self.selection.editShortcut.copyPrivate.toggle()
                 self.formatLockButton()

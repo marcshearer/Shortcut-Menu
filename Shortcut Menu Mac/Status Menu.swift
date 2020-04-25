@@ -21,7 +21,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     private let master = MasterData.shared
     
-    private var statusButton: NSButton!
+    private var statusButtonImage = NSImageView()
     private var statusMenu: NSMenu
 
     private var menuItemList: [String: NSMenuItem] = [:]
@@ -30,6 +30,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     private var definePopover: NSPopover!
     private var whisperPopover: NSPopover!
     
+    private var definePopoverShowing = false
+   
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
     
     override init() {
@@ -38,8 +40,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         self.statusMenu.autoenablesItems = false
         super.init()
         
-        self.statusButton = self.statusItem.button
-        self.statusButton.image = NSImage(named: "shortcut")!
+        let button = self.statusItem.button!
+        self.statusButtonImage.translatesAutoresizingMaskIntoConstraints = false
+        button.addSubview(self.statusButtonImage)
+        Constraint.anchor(view: button, control: self.statusButtonImage, attributes: .leading, .top, .bottom)
+        _ = Constraint.setWidth(control: self.statusButtonImage, width: 30)
+        _ = Constraint.setWidth(control: button, width: 30)
+        self.changeImage(close: false)
 
         // Menu for current section and default section
         self.currentSection = UserDefaults.standard.string(forKey: "currentSection") ?? ""
@@ -53,6 +60,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     // MARK: - Menu delegate handlers =========================================================== -
     
     internal func menuWillOpen(_ menu: NSMenu) {
+        if definePopoverShowing {
+            menu.cancelTrackingWithoutAnimation()
+        }
+        
         // Close definition window
         self.definePopover?.performClose(self)
     }
@@ -67,6 +78,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     internal func popoverDidClose(_ notification: Notification) {
         self.update()
+        self.changeImage(close: false)
+        self.definePopoverShowing = false
     }
     
     // MARK: - Main routines to handle the status elements of the menu =========================================================== -
@@ -162,6 +175,20 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
     }
     
+    func bringToFront() {
+        self.definePopover.contentViewController?.view.window?.makeKey()
+    }
+    
+    func changeImage(close: Bool) {
+        if close {
+            self.statusButtonImage.image = NSImage(named: "ringCloseWhite")
+            self.statusButtonImage.image?.isTemplate = true
+        } else {
+            self.statusButtonImage.image = NSImage(named: "shortcut")
+            self.statusButtonImage.image?.isTemplate = false
+        }
+    }
+    
     private func attributedString(_ string: String, fontSize: CGFloat? = nil) -> NSAttributedString {
         var attributes: [NSAttributedString.Key : Any] = [:]
         
@@ -214,6 +241,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         let contentView = ContentView().environment(\.managedObjectContext, MasterData.context)
         self.showPopover(popover: &self.definePopover, view: AnyView(contentView))
         self.definePopover.contentViewController?.view.window?.becomeKey()
+        self.changeImage(close: true)
+        self.definePopoverShowing = true
     }
     
     @objc private func changeSection(_ sender: Any?) {

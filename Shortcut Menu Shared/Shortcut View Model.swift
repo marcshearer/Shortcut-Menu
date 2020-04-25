@@ -69,14 +69,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     private func setupMappings() {
         
         // Set copy message to blank if copy text is blank
-        Publishers.CombineLatest($copyText, $copyMessage)
+        $copyText
             .receive(on: RunLoop.main)
-            .map { (copyText, copyMessage) in
-                return (copyText.isEmpty ? "" : copyMessage)
+            .map { (copyText) in
+                return (copyText.isEmpty ? "" : self.copyMessage)
             }
         .assign(to: \.copyMessage, on: self)
         .store(in: &cancellableSet)
-        
+
         // Prevent copy message edit if copy text is blank
         Publishers.CombineLatest($copyText, $copyMessage)
             .receive(on: RunLoop.main)
