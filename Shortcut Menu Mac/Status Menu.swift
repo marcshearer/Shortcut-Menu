@@ -259,7 +259,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     
     @objc private func actionShortcut(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trimmingCharacters(in: .whitespacesAndNewlines)}) {
+            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trim()}) {
                 
                 func copyAction() {
                     
