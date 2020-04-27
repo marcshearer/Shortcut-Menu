@@ -20,6 +20,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     public var id: UUID
     @Published public var name:String
     @Published public var url: String
+    @Published public var urlSecurityBookmark: Data?
     @Published public var copyText: String
     @Published public var copyMessage: String
     @Published public var copyPrivate: Bool
@@ -39,14 +40,16 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var copyMessageError: String = ""
     @Published public var canSave: Bool = false
     @Published public var canEditCopyMessage: Bool = false
+    @Published public var canEditUrl: Bool = true
     
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, url: String, copyText: String = "", copyMessage: String = "", copyPrivate: Bool, section: SectionViewModel?, sequence: Int, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
         self.url = url
+        self.urlSecurityBookmark = urlSecurityBookmark
         self.copyText = copyText
         self.copyMessage = copyMessage
         self.copyPrivate = copyPrivate
@@ -59,14 +62,23 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", url: "", copyText: "", copyMessage: "", copyPrivate: false, section: nil, sequence: 0, master: master)
+        self.init(id: UUID(), name: "", url: "", master: master)
     }
      
     private func setupMappings() {
+        
+        // Prevent edit of URL if bookmark data is present
+        $urlSecurityBookmark
+            .receive(on: RunLoop.main)
+            .map { (urlSecurityBookmark) in
+                return (urlSecurityBookmark == nil)
+            }
+        .assign(to: \.canEditUrl, on: self)
+        .store(in: &cancellableSet)
         
         // Set copy message to blank if copy text is blank
         $copyText
@@ -96,11 +108,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         .store(in: &cancellableSet)
         
         // Check url or copy text non-blank and url valid
-        Publishers.CombineLatest($url, $copyText)
+        Publishers.CombineLatest3($url, $copyText, $urlSecurityBookmark)
             .receive(on: RunLoop.main)
-            .map { (url, copyText) in
+            .map { (url, copyText, urlSecurityBookmark) in
                 let bothEmpty = (url.isEmpty && copyText.isEmpty)
-                return (bothEmpty ? "URL or text to copy must be non-blank" : (!self.validUrl(value: url) ? "Invalid URL" : ""))
+                return
+                    (url.trim().left(5) == "file:" && urlSecurityBookmark == nil ? "Local files must be entered using the folder button" :
+                    (bothEmpty ? "URL or text to copy must be non-blank" :
+                    (!self.validUrl(value: url) ? "Invalid URL" : "")))
             }
         .assign(to: \.urlError, on: self)
         .store(in: &cancellableSet)
@@ -147,7 +162,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, urlSecurityBookmark: self.urlSecurityBookmark, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
     }
     
     public var itemProvider: NSItemProvider {
@@ -178,6 +193,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.shortcutMO!.id = self.id
         self.shortcutMO!.name = self.name
         self.shortcutMO!.url = self.url
+        self.shortcutMO!.urlSecurityBookmark = self.urlSecurityBookmark
         self.shortcutMO!.copyText = self.copyText
         self.shortcutMO!.copyMessage = self.copyMessage
         self.shortcutMO!.copyPrivate = self.copyPrivate

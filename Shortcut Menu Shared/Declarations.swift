@@ -55,4 +55,5 @@ let menuBarTextColor = NSColor(red: 0, green: 0, blue: 200, alpha: 1.0)
 
 // Text for default section
 let defaultSectionDisplayName = "Default Section"
+let defaultSectionTitleName = "Default"
 let defaultSectionMenuName = "Defaults only"

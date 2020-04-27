@@ -13,7 +13,7 @@ protocol StatusMenuPopoverDelegate {
     var popover: NSPopover? {get set}
 }
 
-class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
+class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate {
     
     public static let shared = StatusMenu()
     
@@ -27,10 +27,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     private var menuItemList: [String: NSMenuItem] = [:]
     
     private var currentSection: String = ""
-    private var definePopover: NSPopover!
+    private var defineWindowController: MenubarWindowController!
     private var whisperPopover: NSPopover!
     
-    private var definePopoverShowing = false
+    private var defineWindowShowing = false
    
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
     
@@ -60,12 +60,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     // MARK: - Menu delegate handlers =========================================================== -
     
     internal func menuWillOpen(_ menu: NSMenu) {
-        if definePopoverShowing {
+        if defineWindowShowing {
             menu.cancelTrackingWithoutAnimation()
+            self.defineWindowController?.window?.close()
         }
         
-        // Close definition window
-        self.definePopover?.performClose(self)
     }
     
     internal func menuDidClose(_ menu: NSMenu) {
@@ -79,8 +78,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     internal func popoverDidClose(_ notification: Notification) {
         self.update()
         self.changeImage(close: false)
-        self.definePopoverShowing = false
+        self.defineWindowShowing = false
     }
+    
+    // MARK: - Window delegate handlers =========================================================== -
+
+    internal func windowWillClose(_ notification: Notification) {
+        self.update()
+        self.changeImage(close: false)
+        self.defineWindowShowing = false
+    }
+    
     
     // MARK: - Main routines to handle the status elements of the menu =========================================================== -
     
@@ -163,10 +171,21 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         return added
     }
     
-    func showPopover(popover: inout NSPopover?, view: AnyView) {
+    private func whisper(header: String, caption: String = "", closeAfter: TimeInterval = 3) {
+        // Create the window and set the content view.
+        self.showPopover(popover: &self.whisperPopover,
+                         view: AnyView(WhisperView(header: header,
+                                                   caption: caption) ))
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + closeAfter, qos: .userInteractive) {
+            self.whisperPopover.close()
+        }
+    }
+    
+    private func showPopover(popover: inout NSPopover?, view: AnyView) {
         if popover == nil {
             let newPopover = NSPopover()
-            newPopover.behavior = .applicationDefined
+            newPopover.behavior = .transient
             newPopover.contentSize = NSSize(width: 400, height: 500)
             newPopover.delegate = self
             popover = newPopover
@@ -175,13 +194,39 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
         popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
     }
     
-    func bringToFront() {
-        self.definePopover.contentViewController?.view.window?.makeKey()
+     private func showMenubarWindow(menubarWindowController: inout MenubarWindowController?, view: AnyView)  {
+        var window: NSWindow?
+        if menubarWindowController == nil {
+            menubarWindowController = MenubarWindowController()
+            window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+                styleMask: [.titled, .closable],
+                backing: .buffered, defer: false)
+            window?.title = "Define Shortcuts"
+            window?.delegate = self
+            menubarWindowController?.window = window
+        } else {
+            window = menubarWindowController?.window
+        }
+        window?.center()
+        window?.setFrameAutosaveName("Shortcuts Define Window")
+        window?.contentView = NSHostingView(rootView: view)
+        window?.level = .floating
+        window?.makeKeyAndOrderFront(self)
+        NSApp.activate(ignoringOtherApps: true)
     }
     
-    func changeImage(close: Bool) {
+    public func defineAlways(onTop: Bool) {
+        self.defineWindowController?.window?.level = (onTop ? .floating : .normal)
+    }
+    
+    public func bringToFront() {
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    private func changeImage(close: Bool) {
         if close {
-            self.statusButtonImage.image = NSImage(named: "ringCloseWhite")
+            self.statusButtonImage.image = NSImage(named: "xmark.circle")
             self.statusButtonImage.image?.isTemplate = true
         } else {
             self.statusButtonImage.image = NSImage(named: "shortcut")
@@ -239,10 +284,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
     @objc private func define(_ sender: Any?) {
         // Create the window and set the content view.
         let contentView = ContentView().environment(\.managedObjectContext, MasterData.context)
-        self.showPopover(popover: &self.definePopover, view: AnyView(contentView))
-        self.definePopover.contentViewController?.view.window?.becomeKey()
+        self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
+        self.defineWindowController.contentViewController?.view.window?.becomeKey()
         self.changeImage(close: true)
-        self.definePopoverShowing = true
+        self.defineWindowShowing = true
     }
     
     @objc private func changeSection(_ sender: Any?) {
@@ -269,14 +314,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
                         pasteboard.clearContents()
                         pasteboard.setString(shortcut.copyText, forType: .string)
                         
-                        // Create the window and set the content view.
-                        self.showPopover(popover: &self.whisperPopover,
-                                         view: AnyView(WhisperView(header: (shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage),
-                                                                   caption: "Copied to clipboard") ))
-                        
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, qos: .userInteractive) {
-                            self.whisperPopover.close()
-                        }
+                        self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
                     }
                 }
                 
@@ -286,7 +324,25 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
                         // URL if non-blank
                         if !shortcut.url.isEmpty {
                             if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
-                                NSWorkspace.shared.open(url)
+                                
+                                if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
+                                    // Shortcut to a local file
+                                    var isStale: Bool = false
+                                    do {
+                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, bookmarkDataIsStale: &isStale)
+                                        if isStale {
+                                            self.whisper(header: "Unable to access this file", caption: "Try defining the shortcut again")
+                                        } else {
+                                            NSWorkspace.shared.open(url)
+                                        }
+                                    } catch {
+                                        self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
+                                    }
+                                    
+                                } else {
+                                    // Shortcut to a remote url
+                                    NSWorkspace.shared.open(url)
+                                }
                             }
                         }
                     }
@@ -310,5 +366,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate {
 
     @objc private func quit(_ sender: Any?) {
         NSApp.terminate(sender)
+    }
+}
+
+class MenubarWindowController: NSWindowController {
+
+    override func windowDidLoad() {
+        super.windowDidLoad()
+
+        self.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }

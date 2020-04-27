@@ -23,7 +23,7 @@ public class Selection : ObservableObject {
     @Published public var editObject: EditObject = .none
     
     init() {
-        self.sections = self.master.sections
+        self.sections = self.master.sections.sorted(by: { $0.sequence < $1.sequence })
     }
     
     func selectSection(section: SectionViewModel) {
@@ -37,7 +37,7 @@ public class Selection : ObservableObject {
             
             self.editSection = self.selectedSection!.copy()
             self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
-            self.shortcutsTitle = "\(self.selectedSection!.displayName) Shortcuts"
+            self.shortcutsTitle = "\(self.selectedSection!.titleName) Shortcuts"
             self.editObject = (section.name == "" ? .none : .section)
             
         } else {
@@ -119,6 +119,8 @@ public class Selection : ObservableObject {
             }
             last = section.sequence
         }
+        print(self.sections.map { [$0.name, $0.sequence] })
+        print(master.sections.map { [$0.name, $0.sequence] })
     }
     
     func selectShortcut(shortcut: ShortcutViewModel) {

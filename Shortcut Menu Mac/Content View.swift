@@ -27,7 +27,7 @@ struct ContentView: View {
             Divider()
             .background(Color.white)
             
-            DetailView(selection: selection).frame(width: detailWidth, height: formHeight, alignment: .leading)
+            DetailView(selection: selection, editSection: selection.editSection, editShortcut: selection.editShortcut).frame(width: detailWidth, height: formHeight, alignment: .leading)
         }
     }
 }

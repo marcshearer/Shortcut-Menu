@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B20B324924557E0C003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
+		B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
 		B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B262366324502644009D5DC3 /* Default-568h@2x.png */; };
 		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
@@ -49,6 +51,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B20B324824557E0C003F6664 /* String Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String Extensions.swift"; sourceTree = "<group>"; };
 		B21E6A4E24507E7A0004220B /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
 		B262366324502644009D5DC3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* CustomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViews.swift; sourceTree = "<group>"; };
@@ -179,6 +182,7 @@
 				B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */,
 				B28D41F12443538D00C2577E /* Assets.xcassets */,
 				B2AA94A82452DC3A00664AAB /* Local Authentication.swift */,
+				B20B324824557E0C003F6664 /* String Extensions.swift */,
 				B28D41FF2443562C00C2577E /* Section Managed Object.swift */,
 				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
 				B28D420324435F8500C2577E /* Section View Model.swift */,
@@ -299,6 +303,7 @@
 				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */,
 				B28D41EB2443538B00C2577E /* SceneDelegate.swift in Sources */,
+				B20B324924557E0C003F6664 /* String Extensions.swift in Sources */,
 				B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */,
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
 				B28D41F02443538B00C2577E /* ContentView.swift in Sources */,
@@ -325,6 +330,7 @@
 				B28D426A2447515100C2577E /* Content View.swift in Sources */,
 				B28D428A24475BB200C2577E /* Selection.swift in Sources */,
 				B28D428C2447649F00C2577E /* Section List View.swift in Sources */,
+				B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */,
 				B28D42682447515100C2577E /* AppDelegate.swift in Sources */,
 				B26F4429244B390C004D794E /* CustomViews.swift in Sources */,
 				B29D46CD244DD7730001F984 /* Status Menu.swift in Sources */,
