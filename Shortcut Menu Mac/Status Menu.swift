@@ -329,12 +329,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                                     // Shortcut to a local file
                                     var isStale: Bool = false
                                     do {
-                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, bookmarkDataIsStale: &isStale)
-                                        if isStale {
-                                            self.whisper(header: "Unable to access this file", caption: "Try defining the shortcut again")
-                                        } else {
+                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope , bookmarkDataIsStale: &isStale)
+                                        if url.startAccessingSecurityScopedResource() {
                                             NSWorkspace.shared.open(url)
                                         }
+                                        url.stopAccessingSecurityScopedResource()
                                     } catch {
                                         self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
                                     }

@@ -51,6 +51,13 @@ let shortcutSelectionTextColor = sectionSelectionTextColor
 let titleBackgroundColor = Color.gray
 let titleTextColor = Color.white
 
+let sectionEnabledTextColor = Color.black
+let sectionDisabledTextColor = Color.gray
+let placeholderTextColor = Color.gray
+let editTextColor = Color.primary
+let editTextEnabledBorderColor = Color.blue
+let editTextDisabledBorderColor = Color.gray
+
 let menuBarTextColor = NSColor(red: 0, green: 0, blue: 200, alpha: 1.0)
 
 // Text for default section

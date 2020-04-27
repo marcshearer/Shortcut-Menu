@@ -110,10 +110,9 @@ struct DetailView: View {
     
     fileprivate func sectionForm() -> some View {
         return Form {
-            DetailViewSection(header: "Section name") {
+            DetailViewSection(header: "Section name", disabled: self.selection.editMode == .none) {
                 textField("Must be non-blank", value: $selection.editSection.name)
             }
-            .foregroundColor(.secondary)
 
             self.message(text: self.selection.editSection.nameError)
         }
@@ -121,83 +120,81 @@ struct DetailView: View {
     
     fileprivate func shortcutForm() -> some View {
         return Form {
-            DetailViewSection(header: "Shortcut name") {
-                textField("Must be non-blank", value: $editShortcut.name)
+            DetailViewSection(header: "Shortcut name", disabled: self.selection.editMode == .none) {
+                VStack {
+                    textField("Must be non-blank", value: $editShortcut.name)
+                    
+                    self.message(text: self.editShortcut.nameError)
+                }
             }
-            .foregroundColor(.secondary)
 
-            self.message(text: self.editShortcut.nameError)
+            DetailViewSection(header: "URL to link to", disabled: self.selection.editMode == .none, content: { self.shortcutFormUrlField() })
+                .foregroundColor(.accentColor)
             
-            DetailViewSection(header: "URL to link to", content: {
-                HStack(alignment: .top) {
-                    VStack {
-                        ZStack(alignment: .trailing) {
-                            textField("URL or text must be non-blank", value: $editShortcut.url, forceDisabled: !self.editShortcut.canEditUrl)
-                            
-                            if !self.editShortcut.canEditUrl && self.selection.editMode != .none {
-                                HStack(alignment: .center) {
-                                    Button(action: {
-                                        self.editShortcut.url = ""
-                                        self.editShortcut.urlSecurityBookmark = nil
-                                        self.selection.objectWillChange.send()
-                                    }, label: {
-                                        Image("xmark.circle.fill.gray")
-                                            .padding()
-                                            .frame(width: 20, height: 20)
-                                            .background(Color.white)
-                                            .scaledToFit()
-                                    })
-                                    .buttonStyle(PlainButtonStyle())
-                                    
-                                    Spacer()
-                                        .frame(width: 20)
-                                }
-                            }
-                        }
-                        self.message(text: self.editShortcut.urlError)
-                    }
+            DetailViewSection(header: "Text to copy to clipboard", disabled: self.selection.editMode == .none, content: { self.shortcutFormCopyTextField() })
                     
-                    if self.selection.editMode != .none && self.editShortcut.canEditUrl {
-                        Spacer()
-                        self.finderButton()
-                        Spacer()
-                    }
+            DetailViewSection(header: "Message to show instead of copied text", disabled: self.selection.editMode == .none || !self.editShortcut.canEditCopyMessage, content: {
+                VStack {
+                    textField("Blank to show copied text", value: $editShortcut.copyMessage, forceDisabled: !self.editShortcut.canEditCopyMessage)
+                    
+                     self.message(text: self.editShortcut.copyMessageError)
                 }
             })
-                .foregroundColor(.secondary)
             
-            DetailViewSection(header: "Text to copy to clipboard", content: {
+        }
+    }
+    
+    private func shortcutFormUrlField() -> some View {
+        return HStack(alignment: .top) {
+            VStack {
                 HStack {
-                    VStack {
-                        if self.editShortcut.copyPrivate {
-                            secureField("URL or text must be non-blank", value: $editShortcut.copyText)
-                        } else {
-                            textField("URL or text must be non-blank", value: $editShortcut.copyText)
-                        }
-                        
-                        self.message(text: self.editShortcut.copyTextError)
-                    }
+                    textField("URL or text must be non-blank", value: $editShortcut.url, forceDisabled: !self.editShortcut.canEditUrl)
                     
-                    if self.selection.editMode != .none && self.editShortcut.copyText != "" {
-                        Spacer()
-                        self.lockButton()
-                        Spacer()
+                    if !self.editShortcut.canEditUrl && self.selection.editMode != .none {
+                        HStack(alignment: .center) {
+                            
+                            Button(action: {
+                                self.editShortcut.url = ""
+                                self.editShortcut.urlSecurityBookmark = nil
+                            }, label: {
+                                Image("xmark.circle.fill.gray")
+                                    .scaledToFit()
+                            })
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            Spacer()
+                                .frame(width: 10)
+                        }
                     }
                 }
-            })
-            .foregroundColor(.secondary)
-            
-            if self.editShortcut.canEditCopyMessage {
-                DetailViewSection(header: "Message to show instead of copied text", content: {
-                    VStack {
-                        textField("Blank to show copied text", value: $editShortcut.copyMessage)
-                        
-                         self.message(text: self.editShortcut.copyMessageError)
-                    }
-                })
-                .foregroundColor(.secondary)
+                self.message(text: self.editShortcut.urlError)
             }
             
+            if self.selection.editMode != .none && self.editShortcut.canEditUrl {
+                Spacer()
+                self.finderButton()
+                Spacer()
+            }
+        }
+    }
+    
+     private func shortcutFormCopyTextField() -> some View {
+        return HStack {
+            VStack {
+                if self.editShortcut.copyPrivate {
+                    secureField("URL or text must be non-blank", value: $editShortcut.copyText)
+                } else {
+                    textField("URL or text must be non-blank", value: $editShortcut.copyText)
+                }
+                
+                self.message(text: self.editShortcut.copyTextError)
+            }
+            
+            if self.selection.editMode != .none && self.editShortcut.copyText != "" {
+                Spacer()
+                self.lockButton()
+                Spacer()
+            }
         }
     }
     
@@ -260,29 +257,9 @@ struct DetailView: View {
         
         return Button(action: {
             StatusMenu.shared.defineAlways(onTop: false)
-            let openPanel = NSOpenPanel()
-            openPanel.allowsMultipleSelection = false
-            openPanel.canChooseDirectories = false
-            openPanel.canCreateDirectories = false
-            openPanel.canChooseFiles = true
-            openPanel.prompt = "Select target"
-            openPanel.level = .floating
-            openPanel.begin { result in
-                if result == .OK {
-                    if !openPanel.urls.isEmpty {
-                        let url = openPanel.urls[0]
-                        do {
-                            let data = try url.bookmarkData(options: .securityScopeAllowOnlyReadAccess, includingResourceValuesForKeys: nil, relativeTo: nil)
-                            self.selection.objectWillChange.send()
-                            self.editShortcut.url = url.absoluteString
-                            self.editShortcut.urlSecurityBookmark = data
-                        } catch {
-                            // Ignore error
-                        }
-                    }
-                }
-                StatusMenu.shared.defineAlways(onTop: true)
-                StatusMenu.shared.bringToFront()
+            DetailView.findFile { (url, data) in
+                self.editShortcut.url = url.absoluteString
+                self.editShortcut.urlSecurityBookmark = data
             }
         },label: {
             Image("folder")
@@ -298,39 +275,80 @@ struct DetailView: View {
     
     private func textField(_ placeholder: String, value: Binding<String>, forceDisabled: Bool = false) -> some View {
         return TextField(placeholder, text: value)
+            .foregroundColor((value.wrappedValue.isEmpty ? placeholderTextColor : editTextColor))
+            .border((forceDisabled || self.selection.editMode == .none ? editTextDisabledBorderColor : editTextEnabledBorderColor), width: 2)
             .disabled(forceDisabled || self.selection.editMode == .none)
-            .opacity((forceDisabled || self.selection.editMode == .none ? 0.5 : 1.0))
-            .font(.system(size: 20, weight: .semibold, design: .rounded))
+            .opacity((self.selection.editMode == .none ? 0.5 : (forceDisabled ? 0.8 : 1.0)))
+            .font(.system(size:   20,
+                          weight: (value.wrappedValue.isEmpty ? .light : .semibold),
+                          design: .rounded))
             .lineLimit(nil)
             .padding(.horizontal)
     }
     
     private func secureField(_ placeholder: String, value: Binding<String>) -> some View {
         return SecureField(placeholder, text: value)
+            .foregroundColor((value.wrappedValue.isEmpty ? placeholderTextColor : editTextColor))
+            .border((self.selection.editMode == .none ? editTextDisabledBorderColor : editTextEnabledBorderColor), width: 2)
             .disabled(self.selection.editMode == .none)
             .opacity((self.selection.editMode == .none ? 0.5 : 1.0))
-            .font(.system(size: 20, weight: .semibold, design: .rounded))
+            .font(.system(size:   20,
+                          weight: (value.wrappedValue.isEmpty ? .light : .semibold),
+                          design: .rounded))
             .lineLimit(nil)
             .padding(.horizontal)
     }
+    
+    static public func findFile(relativeTo: URL? = nil,completion: @escaping (URL, Data)->()) {
+        let openPanel = NSOpenPanel()
+        openPanel.allowsMultipleSelection = false
+        openPanel.canChooseDirectories = false
+        openPanel.canCreateDirectories = false
+        openPanel.canChooseFiles = true
+        openPanel.prompt = "Select target"
+        openPanel.level = .floating
+        openPanel.begin { result in
+            if result == .OK {
+                if !openPanel.urls.isEmpty {
+                    let url = openPanel.urls[0]
+                    do {
+                        let data = try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: relativeTo)
+                        completion(url, data)
+                    } catch {
+                        // Ignore error
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+            StatusMenu.shared.defineAlways(onTop: true)
+            StatusMenu.shared.bringToFront()
+        }
+    }
+    
 }
 
 struct DetailViewSection <Content> : View where Content : View {
 
     var header: String
+    var disabled: Bool
     var content: Content
 
-    public init(header: String, @ViewBuilder content: () -> Content) {
+    public init(header: String, disabled: Bool, @ViewBuilder content: () -> Content) {
         self.header = header
+        self.disabled = disabled
         self.content = content()
     }
 
     var body : some View {
         Section(header: Text(self.header)) {
-            self.content
+            VStack {
+                self.content
+                Spacer()
+                    .frame(height: 10)
+            }
         }
         .font(.system(size: 20, weight: .light, design: .default))
-        .foregroundColor(.secondary)
+        .foregroundColor((self.disabled ? sectionDisabledTextColor : sectionEnabledTextColor))
         .multilineTextAlignment(.leading)
     }
 }
