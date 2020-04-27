@@ -119,8 +119,6 @@ public class Selection : ObservableObject {
             }
             last = section.sequence
         }
-        print(self.sections.map { [$0.name, $0.sequence] })
-        print(master.sections.map { [$0.name, $0.sequence] })
     }
     
     func selectShortcut(shortcut: ShortcutViewModel) {
