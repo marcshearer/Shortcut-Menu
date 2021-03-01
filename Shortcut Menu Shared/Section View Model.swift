@@ -163,8 +163,9 @@ public class SectionViewModel : ObservableObject, Identifiable {
         let progress = Progress(totalUnitCount: 1)
         
         do {
-            let data = try JSONSerialization.data(withJSONObject: ["type" : ShortcutItemProvider.type,
-                                                                   "id" : self.id.uuidString], options: .prettyPrinted)
+            let data = try JSONSerialization.data(withJSONObject:
+                        ["type" : ShortcutItemProvider.type,
+                         "id" : self.id.uuidString], options: .prettyPrinted)
             progress.completedUnitCount = 1
             completionHandler(data, nil)
         } catch {

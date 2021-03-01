@@ -17,12 +17,12 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     public static let shared = StatusMenu()
     
-    public let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    public let statusItem = NSStatusBar.system.statusItem(withLength: 15)
     
     private let master = MasterData.shared
     
-    private var statusButtonImage = NSImageView()
     private var statusMenu: NSMenu
+    private var statusMenuButton: NSButton
 
     private var menuItemList: [String: NSMenuItem] = [:]
     
@@ -38,14 +38,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         
         self.statusMenu = NSMenu()
         self.statusMenu.autoenablesItems = false
+        self.statusMenuButton = self.statusItem.button!
         super.init()
         
-        let button = self.statusItem.button!
-        self.statusButtonImage.translatesAutoresizingMaskIntoConstraints = false
-        button.addSubview(self.statusButtonImage)
-        Constraint.anchor(view: button, control: self.statusButtonImage, attributes: .leading, .top, .bottom)
-        _ = Constraint.setWidth(control: self.statusButtonImage, width: 30)
-        _ = Constraint.setWidth(control: button, width: 30)
         self.changeImage(close: false)
 
         // Menu for current section and default section
@@ -226,11 +221,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private func changeImage(close: Bool) {
         if close {
-            self.statusButtonImage.image = NSImage(named: "xmark.circle")
-            self.statusButtonImage.image?.isTemplate = true
+            self.statusMenuButton.image = NSImage(systemSymbolName: "xmark.circle", accessibilityDescription: nil)!
+            //self.statusButtonImage.image?.isTemplate = true
         } else {
-            self.statusButtonImage.image = NSImage(named: "shortcut")
-            self.statusButtonImage.image?.isTemplate = false
+            self.statusMenuButton.image = NSImage(systemSymbolName: "arrowshape.turn.up.right.fill", accessibilityDescription: nil)!
+            //self.statusButtonImage.image?.isTemplate = false
         }
     }
     
