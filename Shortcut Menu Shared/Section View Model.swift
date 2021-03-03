@@ -151,11 +151,11 @@ public class SectionViewModel : ObservableObject, Identifiable {
     static let type: String = "section"
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
-        return [SectionItemProvider.itemProviderType]
+        [kUTTypeData as String, SectionItemProvider.itemProviderType]
     }
     
     public static var readableTypeIdentifiersForItemProvider: [String] {
-        return [SectionItemProvider.itemProviderType]
+        [kUTTypeData as String, SectionItemProvider.itemProviderType]
     }
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
@@ -191,7 +191,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
             for item in items {
                 _ = item.loadObject(ofClass:SectionItemProvider.self) { (droppedItem, error) in
                     if error == nil {
-                        if let droppedItem = droppedItem as?SectionItemProvider {
+                        if let droppedItem = droppedItem as? SectionItemProvider {
                             if let droppedIndex = selection.sections.firstIndex(where: {$0.id == droppedItem.id}) {
                                 action(index, droppedIndex)
                             }

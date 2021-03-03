@@ -166,6 +166,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return added
     }
     
+    func paste () {
+        let event1 = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: true); // cmd-v down
+        event1?.flags = CGEventFlags.maskCommand;
+        event1?.post(tap: CGEventTapLocation.cghidEventTap);
+
+        let event2 = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: false) // cmd-v up
+    //    event2?.flags = CGEventFlags.maskCommand
+        event2?.post(tap: CGEventTapLocation.cghidEventTap)
+    }
+    
     private func whisper(header: String, caption: String = "", closeAfter: TimeInterval = 3) {
         // Create the window and set the content view.
         self.showPopover(popover: &self.whisperPopover,
@@ -309,7 +319,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                         pasteboard.clearContents()
                         pasteboard.setString(shortcut.copyText, forType: .string)
                         
-                        self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
+                        if shortcut.url.isEmpty {
+                            self.paste()
+                        } else {
+                            self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
+                        }
                     }
                 }
                 

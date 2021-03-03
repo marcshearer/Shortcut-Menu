@@ -213,9 +213,13 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     static let itemProviderType: String = "com.sheareronline.shortcuts.shortcut"
     static let type: String = "shortcut"
     
-    public static var writableTypeIdentifiersForItemProvider: [String] = [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
+    public static var writableTypeIdentifiersForItemProvider: [String] {
+        [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
+    }
     
-    public static var readableTypeIdentifiersForItemProvider: [String] = [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
+    public static var readableTypeIdentifiersForItemProvider: [String] {
+        [kUTTypeData as String, ShortcutItemProvider.itemProviderType]
+    }
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
         
