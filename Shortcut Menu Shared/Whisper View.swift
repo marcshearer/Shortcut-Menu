@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import AudioToolbox
 
 struct WhisperView: View {
     
@@ -16,7 +17,11 @@ struct WhisperView: View {
     init(header: String? = nil, caption: String? = nil) {
         self.header = header
         self.caption = caption
+        #if canImport(AppKit)
         NSSound(named: "Morse")?.play()
+        #else
+        AudioServicesPlayAlertSound(SystemSoundID(1304))
+        #endif
     }
     
     var body: some View {

@@ -52,7 +52,8 @@ public class MasterData : ObservableObject {
                 sections.append(section!)
                 section?.save()
             }
-            shortcuts.append(ShortcutViewModel(shortcutMO: shortcutMO, section: section!, master: self))
+            let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.name == shortcutMO.nestedSection}) : nil)
+            shortcuts.append(ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, master: self))
         }
         
         // Make sure default section existst

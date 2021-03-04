@@ -13,7 +13,8 @@ struct SectionListView: View {
     @ObservedObject public var selection: Selection
         
     var body: some View {
-        
+        let master = MasterData.shared
+
         VStack(spacing: 0.0) {
             HStack(spacing: 0.0) {
                 Spacer()
@@ -44,16 +45,20 @@ struct SectionListView: View {
             .foregroundColor(titleTextColor)
             List {
                 ForEach (self.selection.sections) { (section) in
-                    if section.name == "" || self.selection.editMode != .none {
-                        self.sectionRow(section)
-                    } else {
-                        self.sectionRow(section)
-                            .onDrag({section.itemProvider})
+                    let nested = master.shortcuts.firstIndex(where: { $0.type == .section && $0.nestedSection?.id == section.id })
+                    if nested == nil {
+                        if section.name == "" || self.selection.editMode != .none {
+                            self.sectionRow(section)
+                        } else {
+                            self.sectionRow(section)
+                                .onDrag({section.itemProvider})
+                        }
                     }
                 }
                 .onInsert(of: SectionItemProvider.writableTypeIdentifiersForItemProvider) { (index, items) in
                     if index != 0 {
-                        SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.dropSectionAction)
+                        SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.insertSectionAction)
+                        ShortcutItemProvider.dropAction(at: index, items, selection: self.selection, action: self.insertShortcutAction)
                     }
                 }
             }
@@ -79,13 +84,29 @@ struct SectionListView: View {
             .onDrop(of: ShortcutItemProvider.readableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
     }
     
-    func dropSectionAction(to: Int, from: Int) {
+    func insertSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             self.selection.sections.move(fromOffsets: [from], toOffset: to)
             self.selection.updateSectionSequence()
         }
     }
-    
+        
+    func insertShortcutAction(to: Int, from: Int) {
+        DispatchQueue.main.async {
+            let shortcut = self.selection.shortcuts[from]
+            if shortcut.type == .section {
+                // Remove section link shortcut
+                self.selection.removeShortcut(shortcut: shortcut)
+                
+                // Find the section and move it to the drop location
+                if let sectionIndex = self.selection.sections.firstIndex(where: {$0.name == shortcut.name}) {
+                    self.selection.sections.move(fromOffsets: [sectionIndex], toOffset: to)
+                    self.selection.updateSectionSequence()
+                }
+            }
+        }
+    }
+
     func dropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             self.selection.shortcuts[from].section = self.selection.sections[to]

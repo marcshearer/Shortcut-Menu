@@ -10,6 +10,7 @@
 		B20B324924557E0C003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
+		B24DED5C25F0D0DF00F76629 /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
 		B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B262366324502644009D5DC3 /* Default-568h@2x.png */; };
 		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
 		B26F4429244B390C004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
@@ -106,6 +107,100 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B24DED4E25F0CF4600F76629 /* Standard Components */ = {
+			isa = PBXGroup;
+			children = (
+				B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */,
+				B28D41F12443538D00C2577E /* Assets.xcassets */,
+			);
+			name = "Standard Components";
+			sourceTree = "<group>";
+		};
+		B24DED4F25F0CF5700F76629 /* Reusable Views */ = {
+			isa = PBXGroup;
+			children = (
+				B26F4427244B3837004D794E /* CustomViews.swift */,
+				B21E6A4E24507E7A0004220B /* Whisper View.swift */,
+			);
+			name = "Reusable Views";
+			sourceTree = "<group>";
+		};
+		B24DED5025F0CF6E00F76629 /* Data Structures */ = {
+			isa = PBXGroup;
+			children = (
+				B29D46C9244D718F0001F984 /* Master Data.swift */,
+				B28D42812447542C00C2577E /* Declarations.swift */,
+				B28D428824475BB000C2577E /* Selection.swift */,
+			);
+			name = "Data Structures";
+			sourceTree = "<group>";
+		};
+		B24DED5125F0CF8300F76629 /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				B28D420324435F8500C2577E /* Section View Model.swift */,
+				B28D420524437C3B00C2577E /* Shortcut View Model.swift */,
+			);
+			name = "View Models";
+			sourceTree = "<group>";
+		};
+		B24DED5225F0CF8D00F76629 /* Managed Objects */ = {
+			isa = PBXGroup;
+			children = (
+				B28D41FF2443562C00C2577E /* Section Managed Object.swift */,
+				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
+			);
+			name = "Managed Objects";
+			sourceTree = "<group>";
+		};
+		B24DED5525F0CFAD00F76629 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B2AA94A82452DC3A00664AAB /* Local Authentication.swift */,
+				B20B324824557E0C003F6664 /* String Extensions.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		B24DED5925F0D04700F76629 /* Standard Components */ = {
+			isa = PBXGroup;
+			children = (
+				B28D42672447515100C2577E /* AppDelegate.swift */,
+				B28D42732447515300C2577E /* Main.storyboard */,
+				B28D42692447515100C2577E /* Content View.swift */,
+				B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */,
+				B28D42762447515300C2577E /* Info.plist */,
+				B28D42702447515300C2577E /* Preview Content */,
+			);
+			name = "Standard Components";
+			sourceTree = "<group>";
+		};
+		B24DED5A25F0D07B00F76629 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B28D428B2447649F00C2577E /* Section List View.swift */,
+				B28D428D2447715600C2577E /* Shortcut List View.swift */,
+				B26F442A244B5E3C004D794E /* Detail View.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		B24DED5B25F0D09800F76629 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B29D46CE244DD9170001F984 /* Constraint.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		B24DED5F25F0D1A800F76629 /* Menus */ = {
+			isa = PBXGroup;
+			children = (
+				B29D46CC244DD7730001F984 /* Status Menu.swift */,
+			);
+			name = Menus;
+			sourceTree = "<group>";
+		};
 		B28D41DC2443538B00C2577E = {
 			isa = PBXGroup;
 			children = (
@@ -152,18 +247,10 @@
 		B28D42662447515100C2577E /* Shortcut Menu Mac */ = {
 			isa = PBXGroup;
 			children = (
-				B28D42672447515100C2577E /* AppDelegate.swift */,
-				B29D46CC244DD7730001F984 /* Status Menu.swift */,
-				B28D42732447515300C2577E /* Main.storyboard */,
-				B28D42762447515300C2577E /* Info.plist */,
-				B29D46CE244DD9170001F984 /* Constraint.swift */,
-				B28D42692447515100C2577E /* Content View.swift */,
-				B21E6A4E24507E7A0004220B /* Whisper View.swift */,
-				B28D428B2447649F00C2577E /* Section List View.swift */,
-				B28D428D2447715600C2577E /* Shortcut List View.swift */,
-				B26F442A244B5E3C004D794E /* Detail View.swift */,
-				B28D42702447515300C2577E /* Preview Content */,
-				B28D42772447515300C2577E /* Shortcut_Menu_Mac.entitlements */,
+				B24DED5925F0D04700F76629 /* Standard Components */,
+				B24DED5B25F0D09800F76629 /* Utilities */,
+				B24DED5F25F0D1A800F76629 /* Menus */,
+				B24DED5A25F0D07B00F76629 /* Views */,
 			);
 			path = "Shortcut Menu Mac";
 			sourceTree = "<group>";
@@ -179,18 +266,12 @@
 		B28D42862447573900C2577E /* Shortcut Menu Shared */ = {
 			isa = PBXGroup;
 			children = (
-				B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */,
-				B28D41F12443538D00C2577E /* Assets.xcassets */,
-				B2AA94A82452DC3A00664AAB /* Local Authentication.swift */,
-				B20B324824557E0C003F6664 /* String Extensions.swift */,
-				B28D41FF2443562C00C2577E /* Section Managed Object.swift */,
-				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
-				B28D420324435F8500C2577E /* Section View Model.swift */,
-				B28D420524437C3B00C2577E /* Shortcut View Model.swift */,
-				B26F4427244B3837004D794E /* CustomViews.swift */,
-				B29D46C9244D718F0001F984 /* Master Data.swift */,
-				B28D42812447542C00C2577E /* Declarations.swift */,
-				B28D428824475BB000C2577E /* Selection.swift */,
+				B24DED4E25F0CF4600F76629 /* Standard Components */,
+				B24DED5025F0CF6E00F76629 /* Data Structures */,
+				B24DED5225F0CF8D00F76629 /* Managed Objects */,
+				B24DED5125F0CF8300F76629 /* View Models */,
+				B24DED4F25F0CF5700F76629 /* Reusable Views */,
+				B24DED5525F0CFAD00F76629 /* Utilities */,
 			);
 			path = "Shortcut Menu Shared";
 			sourceTree = "<group>";
@@ -308,6 +389,7 @@
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
 				B28D41F02443538B00C2577E /* ContentView.swift in Sources */,
 				B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
+				B24DED5C25F0D0DF00F76629 /* Whisper View.swift in Sources */,
 				B28D420A2444450C00C2577E /* Shortcut Detail View.swift in Sources */,
 				B28D42822447542C00C2577E /* Declarations.swift in Sources */,
 				B28D420824437F0A00C2577E /* Shortcut List View.swift in Sources */,

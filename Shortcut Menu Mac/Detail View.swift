@@ -52,6 +52,17 @@ struct DetailView: View {
             
             Spacer()
                         
+            if self.selection.editObject == .section && self.selection.editMode == .none {
+                if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == self.selection.selectedSection?.id}) {
+                    // Nested section - add button to un-nest it
+                    ToolbarButton("remove nest") {
+                        self.selection.removeShortcut(shortcut: shortcut)
+                        self.selection.selectSection(section: self.selection.editSection)
+                    }
+                }
+                Spacer().frame(width: 10)
+            }
+            
             if self.selection.editObject != .none && self.selection.editMode == .none {
                 ToolbarButton("pencil.circle.fill") {
                     self.selection.editMode = .amend

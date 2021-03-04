@@ -24,6 +24,7 @@ struct ToolbarButton: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 30.0, height: 30.0, alignment: .center)
+                .foregroundColor(.white)
         })
         .background(Color.clear)
         .foregroundColor(Color.clear)

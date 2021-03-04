@@ -26,7 +26,7 @@ public class Selection : ObservableObject {
         self.sections = self.master.sections.sorted(by: { $0.sequence < $1.sequence })
     }
     
-    func selectSection(section: SectionViewModel) {
+    func selectSection(section: SectionViewModel, updateShortcuts: Bool = true) {
         
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
@@ -36,9 +36,12 @@ public class Selection : ObservableObject {
         if self.selectedSection != nil {
             
             self.editSection = self.selectedSection!.copy()
-            self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
-            self.shortcutsTitle = "\(self.selectedSection!.titleName) Shortcuts"
             self.editObject = (section.name == "" ? .none : .section)
+
+            if updateShortcuts {
+                self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
+                self.shortcutsTitle = "\(self.selectedSection!.titleName) Shortcuts"
+            }
             
         } else {
             
@@ -78,9 +81,17 @@ public class Selection : ObservableObject {
                 self.updateShortcut(shortcut: shortcut)
             }
         }
-
-        self.selectSection(section: section)
         
+        // Need to update section names on shortcuts which nest this section
+        for shortcut in self.master.shortcuts.filter({$0.type == .section && $0.nestedSection?.name == oldName}) {
+            shortcut.nestedSection = section
+            shortcut.name = section.name
+            if oldName != section.name {
+                self.updateShortcut(shortcut: shortcut)
+            }
+        }
+        
+        self.selectSection(section: section)
     }
     
     func removeSection(section: SectionViewModel) {
@@ -141,6 +152,7 @@ public class Selection : ObservableObject {
         
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
+        self.editSection = SectionViewModel()
         self.editObject = .none
 
 }
@@ -185,9 +197,24 @@ public class Selection : ObservableObject {
         self.editShortcut.sequence = master.nextShortcutSequence(section: section)
         self.editMode = .create
         self.editObject = .shortcut
-       }
+    }
     
-        func getSection(id: UUID) -> SectionViewModel? {
+    func newNestedSectionShortcut(in section: SectionViewModel, to nestedSection: SectionViewModel, at index: Int) {
+        self.deselectShortcut()
+        let shortcut = ShortcutViewModel(master: self.master)
+        shortcut.name = nestedSection.name
+        shortcut.section = section
+        shortcut.type = .section
+        shortcut.nestedSection = nestedSection
+        shortcut.sequence = self.master.nextShortcutSequence(section: section)
+        self.editMode = .none
+        self.shortcuts.insert(shortcut, at: index)
+        self.updateShortcutSequence()
+        self.updateShortcut(shortcut: shortcut)
+        self.selectSection(section: nestedSection, updateShortcuts: false)
+    }
+    
+    func getSection(id: UUID) -> SectionViewModel? {
         return self.sections.first(where: { $0.id == id })
     }
     

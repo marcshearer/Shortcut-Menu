@@ -47,6 +47,7 @@ let sectionDefaultTextColor = Color.gray
 
 let shortcutSelectionBackgroundColor = sectionSelectionBackgroundColor
 let shortcutSelectionTextColor = sectionSelectionTextColor
+let shortcutNestedTextColor = Color.gray
 
 let titleBackgroundColor = Color.gray
 let titleTextColor = Color.white

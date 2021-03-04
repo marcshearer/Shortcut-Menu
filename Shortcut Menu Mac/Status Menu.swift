@@ -132,8 +132,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var added = 0
         
         for shortcut in master.shortcuts.filter({ $0.section?.name == section }).sorted(by: {$0.sequence < $1.sequence}) {
-            self.addShortcut(shortcut: shortcut, inset: inset, to: subMenu)
-            added += 1
+            if shortcut.type == .section {
+                if shortcut.nestedSection?.shortcuts ?? 0 > 0 {
+                    let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                    _ = self.addShortcuts(section: shortcut.nestedSection?.name ?? "Sub-entries", to: subMenuEntry)
+                }
+            } else {
+                self.addShortcut(shortcut: shortcut, inset: inset, to: subMenu)
+                added += 1
+            }
         }
         return added
     }
@@ -145,8 +152,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func addSections(to subMenu: NSMenu) -> Int {
         var added = 0
         for section in master.sections.filter({ $0.name != currentSection && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
-            self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
-            added += 1
+            if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
+                self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
+                added += 1
+            }
         }
         return added
     }
@@ -155,12 +164,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var added = 0
         let subMenu = self.addSubmenu("Other shortcuts")
         for section in master.sections.filter({ $0.name != currentSection && $0.name != "" && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
-            
-            if section.shortcuts > 1 {
-                let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
-                added += self.addShortcuts(section: section.menuName, to: sectionMenu)
-            } else {
-                added += self.addShortcuts(section: section.name, to: subMenu)
+            if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
+                if section.shortcuts > 1 {
+                    let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
+                    added += self.addShortcuts(section: section.menuName, to: sectionMenu)
+                } else {
+                    added += self.addShortcuts(section: section.name, to: subMenu)
+                }
             }
         }
         return added

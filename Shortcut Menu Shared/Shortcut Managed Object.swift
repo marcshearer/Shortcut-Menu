@@ -19,7 +19,8 @@ public class ShortcutMO : NSManagedObject {
     @NSManaged public var copyMessage: String
     @NSManaged public var section: String
     @NSManaged public var sequence64: Int64
-
+    @NSManaged public var type16: Int16
+    @NSManaged public var nestedSection: String
 }
 
 extension ShortcutMO: Identifiable {
@@ -40,6 +41,11 @@ extension ShortcutMO: Identifiable {
         set {
             self.sequence64 = Int64(newValue)
         }
+    }
+    
+    public var type: ShortcutViewModel.ShortcutType {
+        get { ShortcutViewModel.ShortcutType(rawValue: Int(self.type16)) ?? .shortcut }
+        set { self.type16 = Int16(newValue.rawValue) }
     }
     
 }

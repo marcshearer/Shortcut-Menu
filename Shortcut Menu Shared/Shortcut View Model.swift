@@ -13,6 +13,11 @@ import CoreData
 
 public class ShortcutViewModel: ObservableObject, Identifiable {
 
+    public enum ShortcutType: Int {
+        case shortcut = 0
+        case section = 1
+    }
+    
     // Managed object context
     let context: NSManagedObjectContext! = MasterData.context
 
@@ -25,7 +30,9 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var copyMessage: String
     @Published public var copyPrivate: Bool
     @Published public var section: SectionViewModel?
+    @Published public var nestedSection: SectionViewModel?
     @Published public var sequence: Int
+    @Published public var type: ShortcutType
     
     // Linked managed object
     private var shortcutMO: ShortcutMO?
@@ -45,8 +52,9 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
+        self.type = type
         self.name = name
         self.url = url
         self.urlSecurityBookmark = urlSecurityBookmark
@@ -54,6 +62,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.copyMessage = copyMessage
         self.copyPrivate = copyPrivate
         self.section = section
+        self.nestedSection = nestedSection
         self.sequence = sequence
         self.shortcutMO = shortcutMO
         self.master = master
@@ -61,8 +70,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.setupMappings()
     }
     
-    convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+    convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, nestedSection: SectionViewModel? = nil, master: MasterData) {
+        self.init(id: shortcutMO.id, name: shortcutMO.name, type: shortcutMO.type, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, nestedSection: nestedSection, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
@@ -181,7 +190,6 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     public func remove() {
         self.toManagedObject()
         context.delete(self.shortcutMO!)
-        self.save()
         self.shortcutMO = nil
     }
     
@@ -192,12 +200,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         }
         self.shortcutMO!.id = self.id
         self.shortcutMO!.name = self.name
+        self.shortcutMO!.type = self.type
         self.shortcutMO!.url = self.url
         self.shortcutMO!.urlSecurityBookmark = self.urlSecurityBookmark
         self.shortcutMO!.copyText = self.copyText
         self.shortcutMO!.copyMessage = self.copyMessage
         self.shortcutMO!.copyPrivate = self.copyPrivate
         self.shortcutMO!.section = self.section?.name ?? ""
+        self.shortcutMO!.nestedSection = self.nestedSection?.name ?? ""
         self.shortcutMO!.sequence = self.sequence
     }
 }
