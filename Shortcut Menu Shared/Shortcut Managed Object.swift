@@ -21,6 +21,7 @@ public class ShortcutMO : NSManagedObject {
     @NSManaged public var sequence64: Int64
     @NSManaged public var type16: Int16
     @NSManaged public var nestedSection: String
+    @NSManaged public var keyEquivalent: String
 }
 
 extension ShortcutMO: Identifiable {

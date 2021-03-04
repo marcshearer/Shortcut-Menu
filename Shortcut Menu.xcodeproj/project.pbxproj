@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		B20B324924557E0C003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
-		B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
-		B24DED5C25F0D0DF00F76629 /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21E6A4E24507E7A0004220B /* Whisper View.swift */; };
+		B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24DED6725F0D8BD00F76629 /* Whisper View.swift */; };
 		B262366424502644009D5DC3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B262366324502644009D5DC3 /* Default-568h@2x.png */; };
 		B26F4428244B3837004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
 		B26F4429244B390C004D794E /* CustomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* CustomViews.swift */; };
@@ -53,7 +52,7 @@
 
 /* Begin PBXFileReference section */
 		B20B324824557E0C003F6664 /* String Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String Extensions.swift"; sourceTree = "<group>"; };
-		B21E6A4E24507E7A0004220B /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
+		B24DED6725F0D8BD00F76629 /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
 		B262366324502644009D5DC3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* CustomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViews.swift; sourceTree = "<group>"; };
 		B26F442A244B5E3C004D794E /* Detail View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Detail View.swift"; sourceTree = "<group>"; };
@@ -120,7 +119,6 @@
 			isa = PBXGroup;
 			children = (
 				B26F4427244B3837004D794E /* CustomViews.swift */,
-				B21E6A4E24507E7A0004220B /* Whisper View.swift */,
 			);
 			name = "Reusable Views";
 			sourceTree = "<group>";
@@ -201,6 +199,14 @@
 			name = Menus;
 			sourceTree = "<group>";
 		};
+		B24DED6225F0D64000F76629 /* Reusable Views */ = {
+			isa = PBXGroup;
+			children = (
+				B24DED6725F0D8BD00F76629 /* Whisper View.swift */,
+			);
+			name = "Reusable Views";
+			sourceTree = "<group>";
+		};
 		B28D41DC2443538B00C2577E = {
 			isa = PBXGroup;
 			children = (
@@ -248,9 +254,10 @@
 			isa = PBXGroup;
 			children = (
 				B24DED5925F0D04700F76629 /* Standard Components */,
-				B24DED5B25F0D09800F76629 /* Utilities */,
 				B24DED5F25F0D1A800F76629 /* Menus */,
 				B24DED5A25F0D07B00F76629 /* Views */,
+				B24DED6225F0D64000F76629 /* Reusable Views */,
+				B24DED5B25F0D09800F76629 /* Utilities */,
 			);
 			path = "Shortcut Menu Mac";
 			sourceTree = "<group>";
@@ -389,7 +396,6 @@
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
 				B28D41F02443538B00C2577E /* ContentView.swift in Sources */,
 				B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
-				B24DED5C25F0D0DF00F76629 /* Whisper View.swift in Sources */,
 				B28D420A2444450C00C2577E /* Shortcut Detail View.swift in Sources */,
 				B28D42822447542C00C2577E /* Declarations.swift in Sources */,
 				B28D420824437F0A00C2577E /* Shortcut List View.swift in Sources */,
@@ -406,8 +412,8 @@
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
 				B28D427F244753FC00C2577E /* Section Managed Object.swift in Sources */,
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
-				B21E6A4F24507E7A0004220B /* Whisper View.swift in Sources */,
 				B28D42852447566B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
+				B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */,
 				B28D42832447545000C2577E /* Declarations.swift in Sources */,
 				B28D426A2447515100C2577E /* Content View.swift in Sources */,
 				B28D428A24475BB200C2577E /* Selection.swift in Sources */,

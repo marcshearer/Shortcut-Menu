@@ -33,6 +33,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var nestedSection: SectionViewModel?
     @Published public var sequence: Int
     @Published public var type: ShortcutType
+    @Published public var keyEquivalent: String
     
     // Linked managed object
     private var shortcutMO: ShortcutMO?
@@ -52,7 +53,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
         self.id = id
         self.type = type
         self.name = name
@@ -63,6 +64,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.copyPrivate = copyPrivate
         self.section = section
         self.nestedSection = nestedSection
+        self.keyEquivalent = keyEquivalent
         self.sequence = sequence
         self.shortcutMO = shortcutMO
         self.master = master
@@ -71,7 +73,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, nestedSection: SectionViewModel? = nil, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, type: shortcutMO.type, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, nestedSection: nestedSection, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+        self.init(id: shortcutMO.id, name: shortcutMO.name, type: shortcutMO.type, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, nestedSection: nestedSection, keyEquivalent: shortcutMO.keyEquivalent, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
     }
     
     convenience init(master: MasterData? = nil) {
@@ -171,7 +173,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, urlSecurityBookmark: self.urlSecurityBookmark, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, urlSecurityBookmark: self.urlSecurityBookmark, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, nestedSection: self.nestedSection, keyEquivalent: self.keyEquivalent, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
     }
     
     public var itemProvider: NSItemProvider {
@@ -208,6 +210,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.shortcutMO!.copyPrivate = self.copyPrivate
         self.shortcutMO!.section = self.section?.name ?? ""
         self.shortcutMO!.nestedSection = self.nestedSection?.name ?? ""
+        self.shortcutMO!.keyEquivalent = self.keyEquivalent
         self.shortcutMO!.sequence = self.sequence
     }
 }

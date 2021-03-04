@@ -124,6 +124,9 @@ struct DetailView: View {
             DetailViewSection(header: "Section name", disabled: self.selection.editMode == .none) {
                 textField("Must be non-blank", value: $selection.editSection.name)
             }
+            DetailViewSection(header: "Stand-alone menu bar title", disabled: self.selection.editMode == .none) {
+                textField("", value: $selection.editSection.menuTitle)
+            }
 
             self.message(text: self.selection.editSection.nameError)
         }
@@ -151,6 +154,10 @@ struct DetailView: View {
                      self.message(text: self.editShortcut.copyMessageError)
                 }
             })
+            
+            DetailViewSection(header: "Keyboard equivalent", disabled: self.selection.editMode == .none) {
+                textField("", value: $editShortcut.keyEquivalent)
+            }
             
         }
     }

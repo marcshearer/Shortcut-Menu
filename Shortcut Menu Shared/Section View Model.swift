@@ -20,6 +20,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     public let id: UUID
     @Published public var name:String
     @Published public var sequence: Int
+    @Published public var menuTitle: String
     
     // Linked managed object
     private var sectionMO: SectionMO?
@@ -34,10 +35,11 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID = UUID(), name: String = "", sequence: Int = 0, sectionMO: SectionMO? = nil, master: MasterData?) {
+    init(id: UUID = UUID(), name: String = "", sequence: Int = 0, menuTitle: String = "", sectionMO: SectionMO? = nil, master: MasterData?) {
         self.id = id
         self.name = name
         self.sequence = sequence
+        self.menuTitle = menuTitle
         self.sectionMO = sectionMO
         self.master = master
         
@@ -49,7 +51,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     convenience init(sectionMO: SectionMO, master: MasterData) {
-        self.init(id: sectionMO.id, name: sectionMO.name, sequence: sectionMO.sequence, sectionMO: sectionMO, master: master)
+        self.init(id: sectionMO.id, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, sectionMO: sectionMO, master: master)
     }
     
     private func setupMappings() {
@@ -81,7 +83,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public func copy() -> SectionViewModel {
-        return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence, sectionMO: self.sectionMO, master: self.master)
+        return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, sectionMO: self.sectionMO, master: self.master)
     }
     
     public var displayName: String {
@@ -136,6 +138,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
         self.sectionMO!.id = self.id
         self.sectionMO!.name = self.name
         self.sectionMO!.sequence = self.sequence
+        self.sectionMO!.menuTitle = self.menuTitle
     }
 }
 
