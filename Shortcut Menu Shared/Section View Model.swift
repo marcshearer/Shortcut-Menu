@@ -10,6 +10,7 @@ import Foundation
 import Combine
 import SwiftUI
 import CoreData
+import UniformTypeIdentifiers
 
 public class SectionViewModel : ObservableObject, Identifiable {
 
@@ -154,11 +155,11 @@ public class SectionViewModel : ObservableObject, Identifiable {
     static let type: String = "section"
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
-        [kUTTypeData as String, SectionItemProvider.itemProviderType]
+        [UTType.data.identifier, SectionItemProvider.itemProviderType]
     }
     
     public static var readableTypeIdentifiersForItemProvider: [String] {
-        [kUTTypeData as String, SectionItemProvider.itemProviderType]
+        [UTType.data.identifier, SectionItemProvider.itemProviderType]
     }
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
@@ -206,4 +207,23 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
 }
 
-
+class SectionListDropDelegate: DropDelegate {
+    
+    private let parent: SectionListView
+    private let toId: UUID
+    
+    init(_ parent: SectionListView, id toId: UUID) {
+        self.parent = parent
+        self.toId = toId
+    }
+    
+    func performDrop(info: DropInfo) -> Bool {
+        DispatchQueue.main.async {
+            let items = info.itemProviders(for: [UTType.data.identifier as String])
+            if let toIndex = self.parent.selection.getSectionIndex(id: self.toId) {
+                ShortcutItemProvider.dropAction(at: toIndex, items, selection: self.parent.selection, action: self.parent.dropShortcutAction)
+            }
+        }
+        return true
+    }
+}

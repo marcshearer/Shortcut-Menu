@@ -17,10 +17,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 
-        // Cache main context for core data
-        MasterData.context = PersistenceController.shared.container.viewContext
+        MyApp.shared.start()
     
-         // Build status menu
+        // Build status menu
         StatusMenu.shared.update()
     }
 }

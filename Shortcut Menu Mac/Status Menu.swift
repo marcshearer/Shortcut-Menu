@@ -46,7 +46,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.changeImage(close: false)
         
         // Menu for current section and default section
-        self.currentSection = UserDefaults.standard.string(forKey: "currentSection") ?? ""
+        self.currentSection = UserDefault.currentSection.string
         self.update()
         
         self.statusMenu.delegate = self
@@ -232,7 +232,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         if menubarWindowController == nil {
             menubarWindowController = MenubarWindowController()
             window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+                contentRect: NSRect(x: 0, y: 0, width: defaultSectionWidth + defaultShortcutWidth + defaultDetailWidth, height: defaultFormHeight),
                 styleMask: [.titled, .closable],
                 backing: .buffered, defer: false)
             window?.title = "Define Shortcuts"
@@ -316,7 +316,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc private func define(_ sender: Any?) {
         // Create the window and set the content view.
-        let contentView = ContentView().environment(\.managedObjectContext, MasterData.context)
+        let contentView = SetupView().environment(\.managedObjectContext, MasterData.context)
         self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
         self.defineWindowController.contentViewController?.view.window?.becomeKey()
         self.changeImage(close: true)
@@ -330,7 +330,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             } else {
                 self.currentSection = menuItem.title
             }
-            UserDefaults.standard.set(self.currentSection, forKey: "currentSection")
+            UserDefault.currentSection.set(self.currentSection)
             self.update()
         }
     }

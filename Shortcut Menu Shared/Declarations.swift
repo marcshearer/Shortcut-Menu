@@ -24,42 +24,19 @@ public enum EditObject: Int {
 }
 
 // Sizes
+let defaultRowHeight:CGFloat = (MyApp.target == .macOS ? 50.0 : 60.0)
+let defaultSectionWidth: CGFloat = 200.0
+let defaultShortcutWidth: CGFloat = 300.0
+let defaultDetailWidth: CGFloat = 400.0
+let defaultFormHeight: CGFloat = 600.0
+let inputTopHeight: CGFloat = (MyApp.target == .macOS ? 10 : 30.0)
+let inputDefaultHeight: CGFloat = 30.0
+let bannerHeight: CGFloat = (MyApp.target == .macOS ? 60 : 70)
 
-let rowHeight:CGFloat = 50.0
-let sectionWidth: CGFloat = 200.0
-let shortcutWidth: CGFloat = 300.0
-let detailWidth: CGFloat = 400.0
-let formHeight: CGFloat = 600.0
-
-let defaultFont = Font.system(size: 20.0)
-let captionFont = Font.system(size: 16.0)
-let messageFont = Font.system(size: 12.0)
-
-// Colours
-
-let listBackgroundColor = Color.clear
-let listTextColor = Color.black
-let listMessageColor = Color.gray
-
-let sectionSelectionBackgroundColor = Color(red: 0.65, green: 0.65, blue: 1.0)
-let sectionSelectionTextColor = Color.white
-let sectionDefaultTextColor = Color.gray
-
-let shortcutSelectionBackgroundColor = sectionSelectionBackgroundColor
-let shortcutSelectionTextColor = sectionSelectionTextColor
-let shortcutNestedTextColor = Color.gray
-
-let titleBackgroundColor = Color.gray
-let titleTextColor = Color.white
-
-let sectionEnabledTextColor = Color.black
-let sectionDisabledTextColor = Color.gray
-let placeholderTextColor = Color.gray
-let editTextColor = Color.primary
-let editTextEnabledBorderColor = Color.blue
-let editTextDisabledBorderColor = Color.gray
-
-let menuBarTextColor = NSColor(red: 0, green: 0, blue: 200, alpha: 1.0)
+// Fonts
+var defaultFont = Font.system(size: (MyApp.target == .macOS ? 20.0 : 28.0))
+var captionFont = Font.system(size: (MyApp.target == .macOS ? 16.0 : 20.0))
+var messageFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
 
 // Text for default section
 let defaultSectionDisplayName = "Default Section"

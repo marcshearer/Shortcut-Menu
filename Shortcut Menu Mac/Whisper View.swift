@@ -37,7 +37,7 @@ struct WhisperView: View {
                     
                     Text(self.header!)
                         .font(defaultFont)
-                        .foregroundColor(Color(menuBarTextColor))
+                        .foregroundColor(Color(Palette.whisper.text.cgColor!))
                     
                     Spacer()
                         .frame(height: 10)
@@ -57,6 +57,6 @@ struct WhisperView: View {
             Spacer()
                 .frame(width: 40)
         }
-        .background(Color(red: 185/255, green: 201/255, blue: 249/255))
+        .background(Palette.whisper.background)
     }
 }
