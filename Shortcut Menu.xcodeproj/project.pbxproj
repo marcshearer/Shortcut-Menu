@@ -111,10 +111,10 @@
 		B2B82CA825F20D490005B07C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B2B82CAB25F20D490005B07C /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		B2B82CAD25F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu_Mac.xcdatamodel; sourceTree = "<group>"; };
-		B2B82CBC25F20E540005B07C /* Setup View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup View.swift"; path = "Shortcut Menu Shared/Setup View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Shortcut List View.swift"; path = "Shortcut Menu Shared/Setup Shortcut List View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CC225F20E790005B07C /* Setup Detail View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Detail View.swift"; path = "Shortcut Menu Shared/Setup Detail View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CC325F20E790005B07C /* Setup Section List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Section List View.swift"; path = "Shortcut Menu Shared/Setup Section List View.swift"; sourceTree = SOURCE_ROOT; };
+		B2B82CBC25F20E540005B07C /* Setup View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup View.swift"; sourceTree = SOURCE_ROOT; };
+		B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Shortcut List View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Shortcut List View.swift"; sourceTree = SOURCE_ROOT; };
+		B2B82CC225F20E790005B07C /* Setup Detail View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Detail View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Detail View.swift"; sourceTree = SOURCE_ROOT; };
+		B2B82CC325F20E790005B07C /* Setup Section List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Section List View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Section List View.swift"; sourceTree = SOURCE_ROOT; };
 		B2B82CD825F20F0E0005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CE525F20F590005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CF325F257740005B07C /* MyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyApp.swift; sourceTree = "<group>"; };
@@ -127,7 +127,7 @@
 		B2B82D2225F27F450005B07C /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		B2B82D2325F27F450005B07C /* Palette.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		B2B82D2A25F27F840005B07C /* My Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "My Color.swift"; sourceTree = "<group>"; };
-		B2E0709125F4BC5E00316112 /* Main View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Main View.swift"; path = "Shortcut Menu Shared/Main View.swift"; sourceTree = SOURCE_ROOT; };
+		B2E0709125F4BC5E00316112 /* Main View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Main View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Main View.swift"; sourceTree = SOURCE_ROOT; };
 		B2E0709825F4D8DA00316112 /* Slide In Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Slide In Menu.swift"; sourceTree = "<group>"; };
 		B2FD28CB25F6CA9D00F2B450 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
