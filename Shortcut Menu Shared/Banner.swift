@@ -45,19 +45,7 @@ struct Banner: View {
                 HStack {
                     Spacer().frame(width: 8)
                     if back {
-                        Button(action: {
-                            if (backEnabled?.wrappedValue ?? true) {
-                                backAction?()
-                                self.presentationMode.wrappedValue.dismiss()
-                            }
-                        }, label: {
-                            HStack {
-                                Image(systemName: "chevron.left")
-                                    .font(.largeTitle)
-                                    .foregroundColor(Palette.bannerBackButton.opacity((backEnabled?.wrappedValue ?? true) ? 1.0 : 0.5))
-                            }
-                        })
-                        .disabled(!(backEnabled?.wrappedValue ?? true))
+                        backButton
                     }
                     Text(title).font(.largeTitle).bold().foregroundColor(Palette.banner.text)
                     Spacer()
@@ -74,6 +62,23 @@ struct Banner: View {
             }
         }
         .frame(height: bannerHeight)
+    }
+    
+    var backButton: some View {
+        let enabled = backEnabled?.wrappedValue ?? true
+        return Button(action: {
+            if enabled {
+                backAction?()
+                self.presentationMode.wrappedValue.dismiss()
+            }
+        }, label: {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.largeTitle)
+                    .foregroundColor(Palette.bannerBackButton.opacity(enabled ? 1.0 : 0.5))
+            }
+        })
+        .disabled(!(enabled))
     }
 }
 
