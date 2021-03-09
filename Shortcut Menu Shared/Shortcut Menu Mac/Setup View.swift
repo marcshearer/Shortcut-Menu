@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SetupView: View {
     
-    @ObservedObject var selection = Selection()
+    @ObservedObject private var selection = Selection()
     @State var title = "Define Shortcuts"
        
     var body: some View {
@@ -29,21 +29,19 @@ struct SetupView: View {
                     let shortcutWidth: CGFloat = geometry.size.width * 0.35
                     let detailWidth: CGFloat = geometry.size.width * 0.4
                     
-                    
-                    
                     HStack(spacing: 0) {
-                        SectionListView(selection: selection, width: sectionWidth).frame(width: sectionWidth, height: formHeight, alignment: .leading)
+                        SetupSectionListView(selection: selection, width: sectionWidth).frame(width: sectionWidth, height: formHeight, alignment: .leading)
                         
                         Divider()
                             .background(Color.white)
                             .frame(width: 2.0)
                         
-                        ShortcutListView(selection: selection, width: shortcutWidth).frame(width: shortcutWidth, height: formHeight, alignment: .leading)
+                        SetupShortcutListView(selection: selection, width: shortcutWidth).frame(width: shortcutWidth, height: formHeight, alignment: .leading)
                         
                         Divider()
                             .background(Color.white)
                         
-                        DetailView(selection: selection, editSection: selection.editSection, editShortcut: selection.editShortcut).frame(width: detailWidth, height: formHeight, alignment: .leading)
+                        SetupDetailView(selection: selection, editSection: selection.editSection, editShortcut: selection.editShortcut).frame(width: detailWidth, height: formHeight, alignment: .leading)
                     }
                     .background(Palette.background.background)
                 }

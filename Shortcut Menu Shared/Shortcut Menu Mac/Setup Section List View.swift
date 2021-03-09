@@ -8,8 +8,7 @@
 
 import SwiftUI
 
-struct SectionListView: View {
-    
+struct SetupSectionListView: View {
     @ObservedObject public var selection: Selection
     
     @State var width: CGFloat

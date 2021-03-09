@@ -209,10 +209,10 @@ public class SectionViewModel : ObservableObject, Identifiable {
 
 class SectionListDropDelegate: DropDelegate {
     
-    private let parent: SectionListView
+    private let parent: SetupSectionListView
     private let toId: UUID
     
-    init(_ parent: SectionListView, id toId: UUID) {
+    init(_ parent: SetupSectionListView, id toId: UUID) {
         self.parent = parent
         self.toId = toId
     }

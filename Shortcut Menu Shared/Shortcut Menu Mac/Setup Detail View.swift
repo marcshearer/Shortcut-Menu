@@ -8,8 +8,7 @@
 
 import SwiftUI
 
-struct DetailView: View {
-    
+struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
     @ObservedObject public var editSection: SectionViewModel     // Seem to have to pass these in separately to get synch to work
     @ObservedObject public var editShortcut: ShortcutViewModel   // Seem to have to pass these in separately to get synch to work
@@ -244,7 +243,7 @@ struct DetailView: View {
         
         return Button(action: {
             StatusMenu.shared.defineAlways(onTop: false)
-            DetailView.findFile { (url, data) in
+            SetupDetailView.findFile { (url, data) in
                 self.editShortcut.url = url.absoluteString
                 self.editShortcut.urlSecurityBookmark = data
             }

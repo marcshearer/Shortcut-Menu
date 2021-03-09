@@ -65,8 +65,8 @@ public class MasterData : ObservableObject {
         }
     }
     
-    public func sectionsWithShortcuts(excludeDefault: Bool = false) -> Int {
-        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != "" || !excludeDefault) }).count
+    public func sectionsWithShortcuts(excludeDefault: Bool = false) -> [SectionViewModel] {
+        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != "" || !excludeDefault) })
     }
     
     public func nextSectionSequence() -> Int {

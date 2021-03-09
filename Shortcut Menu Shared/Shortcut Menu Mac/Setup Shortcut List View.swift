@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ShortcutListView: View {
+struct SetupShortcutListView: View {
     @ObservedObject public var selection: Selection
 
     @State var width: CGFloat
