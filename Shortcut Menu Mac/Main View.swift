@@ -10,11 +10,10 @@ import SwiftUI
 
 struct MainView : View {
     
-//    @ObservedObject var data = MasterData.shared
-    
     @State private var title = "Shortcuts"
     @State private var showSetup = false
     @State var currentSection: String
+    @State var selection = Selection()
     
     var body: some View {
         
@@ -43,7 +42,8 @@ struct MainView : View {
                         }
                     }
                     Spacer()
-                    NavigationLink(destination: SetupView(), isActive: $showSetup) { EmptyView() }
+                    NavigationLink(destination: SetupView(selection: $selection), isActive: $showSetup) { EmptyView() }.debugAction {
+                    }
                 }
             }
         }

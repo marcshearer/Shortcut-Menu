@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SetupView: View {
     
-    @ObservedObject private var selection = Selection()
+    @Binding var selection: Selection
     @State var title = "Define Shortcuts"
        
     var body: some View {
@@ -41,17 +41,11 @@ struct SetupView: View {
                         Divider()
                             .background(Color.white)
                         
-                        SetupDetailView(selection: selection, editSection: selection.editSection, editShortcut: selection.editShortcut).frame(width: detailWidth, height: formHeight, alignment: .leading)
+                        SetupDetailView(selection: selection).frame(width: detailWidth, height: formHeight, alignment: .leading)
                     }
                     .background(Palette.background.background)
                 }
             }
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        SetupView()
     }
 }

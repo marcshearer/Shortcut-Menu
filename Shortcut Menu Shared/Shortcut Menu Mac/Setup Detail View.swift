@@ -10,8 +10,6 @@ import SwiftUI
 
 struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
-    @ObservedObject public var editSection: SectionViewModel     // Seem to have to pass these in separately to get synch to work
-    @ObservedObject public var editShortcut: ShortcutViewModel   // Seem to have to pass these in separately to get synch to work
     @State var lockImage: String = ""
     @State var lockColor: Color = .red
 
@@ -77,7 +75,7 @@ struct SetupDetailView: View {
                         if self.selection.editObject == .section {
                             self.selection.updateSection(section: self.selection.editSection)
                         } else if self.selection.editObject == . shortcut {
-                            self.selection.updateShortcut(shortcut: self.editShortcut)
+                            self.selection.updateShortcut(shortcut: self.selection.editShortcut)
                         }
                         self.selection.editMode = .none
                     }
@@ -111,7 +109,7 @@ struct SetupDetailView: View {
         
         if self.selection.editObject == .section && self.selection.editSection.canSave {
             result = true
-        } else if self.selection.editObject == .shortcut && self.editShortcut.canSave {
+        } else if self.selection.editObject == .shortcut && self.selection.editShortcut.canSave {
             result = true
         }
         
@@ -132,16 +130,16 @@ struct SetupDetailView: View {
     fileprivate func shortcutForm() -> some View {
         return VStack(spacing: 0) {
             let finderVisible = (self.selection.editMode != .none && MyApp.target == .macOS)
-            let hideVisible = (self.selection.editMode != .none && $editShortcut.copyText.wrappedValue != "")
+            let hideVisible = (self.selection.editMode != .none && $selection.editShortcut.copyText.wrappedValue != "")
             
-            Input(title: "Shortcut name", field: $editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: self.selection.editMode != .none)
+            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: self.selection.editMode != .none)
 
             OverlapButton( {
                 let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: self.selection.editMode != .none && self.editShortcut.canEditUrl)
+                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: self.selection.editMode != .none && self.selection.editShortcut.canEditUrl)
             }, {
                 if finderVisible {
-                    if self.editShortcut.canEditUrl {
+                    if self.selection.editShortcut.canEditUrl {
                         self.finderButton()
                     } else {
                         self.clearButton()
@@ -151,10 +149,10 @@ struct SetupDetailView: View {
             
             OverlapButton( {
                 let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                Input(title: "Text for clipboard", field: $editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: self.selection.editMode != .none,
+                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: self.selection.editMode != .none,
                       onChange: { (value) in
                         if value == "" {
-                            $editShortcut.copyPrivate.wrappedValue = false
+                            $selection.editShortcut.copyPrivate.wrappedValue = false
                         }
                       })
             }, {
@@ -163,10 +161,10 @@ struct SetupDetailView: View {
                 }
             })
             
-            Input(title: "Description of copied text", field: $editShortcut.copyMessage, placeHolder: ($editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: self.selection.editMode != .none && self.editShortcut.canEditCopyMessage)
+            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: self.selection.editMode != .none && self.selection.editShortcut.canEditCopyMessage)
             
             if MyApp.target == .macOS {
-                Input(title: "Keyboard equivalent", field: $editShortcut.keyEquivalent, width: 50, isEnabled: self.selection.editMode != .none)
+                Input(title: "Keyboard equivalent", field: $selection.editShortcut.keyEquivalent, width: 50, isEnabled: self.selection.editMode != .none)
             }
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
@@ -197,23 +195,23 @@ struct SetupDetailView: View {
     }
     
     private func formatLockButton() {
-        let locked = $editShortcut.copyPrivate.wrappedValue
+        let locked = $selection.editShortcut.copyPrivate.wrappedValue
         self.lockImage = (locked ? "lock.open.fill" : "lock.fill")
         self.lockColor = (locked ? .green : .red)
     }
     
     private func lockButton() -> some View {
         return Button(action: {
-            if $editShortcut.copyPrivate.wrappedValue {
+            if $selection.editShortcut.copyPrivate.wrappedValue {
                 LocalAuthentication.authenticate(reason: "\(MyApp.target == .iOS ? "Passcode must be entered to " : "") make private data visible",completion: {
-                    self.editShortcut.copyPrivate.toggle()
+                    self.selection.editShortcut.copyPrivate.toggle()
                     self.formatLockButton()
                     StatusMenu.shared.bringToFront()
                 }, failure: {
                     StatusMenu.shared.bringToFront()
                 })
             } else {
-                self.editShortcut.copyPrivate.toggle()
+                self.selection.editShortcut.copyPrivate.toggle()
                 self.formatLockButton()
             }
         },label: {
@@ -229,8 +227,8 @@ struct SetupDetailView: View {
     private func clearButton() -> some View {
         
         return Button(action: {
-                self.editShortcut.url = ""
-                self.editShortcut.urlSecurityBookmark = nil
+            self.selection.editShortcut.url = ""
+            self.selection.editShortcut.urlSecurityBookmark = nil
         }, label: {
                 Image("xmark.circle.fill.gray")
                     .resizable()
@@ -244,8 +242,8 @@ struct SetupDetailView: View {
         return Button(action: {
             StatusMenu.shared.defineAlways(onTop: false)
             SetupDetailView.findFile { (url, data) in
-                self.editShortcut.url = url.absoluteString
-                self.editShortcut.urlSecurityBookmark = data
+                self.selection.editShortcut.url = url.absoluteString
+                self.selection.editShortcut.urlSecurityBookmark = data
             }
         },label: {
             Image(systemName: "folder.fill")

@@ -28,8 +28,8 @@ struct MyScene: Scene {
     
     var body: some Scene {
         WindowGroup {
-            SetupView(title: "Setup")
-            // MainView(currentSection: currentSection)
+            // SetupView(title: "Setup")
+            MainView(currentSection: currentSection)
         }
     }
 }
