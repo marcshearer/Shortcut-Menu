@@ -17,7 +17,7 @@ struct MainView : View {
     
     var body: some View {
         
-        StandardView(navigation: true) {
+        StandardView(navigation: true, animate: true) {
             GeometryReader { (geometry) in
                 ZStack {
                     VStack(spacing: 0) {
@@ -37,12 +37,14 @@ struct MainView : View {
                         ])
                         HStack {
                             ShortcutListView(currentSection: $currentSection)
-                                .frame(width: geometry.size.width / 3)
+                            .frame(width: geometry.size.width / 3)
                             Spacer()
                         }
                     }
-                    Spacer()
-                    NavigationLink(destination: SetupView(selection: $selection), isActive: $showSetup) { EmptyView() }.debugAction {
+                    if showSetup {
+                        SetupView(selection: selection) {
+                            showSetup = false
+                        }
                     }
                 }
             }

@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-public class Selection : ObservableObject {
+public class Selection : ObservableObject, Identifiable {
     
     private var master: MasterData = MasterData.shared
     @Published public var sections: [SectionViewModel]
@@ -21,9 +21,26 @@ public class Selection : ObservableObject {
     @Published public var editShortcut = ShortcutViewModel()
     @Published public var editMode: EditMode = .none
     @Published public var editObject: EditObject = .none
+    @Published internal var canExit: Bool = false
+    @Published public var id = UUID()
     
+    // Auto-cleanup
+    private var cancellableSet: Set<AnyCancellable> = []
+
     init() {
         self.sections = self.master.sections.sorted(by: { $0.sequence < $1.sequence })
+        
+        self.setupMappings()
+    }
+    
+    func setupMappings() {
+        $editMode
+            .receive(on: RunLoop.main)
+            .map { (editMode) in
+                return (editMode == .none)
+            }
+        .assign(to: \.canExit, on: self)
+        .store(in: &cancellableSet)
     }
     
     func selectSection(section: SectionViewModel, updateShortcuts: Bool = true) {

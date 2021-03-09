@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct StandardView <Content> : View where Content : View {
-    @ObservedObject var messageBox = MessageBox.shared
+    @ObservedObject private var messageBox = MessageBox.shared
     var navigation: Bool
-    @State var animate = false
+    var animate = false
     var content: Content
     
-    init(navigation: Bool = false, @ViewBuilder content: ()->Content) {
+    init(navigation: Bool = false, animate: Bool = false, @ViewBuilder content: ()->Content) {
         self.navigation = navigation
+        self.animate = animate
         self.content = content()
     }
         
@@ -51,7 +52,7 @@ struct StandardView <Content> : View where Content : View {
                 }
             }
         }
-        .animation(messageBox.isShown ? .easeInOut(duration: 0.5) : nil)
+        .animation(animate || messageBox.isShown ? .easeInOut(duration: 0.5) : nil)
         .noNavigationBar
     }
 }

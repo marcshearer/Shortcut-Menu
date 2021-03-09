@@ -10,17 +10,23 @@ import SwiftUI
 
 struct SetupView: View {
     
-    @Binding var selection: Selection
+    @ObservedObject var selection: Selection
     @State var title = "Define Shortcuts"
-       
+    @State var completion: (()->())?
+    @State var backEnabled = true
+
     var body: some View {
         StandardView {
             VStack(spacing: 0) {
                 
                 if MyApp.target == .iOS {
-                    Banner(title: $title, backCheck: {
-                        return selection.editMode == .none
-                    })
+                    Banner(title: $title,
+                           backEnabled: $selection.canExit,
+                           backAction: {
+                                if selection.canExit {
+                                    completion?()
+                                }
+                           })
                 }
                 
                 GeometryReader { geometry in

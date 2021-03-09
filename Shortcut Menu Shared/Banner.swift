@@ -30,7 +30,8 @@ struct Banner: View {
 
     @Binding var title: String
     var back: Bool = true
-    var backCheck: (()->(Bool))? = nil
+    var backEnabled: Binding<Bool>?
+    var backAction: (()->())?
     var optionMode: BannerOptionMode = .none
     var menuImage: AnyView? = nil
     var options: [BannerOption]? = nil
@@ -44,7 +45,19 @@ struct Banner: View {
                 HStack {
                     Spacer().frame(width: 8)
                     if back {
-                        backButton
+                        Button(action: {
+                            if (backEnabled?.wrappedValue ?? true) {
+                                backAction?()
+                                self.presentationMode.wrappedValue.dismiss()
+                            }
+                        }, label: {
+                            HStack {
+                                Image(systemName: "chevron.left")
+                                    .font(.largeTitle)
+                                    .foregroundColor(Palette.bannerBackButton.opacity((backEnabled?.wrappedValue ?? true) ? 1.0 : 0.5))
+                            }
+                        })
+                        .disabled(!(backEnabled?.wrappedValue ?? true))
                     }
                     Text(title).font(.largeTitle).bold().foregroundColor(Palette.banner.text)
                     Spacer()
@@ -62,24 +75,6 @@ struct Banner: View {
         }
         .frame(height: bannerHeight)
     }
-    
-    var backButton: some View {
-        Button(action: {
-            var backOk = true
-            if let backCheck = self.backCheck {
-                backOk = backCheck()
-            }
-            if backOk {
-                self.presentationMode.wrappedValue.dismiss()
-            }
-        }, label: {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.largeTitle)
-                    .foregroundColor(Palette.banner.contrastText)
-            }
-        })
-    }
 }
 
 struct Banner_Menu : View {
@@ -88,7 +83,7 @@ struct Banner_Menu : View {
     let menuStyle = DefaultMenuStyle()
 
     var body: some View {
-        let menuLabel = image ?? AnyView(Image(systemName: "line.horizontal.3").foregroundColor(Palette.header.text).font(.largeTitle))
+        let menuLabel = image ?? AnyView(Image(systemName: "line.horizontal.3").foregroundColor(Palette.banner.text).font(.largeTitle))
         Menu {
             ForEach(0..<(options.count)) { (index) in
                 let option = options[index]
