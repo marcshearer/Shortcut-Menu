@@ -41,14 +41,6 @@
 		B2B82CB025F20D490005B07C /* Status Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CA725F20D490005B07C /* Status Menu.swift */; };
 		B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CA825F20D490005B07C /* AppDelegate.swift */; };
 		B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CAC25F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld */; };
-		B2B82CBE25F20E540005B07C /* Setup View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CBC25F20E540005B07C /* Setup View.swift */; };
-		B2B82CBF25F20E540005B07C /* Setup Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */; };
-		B2B82CC425F20E790005B07C /* Setup Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CC225F20E790005B07C /* Setup Detail View.swift */; };
-		B2B82CC525F20E790005B07C /* Setup Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CC325F20E790005B07C /* Setup Section List View.swift */; };
-		B2B82CCA25F20EB70005B07C /* Setup View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CBC25F20E540005B07C /* Setup View.swift */; };
-		B2B82CCD25F20EBB0005B07C /* Setup Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */; };
-		B2B82CD025F20EBD0005B07C /* Setup Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CC325F20E790005B07C /* Setup Section List View.swift */; };
-		B2B82CD325F20EC10005B07C /* Setup Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CC225F20E790005B07C /* Setup Detail View.swift */; };
 		B2B82CE625F20F590005B07C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CE425F20F590005B07C /* Assets.xcassets */; };
 		B2B82CEE25F20FB00005B07C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CD725F20F0E0005B07C /* Assets.xcassets */; };
 		B2B82CF425F257740005B07C /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CF325F257740005B07C /* MyApp.swift */; };
@@ -71,17 +63,21 @@
 		B2B82D2725F27F450005B07C /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82D2325F27F450005B07C /* Palette.swift */; };
 		B2B82D2B25F27F840005B07C /* My Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82D2A25F27F840005B07C /* My Color.swift */; };
 		B2B82D2C25F27F840005B07C /* My Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82D2A25F27F840005B07C /* My Color.swift */; };
+		B2C2641025F7E35F0054D2ED /* Setup View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640C25F7E35E0054D2ED /* Setup View.swift */; };
+		B2C2641125F7E35F0054D2ED /* Setup Section List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640D25F7E35E0054D2ED /* Setup Section List View.swift */; };
+		B2C2641225F7E35F0054D2ED /* Setup Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */; };
+		B2C2641325F7E35F0054D2ED /* Setup Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640F25F7E35F0054D2ED /* Setup Shortcut List View.swift */; };
+		B2C2641A25F7E3D00054D2ED /* Main View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2641925F7E3D00054D2ED /* Main View.swift */; };
+		B2C2641E25F7E43A0054D2ED /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */; };
 		B2D84BE125F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BE225F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE925F7C22A00966421 /* Persistence.swift */; };
 		B2D84BEB25F7C22A00966421 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE925F7C22A00966421 /* Persistence.swift */; };
 		B2E0708F25F4AF6A00316112 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CAB25F20D490005B07C /* Main.storyboard */; };
-		B2E0709225F4BC5E00316112 /* Main View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709125F4BC5E00316112 /* Main View.swift */; };
 		B2E0709925F4D8DA00316112 /* Slide In Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709825F4D8DA00316112 /* Slide In Menu.swift */; };
 		B2E0709A25F4D8DA00316112 /* Slide In Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709825F4D8DA00316112 /* Slide In Menu.swift */; };
 		B2FD28CC25F6CA9D00F2B450 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FD28CB25F6CA9D00F2B450 /* Utility.swift */; };
 		B2FD28CD25F6CA9D00F2B450 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FD28CB25F6CA9D00F2B450 /* Utility.swift */; };
-		B2FD28DA25F6D0CC00F2B450 /* Shortcut List View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FD28D925F6D0CC00F2B450 /* Shortcut List View.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -112,10 +108,6 @@
 		B2B82CA825F20D490005B07C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B2B82CAB25F20D490005B07C /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		B2B82CAD25F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu_Mac.xcdatamodel; sourceTree = "<group>"; };
-		B2B82CBC25F20E540005B07C /* Setup View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Shortcut List View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Shortcut List View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CC225F20E790005B07C /* Setup Detail View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Detail View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Detail View.swift"; sourceTree = SOURCE_ROOT; };
-		B2B82CC325F20E790005B07C /* Setup Section List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Setup Section List View.swift"; path = "Shortcut Menu Shared/Shortcut Menu Mac/Setup Section List View.swift"; sourceTree = SOURCE_ROOT; };
 		B2B82CD825F20F0E0005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CE525F20F590005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CF325F257740005B07C /* MyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyApp.swift; sourceTree = "<group>"; };
@@ -128,12 +120,16 @@
 		B2B82D2225F27F450005B07C /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		B2B82D2325F27F450005B07C /* Palette.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		B2B82D2A25F27F840005B07C /* My Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "My Color.swift"; sourceTree = "<group>"; };
+		B2C2640C25F7E35E0054D2ED /* Setup View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Setup View.swift"; sourceTree = "<group>"; };
+		B2C2640D25F7E35E0054D2ED /* Setup Section List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Setup Section List View.swift"; sourceTree = "<group>"; };
+		B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Setup Detail View.swift"; sourceTree = "<group>"; };
+		B2C2640F25F7E35F0054D2ED /* Setup Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Setup Shortcut List View.swift"; sourceTree = "<group>"; };
+		B2C2641925F7E3D00054D2ED /* Main View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Main View.swift"; sourceTree = "<group>"; };
+		B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 		B2D84BE025F779B500966421 /* Debug Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Debug Utilities.swift"; sourceTree = "<group>"; };
 		B2D84BE925F7C22A00966421 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		B2E0709125F4BC5E00316112 /* Main View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Main View.swift"; path = "Shortcut Menu Mac/Main View.swift"; sourceTree = SOURCE_ROOT; };
 		B2E0709825F4D8DA00316112 /* Slide In Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Slide In Menu.swift"; sourceTree = "<group>"; };
 		B2FD28CB25F6CA9D00F2B450 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
-		B2FD28D925F6D0CC00F2B450 /* Shortcut List View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,18 +232,6 @@
 			name = "Standard Components";
 			sourceTree = "<group>";
 		};
-		B24DED5A25F0D07B00F76629 /* Shared Views */ = {
-			isa = PBXGroup;
-			children = (
-				B2B82CBC25F20E540005B07C /* Setup View.swift */,
-				B2B82CC325F20E790005B07C /* Setup Section List View.swift */,
-				B2B82CBD25F20E540005B07C /* Setup Shortcut List View.swift */,
-				B2B82CC225F20E790005B07C /* Setup Detail View.swift */,
-			);
-			name = "Shared Views";
-			path = "Shortcut Menu Mac";
-			sourceTree = "<group>";
-		};
 		B24DED5B25F0D09800F76629 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -294,6 +278,7 @@
 		B28D41E72443538B00C2577E /* Shortcut Menu iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B2C2641825F7E3BE0054D2ED /* Views */,
 				B2B82C6F25F14CD20005B07C /* Preview Assets.xcassets */,
 				B2B82C5425F147FF0005B07C /* Standard Components */,
 				B2D84BF625F7D8D500966421 /* Stub classes */,
@@ -304,7 +289,6 @@
 		B28D42662447515100C2577E /* Shortcut Menu Mac */ = {
 			isa = PBXGroup;
 			children = (
-				B2FD28D625F6D07E00F2B450 /* Views */,
 				B24DED5925F0D04700F76629 /* Standard Components */,
 				B24DED5F25F0D1A800F76629 /* Menus */,
 				B24DED6225F0D64000F76629 /* Reusable Views */,
@@ -320,7 +304,7 @@
 				B24DED5025F0CF6E00F76629 /* Data Structures */,
 				B24DED5225F0CF8D00F76629 /* Managed Objects */,
 				B24DED5125F0CF8300F76629 /* View Models */,
-				B24DED5A25F0D07B00F76629 /* Shared Views */,
+				B2C2640B25F7E3470054D2ED /* Shared Views */,
 				B24DED4F25F0CF5700F76629 /* Reusable Views */,
 				B24DED5525F0CFAD00F76629 /* Utilities */,
 			);
@@ -370,21 +354,32 @@
 			path = Base.lproj;
 			sourceTree = "<group>";
 		};
+		B2C2640B25F7E3470054D2ED /* Shared Views */ = {
+			isa = PBXGroup;
+			children = (
+				B2C2640C25F7E35E0054D2ED /* Setup View.swift */,
+				B2C2640D25F7E35E0054D2ED /* Setup Section List View.swift */,
+				B2C2640F25F7E35F0054D2ED /* Setup Shortcut List View.swift */,
+				B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */,
+			);
+			name = "Shared Views";
+			sourceTree = "<group>";
+		};
+		B2C2641825F7E3BE0054D2ED /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */,
+				B2C2641925F7E3D00054D2ED /* Main View.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		B2D84BF625F7D8D500966421 /* Stub classes */ = {
 			isa = PBXGroup;
 			children = (
 				B2B82C9625F20A5D0005B07C /* Status Menu.swift */,
 			);
 			name = "Stub classes";
-			sourceTree = "<group>";
-		};
-		B2FD28D625F6D07E00F2B450 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				B2E0709125F4BC5E00316112 /* Main View.swift */,
-				B2FD28D925F6D0CC00F2B450 /* Shortcut List View.swift */,
-			);
-			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -496,26 +491,26 @@
 				B2B82D2B25F27F840005B07C /* My Color.swift in Sources */,
 				B2B82D0D25F25DFB0005B07C /* Input Title.swift in Sources */,
 				B2B82D2625F27F450005B07C /* Palette.swift in Sources */,
+				B2C2641E25F7E43A0054D2ED /* Shortcut List View.swift in Sources */,
 				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */,
 				B20B324924557E0C003F6664 /* String Extensions.swift in Sources */,
 				B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */,
 				B2B82D1425F27DA50005B07C /* Standard View.swift in Sources */,
-				B2B82CD325F20EC10005B07C /* Setup Detail View.swift in Sources */,
-				B2B82CCD25F20EBB0005B07C /* Setup Shortcut List View.swift in Sources */,
+				B2C2641A25F7E3D00054D2ED /* Main View.swift in Sources */,
 				B2B82CF725F257790005B07C /* MyApp.swift in Sources */,
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
 				B2B82C6225F148D50005B07C /* Shortcut Menu.swift in Sources */,
 				B2B82D1E25F27DD50005B07C /* Target View Modifiers.swift in Sources */,
+				B2C2641325F7E35F0054D2ED /* Setup Shortcut List View.swift in Sources */,
 				B2B82C5125F1477C0005B07C /* Master Data.swift in Sources */,
-				B2FD28DA25F6D0CC00F2B450 /* Shortcut List View.swift in Sources */,
+				B2C2641025F7E35F0054D2ED /* Setup View.swift in Sources */,
 				B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
+				B2C2641225F7E35F0054D2ED /* Setup Detail View.swift in Sources */,
+				B2C2641125F7E35F0054D2ED /* Setup Section List View.swift in Sources */,
 				B2B82D1025F25DFE0005B07C /* Input.swift in Sources */,
-				B2B82CD025F20EBD0005B07C /* Setup Section List View.swift in Sources */,
 				B2B82C9725F20A5D0005B07C /* Status Menu.swift in Sources */,
-				B2E0709225F4BC5E00316112 /* Main View.swift in Sources */,
 				B2B82D1925F27DBE0005B07C /* Message Box.swift in Sources */,
-				B2B82CCA25F20EB70005B07C /* Setup View.swift in Sources */,
 				B2B82D2425F27F450005B07C /* Themes.swift in Sources */,
 				B28D42822447542C00C2577E /* Declarations.swift in Sources */,
 				B2FD28CC25F6CA9D00F2B450 /* Utility.swift in Sources */,
@@ -531,11 +526,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2B82CC525F20E790005B07C /* Setup Section List View.swift in Sources */,
 				B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */,
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
 				B2B82D1A25F27DBE0005B07C /* Message Box.swift in Sources */,
-				B2B82CC425F20E790005B07C /* Setup Detail View.swift in Sources */,
 				B2B82D2525F27F450005B07C /* Themes.swift in Sources */,
 				B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */,
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
@@ -560,11 +553,9 @@
 				B2B82CB025F20D490005B07C /* Status Menu.swift in Sources */,
 				B2B82D2C25F27F840005B07C /* My Color.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
-				B2B82CBF25F20E540005B07C /* Setup Shortcut List View.swift in Sources */,
 				B2B82D2725F27F450005B07C /* Palette.swift in Sources */,
 				B2E0709A25F4D8DA00316112 /* Slide In Menu.swift in Sources */,
 				B2AA94AA2452DDA100664AAB /* Local Authentication.swift in Sources */,
-				B2B82CBE25F20E540005B07C /* Setup View.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
