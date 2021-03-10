@@ -9,39 +9,33 @@
 import SwiftUI
 
 struct ShortcutListView: View {
-    @ObservedObject var data = MasterData.shared
-    
-    @Binding var currentSection: String
+    @ObservedObject public var selection: Selection
     
     var body: some View {
         VStack {
-            if currentSection != defaultSectionMenuName {
-                Tile(text: currentSection, color: Palette.header)
-                let shortcuts = data.shortcuts.filter({$0.section?.name == currentSection})
-                ForEach(shortcuts) { (shortcut) in
-                    Tile(text: shortcut.name, color: Palette.background)
+            if let currentSection = selection.selectedSection {
+                Tile(text: currentSection.name, color: Palette.header)
+                ForEach(selection.shortcuts) { (shortcut) in
+                    Tile(text: shortcut.name, color: Palette.background, selected: { selection.selectedShortcut?.id == shortcut.id }, nested: shortcut.nestedSection != nil) {
+                        
+                        selection.selectShortcut(shortcut: shortcut)
+                        var message = ""
+                        if shortcut.url != "" {
+                            message = "Linking to \(shortcut.name)...\n\n"
+                        }
+                        Actions.shortcut(name: shortcut.name) { (copyMessage) in
+                            if let copyMessage = copyMessage {
+                                message += copyMessage
+                            }
+                            MessageBox.shared.show(message, closeButton: false, hideAfter: 3)
+                            Utility.executeAfter(delay: 3) {
+                                selection.deselectShortcut()
+                            }
+                        }
+                    }
                 }
-            }
-            Spacer()
-        }
-    }
-}
-
-struct Tile: View {
-    @State var text: String
-    @State var color: PaletteColor
-    
-    var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer().frame(width: 20)
-                Text(text).font(defaultFont).foregroundColor(color.text)
                 Spacer()
             }
-            Spacer()
         }
-        .background(color.background)
-        .frame(height: defaultRowHeight)
     }
 }

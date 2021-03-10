@@ -31,10 +31,15 @@ struct StandardView <Content> : View where Content : View {
     }
     
     private func contentView() -> some View {
+        GeometryReader { (geometry) in
         ZStack {
-            Palette.tile.background
+            Palette.background.background
                 .ignoresSafeArea()
-            self.content
+            
+            VStack {
+                Spacer().frame(height: geometry.safeAreaInsets.top)
+                self.content
+            }
             if MyApp.target == .iOS {
                 SlideInMenuView()
             }
@@ -44,7 +49,9 @@ struct StandardView <Content> : View where Content : View {
                     Spacer()
                     HStack {
                         Spacer()
-                        MessageBoxView().frame(width: 400, height: 250)
+                        let width = min(geometry.size.width - 40, 400)
+                        let height = min(geometry.size.height - 40, 250)
+                        MessageBoxView(showIcon: width >= 400).frame(width: width, height: height)
                             .cornerRadius(20)
                         Spacer()
                     }
@@ -52,8 +59,10 @@ struct StandardView <Content> : View where Content : View {
                 }
             }
         }
+        .ignoresSafeArea()
         .animation(animate || messageBox.isShown ? .easeInOut(duration: 0.5) : nil)
         .noNavigationBar
+        }
     }
 }
 

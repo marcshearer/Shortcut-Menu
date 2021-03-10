@@ -200,7 +200,6 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         event1?.post(tap: CGEventTapLocation.cghidEventTap);
 
         let event2 = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: false) // cmd-v up
-    //    event2?.flags = CGEventFlags.maskCommand
         event2?.post(tap: CGEventTapLocation.cghidEventTap)
     }
     
@@ -316,7 +315,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc private func define(_ sender: Any?) {
         // Create the window and set the content view.
-        let contentView = SetupView().environment(\.managedObjectContext, MasterData.context)
+        let selection = Selection()
+        let contentView = SetupView(selection: selection).environment(\.managedObjectContext, MasterData.context)
         self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
         self.defineWindowController.contentViewController?.view.window?.becomeKey()
         self.changeImage(close: true)

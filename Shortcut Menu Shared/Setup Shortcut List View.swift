@@ -16,47 +16,29 @@ struct SetupShortcutListView: View {
     var body: some View {
                 
         VStack(spacing: 0.0) {
-            HStack(spacing: 0.0) {
-                Spacer()
-                    .frame(width: 10.0)
+            ZStack {
+                Tile(text: self.selection.shortcutsTitle, color: Palette.header)
                 
-                Text(self.selection.shortcutsTitle)
-                    .font(defaultFont)
-                
-                Spacer()
-                
-                if self.selection.editMode == .none {
-                    if self.selection.selectedShortcut != nil {
-                        ToolbarButton("minus.circle.fill") {
-                            self.selection.removeShortcut(shortcut: self.selection.selectedShortcut!)
-                        }
-                    }
-                    
-                    if self.selection.selectedSection != nil {
-                        ToolbarButton("plus.circle.fill") {
-                            self.selection.newShortcut(section: self.selection.selectedSection!)
-                        }
-                    }
-                }
-                
-                Spacer()
-                    .frame(width: 5.0)
-            }
-            .frame(height: defaultRowHeight)
-            .background(Palette.header.background)
-            .foregroundColor(Palette.header.text)
-            if self.selection.shortcuts.isEmpty {
-                VStack {
-                    HStack(alignment: .top) {
-                        Spacer().frame(width: 20)
-                        Text("No shortcuts defined")
-                            .frame(height: defaultRowHeight, alignment: .leading)
-                            .foregroundColor(Palette.unselectedList.faintText)
-                            .font(defaultFont)
-                        Spacer()
-                    }
+                HStack(spacing: 0.0) {
                     Spacer()
+                    if self.selection.editMode == .none {
+                        if self.selection.selectedShortcut != nil {
+                            ToolbarButton("minus.circle.fill") {
+                                self.selection.removeShortcut(shortcut: self.selection.selectedShortcut!)
+                            }
+                        }
+                        
+                        if self.selection.selectedSection != nil {
+                            ToolbarButton("plus.circle.fill") {
+                                self.selection.newShortcut(section: self.selection.selectedSection!)
+                            }
+                        }
+                    }
+                    Spacer().frame(width: 5.0)
                 }
+            }
+            if self.selection.shortcuts.isEmpty {
+                Tile(text: "No shortcuts defined", disabled: true)
             } else {
                 ScrollView {
                     VStack {
@@ -79,36 +61,21 @@ struct SetupShortcutListView: View {
                 }
                 .frame(width: width)
             }
+            Spacer()
         }
         .moveDisabled(false)
     }
     
     fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
-        return
-            HStack {
-                if shortcut.type == .section {
-                    Spacer().frame(width: 16)
-                    Image(systemName: "link.circle.fill").foregroundColor(shortcut.id == self.selection.selectedShortcut?.id ? Palette.selectedList.text :Palette.selectedList.faintText).font(defaultFont)
-                    Spacer().frame(width: 10)
+        Tile(text: shortcut.name, selected: { shortcut.id == self.selection.selectedShortcut?.id }, nested: shortcut.nestedSection != nil) {
+            if self.selection.editMode == .none {
+                if shortcut.type == .shortcut {
+                    self.selection.selectShortcut(shortcut: shortcut)
+                } else {
+                    self.selection.selectSection(section: shortcut.nestedSection!)
                 }
-                Text(shortcut.name)
-                    .padding([.leading, .trailing], 16)
-                    .frame(height: defaultRowHeight, alignment: .leading)
-                    .font(defaultFont)
-                    .foregroundColor((shortcut.id == self.selection.selectedShortcut?.id ? Palette.selectedList.text : (shortcut.type == .section ? Palette.selectedList.faintText : Palette.unselectedList.text)))
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if self.selection.editMode == .none {
-                            if shortcut.type == .shortcut {
-                                self.selection.selectShortcut(shortcut: shortcut)
-                            } else {
-                                self.selection.selectSection(section: shortcut.nestedSection!)
-                            }
-                        }
-                    }
-                Spacer()
             }
-            .background(shortcut.id == self.selection.selectedShortcut?.id ? Palette.selectedList.background : Palette.unselectedList.background)
+        }
     }
     
     func dropShortcutAction(to: Int, from: Int) {

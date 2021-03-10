@@ -17,29 +17,24 @@ struct SetupSectionListView: View {
         let master = MasterData.shared
 
         VStack(spacing: 0.0) {
-            HStack(spacing: 0.0) {
-                Spacer()
-                    .frame(width: 10.0)
+            ZStack {
+                Tile(text: "Sections", color: Palette.header)
                 
-                Text("Sections")
-                    .font(defaultFont)
-                
-                Spacer()
-                
-                if self.selection.editMode == .none {
-                    if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
-                        ToolbarButton("minus.circle.fill") {
-                            self.selection.removeSection(section: self.selection.selectedSection!)
+                HStack{
+                    Spacer()
+                    if self.selection.editMode == .none {
+                        if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
+                            ToolbarButton("minus.circle.fill") {
+                                self.selection.removeSection(section: self.selection.selectedSection!)
+                            }
+                        }
+                        
+                        ToolbarButton("plus.circle.fill") {
+                            self.selection.newSection()
                         }
                     }
-                    
-                    ToolbarButton("plus.circle.fill") {
-                        self.selection.newSection()
-                    }
+                    Spacer().frame(width: 5.0)
                 }
-                
-                Spacer()
-                    .frame(width: 5.0)
             }
             .frame(height: defaultRowHeight)
             .background(Palette.header.background)
@@ -75,21 +70,13 @@ struct SetupSectionListView: View {
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
         return
             HStack {
-                Text(section.displayName)
-                    .padding([.leading, .trailing], 16)
-                    .frame(height: defaultRowHeight, alignment: .leading)
-                    .font(defaultFont)
-                    .foregroundColor((section.id == self.selection.selectedSection?.id ? Palette.selectedList.text : (section.name == "" ? Palette.selectedList.faintText : Palette.unselectedList.text)))
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if self.selection.editMode == .none {
-                            self.selection.selectSection(section: section)
-                        }
+                Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }) {
+                    if self.selection.editMode == .none {
+                        self.selection.selectSection(section: section)
                     }
-                    .onDrop(of: ShortcutItemProvider.readableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
-                Spacer()
+                }
+                .onDrop(of: ShortcutItemProvider.readableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
             }
-            .background((section.id == self.selection.selectedSection?.id ? Palette.selectedList.background : Palette.unselectedList.background))
     }
     
     func insertSectionAction(to: Int, from: Int) {

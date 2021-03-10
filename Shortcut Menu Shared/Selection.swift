@@ -43,6 +43,12 @@ public class Selection : ObservableObject, Identifiable {
         .store(in: &cancellableSet)
     }
     
+    func selectSection(section name: String, updateShortcuts: Bool = true) {
+        if let section = self.sections.first(where: {$0.name == name}) {
+            self.selectSection(section: section, updateShortcuts: updateShortcuts)
+        }
+    }
+    
     func selectSection(section: SectionViewModel, updateShortcuts: Bool = true) {
         
         self.selectedShortcut = nil
@@ -146,6 +152,16 @@ public class Selection : ObservableObject, Identifiable {
                 section.save()
             }
             last = section.sequence
+        }
+    }
+    
+    public func sectionsWithShortcuts(excludeDefault: Bool = false) -> [SectionViewModel] {
+        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != "" || !excludeDefault) })
+    }
+    
+    func selectShortcut(shortcut name: String) {
+        if let shortcut = self.shortcuts.first(where: {$0.name == name}) {
+            self.selectShortcut(shortcut: shortcut)
         }
     }
     

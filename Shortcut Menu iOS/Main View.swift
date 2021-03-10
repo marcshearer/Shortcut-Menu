@@ -10,10 +10,10 @@ import SwiftUI
 
 struct MainView : View {
     
+    @ObservedObject public var selection: Selection
+    
     @State private var title = "Shortcuts"
     @State private var showSetup = false
-    @State var currentSection: String
-    @State var selection = Selection()
     
     var body: some View {
         
@@ -27,18 +27,16 @@ struct MainView : View {
                             },
                             BannerOption(image: AnyView(Image(systemName: "filemenu.and.selection").font(.largeTitle).foregroundColor(Palette.banner.text))) {
                                 
-                                SlideInMenu.shared.show(title: "Select Section", options: MasterData.shared.sectionsWithShortcuts().map{($0.name == "" ? defaultSectionMenuName : $0.name)}) { (selection) in
-                                    if let selection = selection {
-                                        currentSection = selection
+                                SlideInMenu.shared.show(title: "Select Section", options: selection.sectionsWithShortcuts().map{($0.name == "" ? defaultSectionMenuName : $0.name)}) { (section) in
+                                    if let section = section {
+                                        selection.selectSection(section: section)
                                         UserDefault.currentSection.set(selection)
                                     }
                                 }
                             }
                         ])
                         HStack {
-                            ShortcutListView(currentSection: $currentSection)
-                            .frame(width: geometry.size.width / 3)
-                            Spacer()
+                            ShortcutListView(selection: selection)
                         }
                     }
                     if showSetup {
