@@ -18,6 +18,7 @@ struct Tile: View {
     @State var nested: Bool = false
     @State var rounded: Bool = false
     @State var insets = EdgeInsets()
+    @State var rightContent: (()->AnyView)?
     @State var tapAction: (()->())?
 
     var body: some View {
@@ -37,6 +38,10 @@ struct Tile: View {
                     .font(defaultFont)
                     .foregroundColor(nested || disabled ? color.faintText : color.text)
                 Spacer()
+                if let rightContent = rightContent {
+                    rightContent()
+                    Spacer().frame(width: 32)
+                }
             }
             Spacer()
         }

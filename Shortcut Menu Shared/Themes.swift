@@ -76,6 +76,7 @@ enum ThemeBackgroundColorName: CaseIterable {
     case alternate
     case tile
     case header
+    case subHeader
     case selectedList
     case unselectedList
     case listMessage
@@ -346,6 +347,7 @@ class Themes {
                 .alternate                   : ThemeColor(#colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1), #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1), .lightBackground, .darkBackground),
                 .tile                        : ThemeColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1), #colorLiteral(red: 0.07843137255, green: 0.07843137255, blue: 0.07843137255, alpha: 1), .lightBackground, .darkBackground),
                 .header                      : ThemeColor(#colorLiteral(red: 0.3921568627, green: 0.5490196078, blue: 0.5490196078, alpha: 1), #colorLiteral(red: 0.6286649108, green: 0.6231410503, blue: 0.6192827821, alpha: 1), .darkBackground,  .lightBackground),
+                .subHeader                   : ThemeColor(#colorLiteral(red: 0.4705882353, green: 0.7058823529, blue: 0.7843137255, alpha: 1), #colorLiteral(red: 0.3921568627, green: 0.5490196078, blue: 0.5490196078, alpha: 1), .darkBackground,  .lightBackground),
                 .selectedList                : ThemeColor(#colorLiteral(red: 0.65, green: 0.65, blue: 1, alpha: 1), nil, .lightBackground),
                 .unselectedList              : ThemeColor(#colorLiteral(red: 0.999904573, green: 1, blue: 0.9998808503, alpha: 1), #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), .lightBackground, .darkBackground),
                 .divider                     : ThemeColor(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), #colorLiteral(red: 0.6286649108, green: 0.6231410503, blue: 0.6192827821, alpha: 1), .darkBackground,  .lightBackground),

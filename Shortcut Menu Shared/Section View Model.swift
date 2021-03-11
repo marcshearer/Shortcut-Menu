@@ -79,8 +79,8 @@ public class SectionViewModel : ObservableObject, Identifiable {
         return self.master?.sections.contains(where: {$0.name == name && $0.id != self.id}) ?? false
     }
     
-    public var shortcuts: Int {
-        return self.master?.shortcuts.filter({ $0.section?.id == self.id } ).count ?? 0
+    public var shortcuts: [ShortcutViewModel] {
+        return self.master?.shortcuts.filter({ $0.section?.id == self.id }) ?? []
     }
     
     public func copy() -> SectionViewModel {

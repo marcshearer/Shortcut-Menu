@@ -43,7 +43,7 @@ struct Banner: View {
             VStack {
                 Spacer()
                 HStack {
-                    Spacer().frame(width: 8)
+                    Spacer().frame(width: 16)
                     if back {
                         backButton
                     }

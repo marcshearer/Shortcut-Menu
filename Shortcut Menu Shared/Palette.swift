@@ -17,6 +17,7 @@ class Palette {
     @BackgroundColor(.alternate) static var alternate
     @BackgroundColor(.tile) static var tile
     @BackgroundColor(.header) static var header
+    @BackgroundColor(.subHeader) static var subHeader
     @BackgroundColor(.selectedList) static var selectedList
     @BackgroundColor(.unselectedList) static var unselectedList
     @BackgroundColor(.listMessage) static var listMessage

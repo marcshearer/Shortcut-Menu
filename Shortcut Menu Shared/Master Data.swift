@@ -65,8 +65,8 @@ public class MasterData : ObservableObject {
         }
     }
     
-    public func sectionsWithShortcuts(excludeSection: String? = nil, excludeNested: Bool = true) -> [SectionViewModel] {
-        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != excludeSection) && (!excludeNested || !isNested($0)) })
+    public func sectionsWithShortcuts(excludeSections: [String] = [], excludeNested: Bool = true) -> [SectionViewModel] {
+        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeNested || !isNested($0)) })
     }
     
     public func isNested(_ section: SectionViewModel) -> Bool {

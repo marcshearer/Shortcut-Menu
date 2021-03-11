@@ -85,10 +85,10 @@ struct SlideInMenuView : View {
                                                 }
                                                 Spacer()
                                             }
-                                            // Divider().foregroundColor(Palette.divider.background)
                                         }
                                         .frame(height: 50)
                                     }
+                                    .background(Palette.alternate.background)
                                     .listRowInsets(EdgeInsets())
                                     .listStyle(PlainListStyle())
                                 }
@@ -108,7 +108,7 @@ struct SlideInMenuView : View {
                                     Spacer()
                                 }
                                 .frame(height: 50).layoutPriority(.greatestFiniteMagnitude)
-                            }
+                           }
                             .frame(width: values.width)
                             .background(Palette.alternate.background)
                             .cornerRadius(20)
