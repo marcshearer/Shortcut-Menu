@@ -68,7 +68,7 @@ struct SlideInMenuView : View {
                                     .frame(height: 50)
                                 }
                                 let options = $values.options.wrappedValue
-                                ScrollView(.vertical, showsIndicators: true) {
+                                List {
                                     ForEach(options, id: \.self) { (option) in
                                         VStack(spacing: 0) {
                                             VStack {
@@ -85,11 +85,14 @@ struct SlideInMenuView : View {
                                                 }
                                                 Spacer()
                                             }
-                                            Divider().foregroundColor(Palette.divider.background)
+                                            // Divider().foregroundColor(Palette.divider.background)
                                         }
                                         .frame(height: 50)
                                     }
+                                    .listRowInsets(EdgeInsets())
+                                    .listStyle(PlainListStyle())
                                 }
+                                .environment(\.defaultMinListRowHeight, 50)
                                 .frame(height: max(0, min(CGFloat(values.options.count * 50), fullGeometry.size.height - values.top - 100.0)))
                                 VStack(spacing: 0) {
                                     Spacer()

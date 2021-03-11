@@ -11,7 +11,7 @@ import SwiftUI
 
 // Enumerations
 
-public enum EditMode: Int {
+public enum EditAction: Int {
     case none = 0
     case create = 1
     case amend = 2

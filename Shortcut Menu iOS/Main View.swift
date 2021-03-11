@@ -10,14 +10,14 @@ import SwiftUI
 
 struct MainView : View {
     
-    @ObservedObject public var selection: Selection
+    @ObservedObject private var displayState = DisplayState()
     
     @State private var title = "Shortcuts"
     @State private var showSetup = false
     
     var body: some View {
         
-        StandardView(navigation: true, animate: true) {
+        StandardView(navigation: true, animate: true, backgroundColor: Palette.alternate) {
             GeometryReader { (geometry) in
                 ZStack {
                     VStack(spacing: 0) {
@@ -27,19 +27,23 @@ struct MainView : View {
                             },
                             BannerOption(image: AnyView(Image(systemName: "filemenu.and.selection").font(.largeTitle).foregroundColor(Palette.banner.text))) {
                                 
-                                SlideInMenu.shared.show(title: "Select Section", options: selection.sectionsWithShortcuts().map{($0.name == "" ? defaultSectionMenuName : $0.name)}) { (section) in
+                                let options = MasterData.shared.sectionsWithShortcuts(excludeSection: displayState.selectedSection ?? "", excludeNested: true).map{($0.name == "" ? defaultSectionMenuName : $0.name)}
+                                
+                                SlideInMenu.shared.show(title: "Select Section", options: options) { (section) in
                                     if let section = section {
-                                        selection.selectSection(section: section)
-                                        UserDefault.currentSection.set(selection)
+                                        let selectedSection = (section == defaultSectionMenuName ? nil : section)
+                                        displayState.selectedSection = selectedSection
+                                        UserDefault.currentSection.set(selectedSection ?? "")
                                     }
                                 }
                             }
                         ])
                         HStack {
-                            ShortcutListView(selection: selection)
+                            ShortcutListView(displayState: displayState)
                         }
                     }
                     if showSetup {
+                        let selection = Selection()
                         SetupView(selection: selection) {
                             showSetup = false
                         }

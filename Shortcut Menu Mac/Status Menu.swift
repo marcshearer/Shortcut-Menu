@@ -112,7 +112,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             self.addSeparator()
         }
         
-        let nonEmptySections = self.master.sectionsWithShortcuts(excludeDefault: true).count
+        let nonEmptySections = self.master.sectionsWithShortcuts(excludeSection: "").count
         if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
             
             if self.addOtherShortcuts() > 0 {

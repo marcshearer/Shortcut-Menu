@@ -12,10 +12,12 @@ struct StandardView <Content> : View where Content : View {
     var navigation: Bool
     var animate = false
     var content: Content
+    var backgroundColor: PaletteColor
     
-    init(navigation: Bool = false, animate: Bool = false, @ViewBuilder content: ()->Content) {
+    init(navigation: Bool = false, animate: Bool = false, backgroundColor: PaletteColor = Palette.background, @ViewBuilder content: ()->Content) {
         self.navigation = navigation
         self.animate = animate
+        self.backgroundColor = backgroundColor
         self.content = content()
     }
         
@@ -33,7 +35,7 @@ struct StandardView <Content> : View where Content : View {
     private func contentView() -> some View {
         GeometryReader { (geometry) in
         ZStack {
-            Palette.background.background
+            backgroundColor.background
                 .ignoresSafeArea()
             
             VStack {

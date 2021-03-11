@@ -224,15 +224,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.id = id
     }
         
-    static let itemProviderType: String = "com.sheareronline.shortcuts.shortcut"
-    static let type: String = "shortcut"
+    static let type = UTType(exportedAs: "com.sheareronline.shortcuts.shortcut", conformingTo: UTType.data)
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
-        [UTType.data.identifier, ShortcutItemProvider.itemProviderType]
+        ["public.data"]
     }
     
     public static var readableTypeIdentifiersForItemProvider: [String] {
-        [UTType.data.identifier, ShortcutItemProvider.itemProviderType]
+        ["public.data"]
     }
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
@@ -240,7 +239,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         let progress = Progress(totalUnitCount: 1)
         
         do {
-            let data = try JSONSerialization.data(withJSONObject: ["type" : ShortcutItemProvider.type,
+            let data = try JSONSerialization.data(withJSONObject: ["type" : ShortcutItemProvider.type.identifier,
                                                                    "id" : self.id.uuidString], options: .prettyPrinted)
             progress.completedUnitCount = 1
             completionHandler(data, nil)
@@ -254,7 +253,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> ShortcutItemProvider {
         var id: UUID
         let propertyList: [String : String] = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
-        if propertyList["type"] == ShortcutItemProvider.type {
+        if propertyList["type"] == ShortcutItemProvider.type.identifier {
             id = UUID(uuidString: propertyList["id"] ?? "") ?? UUID()
         } else {
             id = UUID()

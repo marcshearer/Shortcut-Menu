@@ -26,9 +26,9 @@ struct SetupDetailView: View {
                 Spacer()
                     .frame(width: 10.0)
                 
-                if self.selection.editObject == .shortcut {
+                if selection.editObject == .shortcut {
                     shortcutForm()
-                } else if self.selection.editObject ==  .section {
+                } else if selection.editObject ==  .section {
                     sectionForm()
                 }
             }
@@ -49,50 +49,50 @@ struct SetupDetailView: View {
             
             Spacer()
                         
-            if self.selection.editObject == .section && self.selection.editMode == .none {
-                if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == self.selection.selectedSection?.id}) {
+            if selection.editObject == .section && selection.editAction == .none {
+                if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
                     // Nested section - add button to un-nest it
                     ToolbarButton("remove nest") {
-                        self.selection.removeShortcut(shortcut: shortcut)
-                        self.selection.selectSection(section: self.selection.editSection)
+                        selection.removeShortcut(shortcut: shortcut)
+                        selection.selectSection(section: selection.editSection)
                     }
                 }
                 Spacer().frame(width: 10)
             }
             
-            if self.selection.editObject != .none && self.selection.editMode == .none {
+            if selection.editObject != .none && selection.editAction == .none {
                 ToolbarButton("pencil.circle.fill") {
-                    self.selection.editMode = .amend
+                    selection.editAction = .amend
                     self.formatLockButton()
                 }
             }
             
-            if self.selection.editObject != .none && self.selection.editMode != .none {
+            if selection.editObject != .none && selection.editAction != .none {
                 
                 if self.canSave() {
                     ToolbarButton("checkmark.circle.fill") {
                         // Update
-                        if self.selection.editObject == .section {
-                            self.selection.updateSection(section: self.selection.editSection)
-                        } else if self.selection.editObject == . shortcut {
-                            self.selection.updateShortcut(shortcut: self.selection.editShortcut)
+                        if selection.editObject == .section {
+                            selection.updateSection(section: selection.editSection)
+                        } else if selection.editObject == . shortcut {
+                            selection.updateShortcut(shortcut: selection.editShortcut)
                         }
-                        self.selection.editMode = .none
+                        selection.editAction = .none
                     }
                 }
                 
                 ToolbarButton("xmark.circle.fill") {
                     // Revert
-                    if self.selection.editMode == .create {
-                        self.selection.editObject = .none
+                    if selection.editAction == .create {
+                        selection.editObject = .none
                     } else {
-                        if self.selection.editObject == .section {
-                            self.selection.selectSection(section: self.selection.selectedSection!)
-                        } else if self.selection.editObject == . shortcut {
-                            self.selection.selectShortcut(shortcut: self.selection.selectedShortcut!)
+                        if selection.editObject == .section {
+                            selection.selectSection(section: selection.selectedSection!)
+                        } else if selection.editObject == . shortcut {
+                            selection.selectShortcut(shortcut: selection.selectedShortcut!)
                         }
                     }
-                    self.selection.editMode = .none
+                    selection.editAction = .none
                 }
             }
             
@@ -107,9 +107,9 @@ struct SetupDetailView: View {
     fileprivate func canSave() -> Bool {
         var result = false
         
-        if self.selection.editObject == .section && self.selection.editSection.canSave {
+        if selection.editObject == .section && selection.editSection.canSave {
             result = true
-        } else if self.selection.editObject == .shortcut && self.selection.editShortcut.canSave {
+        } else if selection.editObject == .shortcut && selection.editShortcut.canSave {
             result = true
         }
         
@@ -119,9 +119,9 @@ struct SetupDetailView: View {
     fileprivate func sectionForm() -> some View {
         return VStack(spacing: 0) {
             
-            Input(title: "Section name", field: $selection.editSection.name, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: self.selection.editMode != .none)
+            Input(title: "Section name", field: $selection.editSection.name, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: selection.editAction != .none)
             
-            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, message: $selection.editSection.nameError, width: 100, isEnabled: self.selection.editMode != .none)
+            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, message: $selection.editSection.nameError, width: 100, isEnabled: selection.editAction != .none)
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
@@ -129,17 +129,17 @@ struct SetupDetailView: View {
     
     fileprivate func shortcutForm() -> some View {
         return VStack(spacing: 0) {
-            let finderVisible = (self.selection.editMode != .none && MyApp.target == .macOS)
-            let hideVisible = (self.selection.editMode != .none && $selection.editShortcut.copyText.wrappedValue != "")
+            let finderVisible = (selection.editAction != .none && MyApp.target == .macOS)
+            let hideVisible = (selection.editAction != .none && $selection.editShortcut.copyText.wrappedValue != "")
             
-            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: self.selection.editMode != .none)
+            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: selection.editAction != .none)
 
             OverlapButton( {
                 let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: self.selection.editMode != .none && self.selection.editShortcut.canEditUrl)
+                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: selection.editAction != .none && selection.editShortcut.canEditUrl)
             }, {
                 if finderVisible {
-                    if self.selection.editShortcut.canEditUrl {
+                    if selection.editShortcut.canEditUrl {
                         self.finderButton()
                     } else {
                         self.clearButton()
@@ -149,7 +149,7 @@ struct SetupDetailView: View {
             
             OverlapButton( {
                 let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: self.selection.editMode != .none,
+                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: selection.editAction != .none,
                       onChange: { (value) in
                         if value == "" {
                             $selection.editShortcut.copyPrivate.wrappedValue = false
@@ -161,10 +161,10 @@ struct SetupDetailView: View {
                 }
             })
             
-            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: self.selection.editMode != .none && self.selection.editShortcut.canEditCopyMessage)
+            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: selection.editAction != .none && selection.editShortcut.canEditCopyMessage)
             
             if MyApp.target == .macOS {
-                Input(title: "Keyboard equivalent", field: $selection.editShortcut.keyEquivalent, width: 50, isEnabled: self.selection.editMode != .none)
+                Input(title: "Keyboard equivalent", field: $selection.editShortcut.keyEquivalent, width: 50, isEnabled: selection.editAction != .none)
             }
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
@@ -173,9 +173,9 @@ struct SetupDetailView: View {
         
     private func detailTitle() -> String {
         
-        switch self.selection.editObject {
+        switch selection.editObject {
         case .section:
-            return "\(self.selection.editMode == .create ? "New " : "")Section Details"
+            return "\(selection.editAction == .create ? "New " : "")Section Details"
         case .shortcut:
             return "Shortcut Details"
         case .none:
@@ -204,14 +204,14 @@ struct SetupDetailView: View {
         return Button(action: {
             if $selection.editShortcut.copyPrivate.wrappedValue {
                 LocalAuthentication.authenticate(reason: "\(MyApp.target == .iOS ? "Passcode must be entered to " : "") make private data visible",completion: {
-                    self.selection.editShortcut.copyPrivate.toggle()
+                    selection.editShortcut.copyPrivate.toggle()
                     self.formatLockButton()
                     StatusMenu.shared.bringToFront()
                 }, failure: {
                     StatusMenu.shared.bringToFront()
                 })
             } else {
-                self.selection.editShortcut.copyPrivate.toggle()
+                selection.editShortcut.copyPrivate.toggle()
                 self.formatLockButton()
             }
         },label: {
@@ -221,14 +221,14 @@ struct SetupDetailView: View {
                 .frame(width: 24, height: 24)
         })
         .buttonStyle(PlainButtonStyle())
-        .disabled(self.selection.editMode == .none)
+        .disabled(selection.editAction == .none)
     }
     
     private func clearButton() -> some View {
         
         return Button(action: {
-            self.selection.editShortcut.url = ""
-            self.selection.editShortcut.urlSecurityBookmark = nil
+            selection.editShortcut.url = ""
+            selection.editShortcut.urlSecurityBookmark = nil
         }, label: {
                 Image("xmark.circle.fill.gray")
                     .resizable()
@@ -242,8 +242,8 @@ struct SetupDetailView: View {
         return Button(action: {
             StatusMenu.shared.defineAlways(onTop: false)
             SetupDetailView.findFile { (url, data) in
-                self.selection.editShortcut.url = url.absoluteString
-                self.selection.editShortcut.urlSecurityBookmark = data
+                selection.editShortcut.url = url.absoluteString
+                selection.editShortcut.urlSecurityBookmark = data
             }
         },label: {
             Image(systemName: "folder.fill")
@@ -251,7 +251,7 @@ struct SetupDetailView: View {
                 .foregroundColor(Color.blue)
         })
         .buttonStyle(PlainButtonStyle())
-        .disabled(self.selection.editMode == .none)
+        .disabled(selection.editAction == .none)
     }
     
     static public func findFile(relativeTo: URL? = nil,completion: @escaping (URL, Data)->()) {

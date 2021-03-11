@@ -19,7 +19,7 @@ public class Selection : ObservableObject, Identifiable {
     @Published public var shortcutsTitle: String = "No Section Selected"
     @Published public var selectedShortcut: ShortcutViewModel?
     @Published public var editShortcut = ShortcutViewModel()
-    @Published public var editMode: EditMode = .none
+    @Published public var editAction: EditAction = .none
     @Published public var editObject: EditObject = .none
     @Published internal var canExit: Bool = false
     @Published public var id = UUID()
@@ -34,7 +34,7 @@ public class Selection : ObservableObject, Identifiable {
     }
     
     func setupMappings() {
-        $editMode
+        $editAction
             .receive(on: RunLoop.main)
             .map { (editMode) in
                 return (editMode == .none)
@@ -137,7 +137,7 @@ public class Selection : ObservableObject, Identifiable {
         self.deselectSection()
         self.editSection = SectionViewModel(master: self.master)
         self.editSection.sequence = master.nextSectionSequence()
-        self.editMode = .create
+        self.editAction = .create
         self.editObject = .section
     }
     
@@ -154,11 +154,7 @@ public class Selection : ObservableObject, Identifiable {
             last = section.sequence
         }
     }
-    
-    public func sectionsWithShortcuts(excludeDefault: Bool = false) -> [SectionViewModel] {
-        return self.sections.filter( { $0.shortcuts > 0 && ($0.name != "" || !excludeDefault) })
-    }
-    
+        
     func selectShortcut(shortcut name: String) {
         if let shortcut = self.shortcuts.first(where: {$0.name == name}) {
             self.selectShortcut(shortcut: shortcut)
@@ -228,7 +224,7 @@ public class Selection : ObservableObject, Identifiable {
         self.editShortcut = ShortcutViewModel(master: self.master)
         self.editShortcut.section = section
         self.editShortcut.sequence = master.nextShortcutSequence(section: section)
-        self.editMode = .create
+        self.editAction = .create
         self.editObject = .shortcut
     }
     
@@ -240,7 +236,7 @@ public class Selection : ObservableObject, Identifiable {
         shortcut.type = .section
         shortcut.nestedSection = nestedSection
         shortcut.sequence = self.master.nextShortcutSequence(section: section)
-        self.editMode = .none
+        self.editAction = .none
         self.shortcuts.insert(shortcut, at: index)
         self.updateShortcutSequence()
         self.updateShortcut(shortcut: shortcut)

@@ -151,15 +151,14 @@ public class SectionViewModel : ObservableObject, Identifiable {
         self.id = id
     }
         
-    static let itemProviderType: String = "com.sheareronline.shortcuts.section"
-    static let type: String = "section"
+    static let type = UTType(exportedAs: "com.sheareronline.shortcuts.section", conformingTo: UTType.data)
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
-        [UTType.data.identifier, SectionItemProvider.itemProviderType]
+        [type.identifier]
     }
     
     public static var readableTypeIdentifiersForItemProvider: [String] {
-        [UTType.data.identifier, SectionItemProvider.itemProviderType]
+        [type.identifier]
     }
     
     public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
@@ -167,9 +166,11 @@ public class SectionViewModel : ObservableObject, Identifiable {
         let progress = Progress(totalUnitCount: 1)
         
         do {
-            let data = try JSONSerialization.data(withJSONObject:
-                        ["type" : ShortcutItemProvider.type,
-                         "id" : self.id.uuidString], options: .prettyPrinted)
+            let data = try JSONSerialization.data(
+                withJSONObject:
+                    ["type" : SectionItemProvider.type.identifier,
+                     "id" : self.id.uuidString],
+                options: .prettyPrinted)
             progress.completedUnitCount = 1
             completionHandler(data, nil)
         } catch {
@@ -182,7 +183,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     public static func object(withItemProviderData data: Data, typeIdentifier: String) throws ->SectionItemProvider {
         var id: UUID
         let propertyList: [String : String] = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
-        if propertyList["type"] == ShortcutItemProvider.type {
+        if propertyList["type"] == SectionItemProvider.type.identifier {
             id = UUID(uuidString: propertyList["id"] ?? "") ?? UUID()
         } else {
             id = UUID()
@@ -217,11 +218,27 @@ class SectionListDropDelegate: DropDelegate {
         self.toId = toId
     }
     
+    func dropExited(info: DropInfo) {
+        
+    }
+    
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return nil
+    }
+    
+    func validateDrop(info: DropInfo) -> Bool {
+        return true
+    }
+    
+    func dropEntered(info: DropInfo) {
+        
+    }
+    
     func performDrop(info: DropInfo) -> Bool {
         DispatchQueue.main.async {
             let items = info.itemProviders(for: [UTType.data.identifier as String])
             if let toIndex = self.parent.selection.getSectionIndex(id: self.toId) {
-                ShortcutItemProvider.dropAction(at: toIndex, items, selection: self.parent.selection, action: self.parent.dropShortcutAction)
+                ShortcutItemProvider.dropAction(at: toIndex, items, selection: self.parent.selection, action: self.parent.onDropShortcutAction)
             }
         }
         return true

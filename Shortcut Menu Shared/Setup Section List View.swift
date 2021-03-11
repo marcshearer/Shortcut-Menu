@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SetupSectionListView: View {
     @ObservedObject public var selection: Selection
@@ -22,7 +23,7 @@ struct SetupSectionListView: View {
                 
                 HStack{
                     Spacer()
-                    if self.selection.editMode == .none {
+                    if self.selection.editAction == .none {
                         if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
                             ToolbarButton("minus.circle.fill") {
                                 self.selection.removeSection(section: self.selection.selectedSection!)
@@ -39,54 +40,52 @@ struct SetupSectionListView: View {
             .frame(height: defaultRowHeight)
             .background(Palette.header.background)
             .foregroundColor(Palette.header.text)
-            ScrollView {
-                VStack {
-                    ForEach (self.selection.sections) { (section) in
-                        let nested = master.shortcuts.firstIndex(where: { $0.type == .section && $0.nestedSection?.id == section.id })
-                        if nested == nil {
-                            if section.name == "" || self.selection.editMode != .none {
-                                self.sectionRow(section)
-                            } else {
-                                self.sectionRow(section)
-                                    .onDrag({section.itemProvider})
-                            }
+            List {
+                ForEach (self.selection.sections) { (section) in
+                    let nested = master.shortcuts.firstIndex(where: { $0.type == .section && $0.nestedSection?.id == section.id })
+                    if nested == nil {
+                        if section.name == "" || self.selection.editAction != .none {
+                            self.sectionRow(section)
+                                .moveDisabled(true)
+                                .onDrop(of: ["public.data"], delegate: SectionListDropDelegate(self, id: section.id))
+                        } else {
+                            self.sectionRow(section)
+                                .moveDisabled(false)
+                                .onDrag({section.itemProvider})
                         }
-                    }
-                    .onInsert(of: SectionItemProvider.writableTypeIdentifiersForItemProvider) { (index, items) in
-                        if index != 0 {
-                            SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.insertSectionAction)
-                            ShortcutItemProvider.dropAction(at: index, items, selection: self.selection, action: self.insertShortcutAction)
-                        }
+
                     }
                 }
-                .opacity((self.selection.editMode != .none ? 0.6 : 1.0))
-                .environment(\.defaultMinListRowHeight, defaultRowHeight)
+                .onMove(perform: { indices, newOffset in
+                    self.onMoveAction(to: newOffset, from: indices)
+                })
+                .onInsert(of: [ShortcutItemProvider.type.identifier])
+                { (index, items) in
+                    ShortcutItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertShortcutAction)
+                }
+                .listRowInsets(EdgeInsets())
             }
-            .frame(width: width)
+            .opacity((self.selection.editAction != .none ? 0.6 : 1.0))
+            .environment(\.defaultMinListRowHeight, defaultRowHeight)
         }
-        .moveDisabled(false)
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        return
-            HStack {
-                Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }) {
-                    if self.selection.editMode == .none {
-                        self.selection.selectSection(section: section)
-                    }
-                }
-                .onDrop(of: ShortcutItemProvider.readableTypeIdentifiersForItemProvider, delegate: SectionListDropDelegate(self, id: section.id))
+        Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.name == "") {
+            if self.selection.editAction == .none {
+                self.selection.selectSection(section: section)
             }
+        }
     }
     
-    func insertSectionAction(to: Int, from: Int) {
+    func onMoveAction(to: Int, from: IndexSet) {
         DispatchQueue.main.async {
-            self.selection.sections.move(fromOffsets: [from], toOffset: to)
+            self.selection.sections.move(fromOffsets: from, toOffset: to)
             self.selection.updateSectionSequence()
         }
     }
         
-    func insertShortcutAction(to: Int, from: Int) {
+    func onInsertShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             let shortcut = self.selection.shortcuts[from]
             if shortcut.type == .section {
@@ -102,7 +101,7 @@ struct SetupSectionListView: View {
         }
     }
 
-    func dropShortcutAction(to: Int, from: Int) {
+    func onDropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             self.selection.shortcuts[from].section = self.selection.sections[to]
             self.selection.shortcuts[from].sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[to])

@@ -11,26 +11,21 @@ import UIKit
 @main
 struct ShortcutMenu: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    private var selection: Selection
-
+     
     init() {
         MyApp.shared.start()
-        selection = Selection()
-        selection.selectSection(section: UserDefault.currentSection.string)
     }
     
     var body: some Scene {
-        MyScene(selection: selection)
+        MyScene()
     }
 }
 
 struct MyScene: Scene {
-    @State var selection: Selection
     
     var body: some Scene {
         WindowGroup {
-            // SetupView(title: "Setup")
-            MainView(selection: selection)
+            MainView()
         }
     }
 }
