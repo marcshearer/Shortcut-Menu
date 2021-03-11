@@ -49,38 +49,38 @@ struct SetupShortcutListView: View {
                                 .onDrag({shortcut.itemProvider})
                         }
                     }
-                    .onMove(perform: { indices, newOffset in
-                        self.onMoveAction(to: newOffset, from: indices)
-                    })
-                    .onInsert(of: [SectionItemProvider.type.identifier])
+                    .onInsert(of: [ShortcutItemProvider.type.identifier, NestedSectionItemProvider.type.identifier, SectionItemProvider.type.identifier])
                     { (index, items) in
+                        ShortcutItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertShortcutAction)
                         SectionItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertSectionAction)
                     }
-                    .listRowInsets(EdgeInsets())
                 }
-                .moveDisabled(false)
-                .opacity((selection.editAction != .none ? 0.6 : 1.0))
+                .padding(0)
+                .background(Color.red)
+                .listStyle(PlainListStyle())
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
+                .opacity((selection.editAction != .none ? 0.6 : 1.0))
             }
             Spacer()
         }
     }
     
     fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
-        Tile(text: shortcut.name, selected: { shortcut.id == selection.selectedShortcut?.id }, nested: shortcut.nestedSection != nil) {
-            if selection.editAction == .none {
-                if shortcut.type == .shortcut {
-                    selection.selectShortcut(shortcut: shortcut)
-                } else {
-                    selection.selectSection(section: shortcut.nestedSection!)
+        Tile(text: shortcut.name, selected: { shortcut.id == selection.selectedShortcut?.id }, nested: shortcut.nestedSection != nil, tapAction: {
+                if selection.editAction == .none {
+                    if shortcut.type == .shortcut {
+                        selection.selectShortcut(shortcut: shortcut)
+                    } else {
+                        selection.selectSection(section: shortcut.nestedSection!)
+                    }
                 }
-            }
-        }
+        })
+        .listRowInsets(EdgeInsets())
     }
     
-    func onMoveAction(to: Int, from: IndexSet) {
+    func onInsertShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
-            selection.shortcuts.move(fromOffsets: from, toOffset: to)
+            selection.shortcuts.move(fromOffsets: [from], toOffset: to)
             selection.updateShortcutSequence()
         }
     }

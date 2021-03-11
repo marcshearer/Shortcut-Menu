@@ -178,7 +178,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public var itemProvider: NSItemProvider {
-        return NSItemProvider(object: ShortcutItemProvider(id: self.id))
+        if type == .shortcut {
+            return NSItemProvider(object: ShortcutItemProvider(id: self.id))
+        } else {
+            return NSItemProvider(object: NestedSectionItemProvider(id: self.id))
+        }
     }
     
     public func save() {
@@ -216,30 +220,22 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
 }
 
-@objc final class ShortcutItemProvider: NSObject, NSItemProviderReading, NSItemProviderWriting {
-        
+@objc class ShortcutItemProviderBase: NSObject {
+    
     public let id: UUID
+    private var type: UTType
     
-    init(id: UUID) {
+    init(id: UUID, type: UTType) {
         self.id = id
-    }
-        
-    static let type = UTType(exportedAs: "com.sheareronline.shortcuts.shortcut", conformingTo: UTType.data)
-    
-    public static var writableTypeIdentifiersForItemProvider: [String] {
-        ["public.data"]
+        self.type = type
     }
     
-    public static var readableTypeIdentifiersForItemProvider: [String] {
-        ["public.data"]
-    }
-    
-    public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
+    @objc public func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
         
         let progress = Progress(totalUnitCount: 1)
         
         do {
-            let data = try JSONSerialization.data(withJSONObject: ["type" : ShortcutItemProvider.type.identifier,
+            let data = try JSONSerialization.data(withJSONObject: ["type" : type.identifier,
                                                                    "id" : self.id.uuidString], options: .prettyPrinted)
             progress.completedUnitCount = 1
             completionHandler(data, nil)
@@ -250,30 +246,87 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         return progress
     }
     
-    public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> ShortcutItemProvider {
-        var id: UUID
+    @objc public static func object(withItemProviderData data: Data, type: UTType) throws -> UUID {
+        var id: UUID?
         let propertyList: [String : String] = try JSONSerialization.jsonObject(with: data, options: []) as! [String : String]
-        if propertyList["type"] == ShortcutItemProvider.type.identifier {
-            id = UUID(uuidString: propertyList["id"] ?? "") ?? UUID()
-        } else {
-            id = UUID()
+        if propertyList["type"] == type.identifier {
+            if let idString =  propertyList["id"] {
+                if let uuid = UUID(uuidString: idString) {
+                    id = uuid
+                }
+            }
         }
-        return ShortcutItemProvider(id: id)
+        if id == nil {
+            throw ShortcutMenuError.invalidData
+        }
+        return id!
     }
     
     static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {
         DispatchQueue.main.async {
             for item in items {
-                _ = item.loadObject(ofClass: ShortcutItemProvider.self) { (droppedItem, error) in
-                    if error == nil {
-                        if let droppedItem = droppedItem as? ShortcutItemProvider {
-                            if let droppedIndex = selection.shortcuts.firstIndex(where: {$0.id == droppedItem.id}) {
-                                action(index, droppedIndex)
+                var classType: NSItemProviderReading.Type?
+                if item.hasItemConformingToTypeIdentifier(ShortcutItemProvider.type.identifier) {
+                    classType = ShortcutItemProvider.self
+                } else if item.hasItemConformingToTypeIdentifier(NestedSectionItemProvider.type.identifier) {
+                    classType = NestedSectionItemProvider.self
+                }
+                if let classType = classType {
+                    _ = item.loadObject(ofClass: classType) { (droppedItem, error) in
+                        if error == nil {
+                            if let droppedItem = droppedItem as? ShortcutItemProviderBase {
+                                if let droppedIndex = selection.shortcuts.firstIndex(where: {$0.id == droppedItem.id}) {
+                                    action(index, droppedIndex)
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@objc final class ShortcutItemProvider: ShortcutItemProviderBase, NSItemProviderReading, NSItemProviderWriting {
+    // Note: also had to declare this in info.plist
+    
+    init(id: UUID) {
+        super.init(id: id, type: ShortcutItemProvider.type)
+    }
+    static let type = UTType(exportedAs: "com.sheareronline.shortcuts.shortcut", conformingTo: UTType.data)
+
+    public static var writableTypeIdentifiersForItemProvider: [String] {
+        [type.identifier]
+    }
+
+    public static var readableTypeIdentifiersForItemProvider: [String] {
+        [type.identifier]
+    }
+    
+    @objc public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> ShortcutItemProvider {
+        let id = try ShortcutItemProviderBase.object(withItemProviderData: data, type: ShortcutItemProvider.type)
+        return ShortcutItemProvider(id: id)
+    }
+}
+
+@objc final class NestedSectionItemProvider: ShortcutItemProviderBase, NSItemProviderReading, NSItemProviderWriting {
+    // Note: also had to declare this in info.plist
+    
+    init(id: UUID) {
+        super.init(id: id, type: NestedSectionItemProvider.type)
+    }
+    static let type = UTType(exportedAs: "com.sheareronline.shortcuts.nestedsection", conformingTo: UTType.data)
+
+    public static var writableTypeIdentifiersForItemProvider: [String] {
+        [type.identifier]
+    }
+
+    public static var readableTypeIdentifiersForItemProvider: [String] {
+        [type.identifier]
+    }
+    
+    @objc public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> NestedSectionItemProvider {
+        let id = try ShortcutItemProviderBase.object(withItemProviderData: data, type: NestedSectionItemProvider.type)
+        return NestedSectionItemProvider(id: id)
     }
 }

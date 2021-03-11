@@ -77,6 +77,6 @@ class MyApp {
     }
 }
 
-enum Wots4TError: Error {
+enum ShortcutMenuError: Error {
     case invalidData
 }

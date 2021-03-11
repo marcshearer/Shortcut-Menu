@@ -95,7 +95,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         
         if self.currentSection != "" {
             if let section = self.master.sections.first(where: { $0.name == self.currentSection }) {
-                if section.shortcuts > 0 {
+                if section.shortcuts.count > 0 {
                     self.addItem(id: "sectionTitle", (self.currentSection == "" ? "Shortcuts" : self.currentSection))
                     self.menuItemList["sectionTitle"]?.isEnabled = false
                 }
@@ -112,7 +112,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             self.addSeparator()
         }
         
-        let nonEmptySections = self.master.sectionsWithShortcuts(excludeSection: "").count
+        let nonEmptySections = self.master.sectionsWithShortcuts(excludeSections: [""]).count
         if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
             
             if self.addOtherShortcuts() > 0 {
@@ -137,7 +137,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             NSStatusBar.system.removeStatusItem(item)
         }
         self.additionalStatusItems = []
-        for section in master.sections.filter({$0.menuTitle != "" && $0.shortcuts > 0}) {
+        for section in master.sections.filter({$0.menuTitle != "" && $0.shortcuts.count > 0}) {
             let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             statusItem.menu = NSMenu()
             self.additionalStatusItems.append(statusItem)
@@ -151,7 +151,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         
         for shortcut in master.shortcuts.filter({ $0.section?.name == section }).sorted(by: {$0.sequence < $1.sequence}) {
             if shortcut.type == .section {
-                if shortcut.nestedSection?.shortcuts ?? 0 > 0 {
+                if shortcut.nestedSection?.shortcuts.count ?? 0 > 0 {
                     let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
                     self.addShortcuts(section: shortcut.nestedSection?.name ?? "Sub-entries", to: subMenuEntry)
                 }
@@ -169,7 +169,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private func addSections(to subMenu: NSMenu) -> Int {
         var added = 0
-        for section in master.sections.filter({ $0.name != currentSection && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
+        for section in master.sections.filter({ $0.name != currentSection && $0.shortcuts.count > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
                 self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
                 added += 1
@@ -181,9 +181,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func addOtherShortcuts() -> Int {
         var added = 0
         let subMenu = self.addSubmenu("Other shortcuts")
-        for section in master.sections.filter({ $0.name != currentSection && $0.name != "" && $0.shortcuts > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
+        for section in master.sections.filter({ $0.name != currentSection && $0.name != "" && $0.shortcuts.count > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
-                if section.shortcuts > 1 {
+                if section.shortcuts.count > 1 {
                     let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
                     added += self.addShortcuts(section: section.menuName, to: sectionMenu)
                 } else {

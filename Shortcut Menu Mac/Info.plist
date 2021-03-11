@@ -54,6 +54,16 @@
                 <string>public.data</string>
             </array>
             <key>UTTypeDescription</key>
+            <string>Nested Section</string>
+            <key>UTTypeIdentifier</key>
+            <string>com.sheareronline.shortcuts.nestedsection</string>
+        </dict>
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+            <key>UTTypeDescription</key>
             <string>Shortcut</string>
             <key>UTTypeIdentifier</key>
             <string>com.sheareronline.shortcuts.shortcut</string>

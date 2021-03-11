@@ -144,7 +144,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
 }
 
 @objc final class SectionItemProvider: NSObject, NSItemProviderReading, NSItemProviderWriting {
-        
+    // Note: also had to declare this in info.plist
     public let id: UUID
     
     init(id: UUID) {
@@ -194,7 +194,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {
         DispatchQueue.main.async {
             for item in items {
-                _ = item.loadObject(ofClass:SectionItemProvider.self) { (droppedItem, error) in
+                _ = item.loadObject(ofClass: SectionItemProvider.self) { (droppedItem, error) in
                     if error == nil {
                         if let droppedItem = droppedItem as? SectionItemProvider {
                             if let droppedIndex = selection.sections.firstIndex(where: {$0.id == droppedItem.id}) {
@@ -216,22 +216,6 @@ class SectionListDropDelegate: DropDelegate {
     init(_ parent: SetupSectionListView, id toId: UUID) {
         self.parent = parent
         self.toId = toId
-    }
-    
-    func dropExited(info: DropInfo) {
-        
-    }
-    
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        return nil
-    }
-    
-    func validateDrop(info: DropInfo) -> Bool {
-        return true
-    }
-    
-    func dropEntered(info: DropInfo) {
-        
     }
     
     func performDrop(info: DropInfo) -> Bool {

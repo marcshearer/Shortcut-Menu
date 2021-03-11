@@ -36,8 +36,8 @@ public class Selection : ObservableObject, Identifiable {
     func setupMappings() {
         $editAction
             .receive(on: RunLoop.main)
-            .map { (editMode) in
-                return (editMode == .none)
+            .map { (editAction) in
+                return (editAction == .none)
             }
         .assign(to: \.canExit, on: self)
         .store(in: &cancellableSet)
