@@ -73,7 +73,7 @@ struct SetupSectionListView: View {
             }
         })
         .onDrop(of: [ShortcutItemProvider.type.identifier], delegate: SectionListDropDelegate(self, id: section.id))
-        .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 2), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 2), trailing: 0))
+        .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
     func onInsertSectionAction(to: Int, from: Int) {

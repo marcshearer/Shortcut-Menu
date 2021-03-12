@@ -1,0 +1,1 @@
+There seems to be a bug where drop (not insert) is not working on iOS
