@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import UniformTypeIdentifiers
 
 public class Selection : ObservableObject, Identifiable {
     
@@ -192,7 +193,12 @@ public class Selection : ObservableObject, Identifiable {
         if let updateIndex = self.master.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
             self.master.shortcuts[updateIndex] = shortcut
         } else {
-            self.master.shortcuts.append(shortcut)
+            if let beforeIndex = self.master.shortcuts.firstIndex(where: {$0.sequence > shortcut.sequence}) {
+                //This isn't the highest sequence - try to insert in the right place
+                self.master.shortcuts.insert(shortcut, at: beforeIndex)
+            } else {
+                self.master.shortcuts.append(shortcut)
+            }
             new = true
         }
         shortcut.save()
@@ -219,11 +225,15 @@ public class Selection : ObservableObject, Identifiable {
         }
     }
     
-    func newShortcut(section: SectionViewModel) {
+    func newShortcut(section: SectionViewModel, shortcut: ShortcutViewModel? = nil) {
         self.deselectShortcut()
-        self.editShortcut = ShortcutViewModel(master: self.master)
+        if let shortcut = shortcut {
+            self.editShortcut = shortcut
+        } else {
+            self.editShortcut = ShortcutViewModel(master: self.master)
+            self.editShortcut.sequence = master.nextShortcutSequence(section: section)
+        }
         self.editShortcut.section = section
-        self.editShortcut.sequence = master.nextShortcutSequence(section: section)
         self.editAction = .create
         self.editObject = .shortcut
     }
@@ -247,17 +257,88 @@ public class Selection : ObservableObject, Identifiable {
         return self.sections.first(where: { $0.id == id })
     }
     
-    public func updateShortcutSequence() {
-        var last = 0
-        for shortcut in self.shortcuts {
-            if shortcut.sequence != last + 1 {
-                shortcut.sequence = last + 1
-                shortcut.save()
-                if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
-                    self.editShortcut.sequence = shortcut.sequence
+    @discardableResult public func updateShortcutSequence(leavingGapAfter: ShortcutViewModel? = nil, section: SectionViewModel? = nil) -> Int {
+        var last = 1
+        var gapSequence = 0
+        
+        if let section = section ?? self.selectedSection {
+            for shortcut in section.shortcuts {
+                if shortcut.sequence != last + 1 {
+                    shortcut.sequence = last + 1
+                    shortcut.save()
+                    if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
+                        self.editShortcut.sequence = shortcut.sequence
+                    }
+                }
+                last = shortcut.sequence
+                if shortcut.id == leavingGapAfter?.id {
+                    gapSequence = last + 1
+                    last += 1
                 }
             }
-            last = shortcut.sequence
+        }
+        return gapSequence
+    }
+    
+    public func dropUrl(afterIndex: Int? = nil, section: SectionViewModel? = nil, items: [NSItemProvider]) {
+        DispatchQueue.main.async {
+            for item in items {
+                item.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil, completionHandler: { (url, error) in
+                    if let data = url as? Data {
+                        DispatchQueue.main.async {
+                            if let urlString = String(data: data, encoding: .utf8) {
+                                if let url = URL(string: urlString) {
+                                    LinkPresentation.getDetail(url: url) { (result) in
+                                        Utility.mainThread {
+                                            var name = ""
+                                            switch result {
+                                            case .success(let (_, urlName)):
+                                                name = urlName ?? ""
+                                            default:
+                                                break
+                                            }
+                                            
+                                            var urlString: String?
+                                            var urlSecurityBookmark: Data?
+                                            if item.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+                                                if let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
+                                                    urlString = url.absoluteString
+                                                    urlSecurityBookmark = bookmarkData
+                                                }
+                                            } else if item.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                                                urlString = url.absoluteString
+                                            }
+                                            
+                                            if let urlString = urlString {
+                                                
+                                                // Use provided section or if none use selected section or default
+                                                let section = section ?? self.selectedSection ?? MasterData.shared.section(named: "")!
+                                                
+                                                // Switch to this section
+                                                self.selectSection(section: section)
+                                                
+                                                //Create shortcut
+                                                let shortcut = ShortcutViewModel(master: MasterData.shared)
+                                                shortcut.name = name
+                                                shortcut.url = urlString
+                                                shortcut.urlSecurityBookmark = urlSecurityBookmark
+                                                
+                                                // Work out where to put it - if no index insert at end
+                                                let insertAfterIndex = afterIndex ?? section.shortcuts.count
+                                                let insertAfter = (insertAfterIndex == 0 ? nil : section.shortcuts[insertAfterIndex - 1])
+                                                shortcut.sequence = self.updateShortcutSequence(leavingGapAfter: insertAfter, section: section)
+                                                
+                                                // Create the shortcut
+                                                self.newShortcut(section: (section), shortcut: shortcut)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
         }
     }
     

@@ -72,7 +72,7 @@ struct SetupSectionListView: View {
                 self.selection.selectSection(section: section)
             }
         })
-        .onDrop(of: [ShortcutItemProvider.type.identifier], delegate: SectionListDropDelegate(self, id: section.id))
+        .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: SectionListDropDelegate(self, id: section.id))
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     

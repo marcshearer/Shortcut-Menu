@@ -224,9 +224,14 @@ class SectionListDropDelegate: DropDelegate {
     
     func performDrop(info: DropInfo) -> Bool {
         DispatchQueue.main.async {
-            let items = info.itemProviders(for: [ShortcutItemProvider.type.identifier])
+            
             if let toIndex = self.parent.selection.getSectionIndex(id: self.toId) {
-                ShortcutItemProvider.dropAction(at: toIndex, items, selection: self.parent.selection, action: self.parent.onDropShortcutAction)
+                let shortcutItems = info.itemProviders(for: [ShortcutItemProvider.type.identifier])
+                ShortcutItemProvider.dropAction(at: toIndex, shortcutItems, selection: self.parent.selection, action: self.parent.onDropShortcutAction)
+                
+                let urlItems = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                let selection = self.parent.selection
+                selection.dropUrl(section: selection.sections[toIndex], items: urlItems)
             }
         }
         return true

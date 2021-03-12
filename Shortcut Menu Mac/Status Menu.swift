@@ -8,6 +8,7 @@
 
 import Cocoa
 import SwiftUI
+import UniformTypeIdentifiers
 
 protocol StatusMenuPopoverDelegate {
     var popover: NSPopover? {get set}
@@ -41,6 +42,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenu = NSMenu()
         self.statusMenu.autoenablesItems = false
         self.statusMenuButton = self.statusItem.button!
+        self.statusMenuButton.registerForDraggedTypes([NSPasteboard.PasteboardType.URL])
+
         super.init()
         
         self.changeImage(close: false)
@@ -313,14 +316,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenu.addItem(NSMenuItem.separator())
     }
     
-    @objc private func define(_ sender: Any?) {
+    @objc public func define(_ sender: Any?) {
         // Create the window and set the content view.
-        let selection = Selection()
-        let contentView = SetupView(selection: selection).environment(\.managedObjectContext, MasterData.context)
-        self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
-        self.defineWindowController.contentViewController?.view.window?.becomeKey()
-        self.changeImage(close: true)
-        self.defineWindowShowing = true
+        if !self.defineWindowShowing {
+            let selection = Selection()
+            let contentView = SetupView(selection: selection).environment(\.managedObjectContext, MasterData.context)
+            self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
+            self.defineWindowController.contentViewController?.view.window?.becomeKey()
+            self.changeImage(close: true)
+            self.defineWindowShowing = true
+        }
     }
     
     @objc private func changeSection(_ sender: Any?) {
@@ -366,7 +371,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                                     // Shortcut to a local file
                                     var isStale: Bool = false
                                     do {
-                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope , bookmarkDataIsStale: &isStale)
+                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
                                         if url.startAccessingSecurityScopedResource() {
                                             NSWorkspace.shared.open(url)
                                         }
@@ -412,5 +417,13 @@ class MenubarWindowController: NSWindowController {
 
         self.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+extension NSStatusBarButton {
+    
+    open override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        StatusMenu.shared.define(self)
+        return .private
     }
 }

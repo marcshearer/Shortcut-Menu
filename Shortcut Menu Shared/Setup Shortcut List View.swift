@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SetupShortcutListView: View {
     @ObservedObject public var selection: Selection
@@ -49,14 +50,14 @@ struct SetupShortcutListView: View {
                                 .onDrag({shortcut.itemProvider})
                         }
                     }
-                    .onInsert(of: [ShortcutItemProvider.type.identifier, NestedSectionItemProvider.type.identifier, SectionItemProvider.type.identifier])
+                    .onInsert(of: [ShortcutItemProvider.type.identifier, NestedSectionItemProvider.type.identifier, SectionItemProvider.type.identifier, UTType.url.identifier])
                     { (index, items) in
                         ShortcutItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertShortcutAction)
                         SectionItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertSectionAction)
+                        selection.dropUrl(afterIndex: index, items: items)
                     }
                 }
                 .padding(0)
-                .background(Color.red)
                 .listStyle(PlainListStyle())
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
                 .opacity((selection.editAction != .none ? 0.6 : 1.0))
