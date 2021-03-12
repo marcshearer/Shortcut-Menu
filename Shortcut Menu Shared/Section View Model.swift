@@ -218,9 +218,13 @@ class SectionListDropDelegate: DropDelegate {
         self.toId = toId
     }
     
+    func validateDrop(info: DropInfo) -> Bool {
+        return true
+    }
+    
     func performDrop(info: DropInfo) -> Bool {
         DispatchQueue.main.async {
-            let items = info.itemProviders(for: [UTType.data.identifier as String])
+            let items = info.itemProviders(for: [ShortcutItemProvider.type.identifier])
             if let toIndex = self.parent.selection.getSectionIndex(id: self.toId) {
                 ShortcutItemProvider.dropAction(at: toIndex, items, selection: self.parent.selection, action: self.parent.onDropShortcutAction)
             }

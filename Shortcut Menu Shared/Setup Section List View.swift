@@ -50,13 +50,12 @@ struct SetupSectionListView: View {
                                 self.sectionRow(section)
                                     .onDrag({section.itemProvider})
                             }
-                            
                         }
                     }
                     .onInsert(of: [SectionItemProvider.type.identifier, NestedSectionItemProvider.type.identifier])
                     { (index, items) in
                         SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertSectionAction)
-                        ShortcutItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertShortcutAction)
+                        NestedSectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertNestedSectionAction)
                     }
                     Spacer()
                 }
@@ -73,20 +72,20 @@ struct SetupSectionListView: View {
                 self.selection.selectSection(section: section)
             }
         })
-        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
         .onDrop(of: [ShortcutItemProvider.type.identifier], delegate: SectionListDropDelegate(self, id: section.id))
+        .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 2), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 2), trailing: 0))
     }
     
     func onInsertSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             if to > 0 {
-                self.selection.sections.move(fromOffsets: [from], toOffset: to)
+                self.selection.sections.move(fromOffsets: [from], toOffset: to + (to > from ? 1 : 0))
                 self.selection.updateSectionSequence()
             }
         }
     }
         
-    func onInsertShortcutAction(to: Int, from: Int) {
+    func onInsertNestedSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             let shortcut = self.selection.shortcuts[from]
             if shortcut.type == .section {
