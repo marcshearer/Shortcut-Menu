@@ -22,8 +22,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private let master = MasterData.shared
     
-    private var statusMenu: NSMenu
-    private var statusMenuButton: NSButton
+    public var statusMenu: NSMenu
+    public var statusMenuButton: NSButton
 
     private var menuItemList: [String: NSMenuItem] = [:]
     
@@ -55,6 +55,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenu.delegate = self
         
         self.statusItem.menu = self.statusMenu
+        
+        ShortcutKeyMonitor.shared.startMonitor(notify: shortcutKeyNotify)
+        updateShortcutKeys()
     }
     
     // MARK: - Menu delegate handlers =========================================================== -
@@ -262,10 +265,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func changeImage(close: Bool) {
         if close {
             self.statusMenuButton.image = NSImage(systemSymbolName: "xmark.circle", accessibilityDescription: nil)!
-            //self.statusButtonImage.image?.isTemplate = true
         } else {
             self.statusMenuButton.image = NSImage(systemSymbolName: "arrowshape.turn.up.right.fill", accessibilityDescription: nil)!
-            //self.statusButtonImage.image?.isTemplate = false
         }
     }
     
@@ -343,71 +344,88 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     @objc private func actionShortcut(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
             if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trim()}) {
+                self.actionShortcut(shortcut: shortcut)
+            }
+        }
+    }
+    
+    private func actionShortcut(shortcut: ShortcutViewModel) {
+        
+        func copyAction() {
+            
+            // Copy text to clipboard if non-blank
+            if !shortcut.copyText.isEmpty {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(shortcut.copyText, forType: .string)
                 
-                func copyAction() {
-                    
-                    // Copy text to clipboard if non-blank
-                    if !shortcut.copyText.isEmpty {
-                        let pasteboard = NSPasteboard.general
-                        pasteboard.clearContents()
-                        pasteboard.setString(shortcut.copyText, forType: .string)
-                        
-                        if shortcut.url.isEmpty {
-                            self.paste()
-                        } else {
-                            self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
-                        }
-                    }
-                }
-                
-                func urlAction(wait: Bool) {
-                    
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
-                        // URL if non-blank
-                        if !shortcut.url.isEmpty {
-                            if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
-                                
-                                if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
-                                    // Shortcut to a local file
-                                    var isStale: Bool = false
-                                    do {
-                                        let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
-                                        if url.startAccessingSecurityScopedResource() {
-                                            NSWorkspace.shared.open(url)
-                                        }
-                                        url.stopAccessingSecurityScopedResource()
-                                    } catch {
-                                        self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
-                                    }
-                                    
-                                } else {
-                                    // Shortcut to a remote url
-                                    NSWorkspace.shared.open(url)
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
-                    
-                    LocalAuthentication.authenticate(reason: "reveal private data", completion: {
-                        copyAction()
-                        urlAction(wait: true)
-                    }, failure: {
-                        urlAction(wait: false)
-                    })
+                if shortcut.url.isEmpty {
+                    self.paste()
                 } else {
-                    copyAction()
-                    urlAction(wait: true)
+                    self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
                 }
             }
+        }
+        
+        func urlAction(wait: Bool) {
+            
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
+                // URL if non-blank
+                if !shortcut.url.isEmpty {
+                    if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                        
+                        if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
+                            // Shortcut to a local file
+                            var isStale: Bool = false
+                            do {
+                                let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
+                                if url.startAccessingSecurityScopedResource() {
+                                    NSWorkspace.shared.open(url)
+                                }
+                                url.stopAccessingSecurityScopedResource()
+                            } catch {
+                                self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
+                            }
+                            
+                        } else {
+                            // Shortcut to a remote url
+                            NSWorkspace.shared.open(url)
+                        }
+                    }
+                }
+            }
+        }
+        
+        if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
+            
+            LocalAuthentication.authenticate(reason: "reveal private data", completion: {
+                copyAction()
+                urlAction(wait: true)
+            }, failure: {
+                urlAction(wait: false)
+            })
+        } else {
+            copyAction()
+            urlAction(wait: true)
+        }
+        
+    }
+    
+    public func updateShortcutKeys() {
+        let shortcutKeys = master.shortcuts.filter{$0.keyEquivalent != ""}.map{($0.keyEquivalent, $0.name)}
+        ShortcutKeyMonitor.shared.updateMonitor(keys: shortcutKeys)
+    }
+    
+    private func shortcutKeyNotify(_ id: Any?) {
+        if let name = id as? String,
+           let shortcut = master.shortcut(named: name) {
+            actionShortcut(shortcut: shortcut)
         }
     }
 
     @objc private func quit(_ sender: Any?) {
         NSApp.terminate(sender)
-    }
+    }    
 }
 
 class MenubarWindowController: NSWindowController {

@@ -85,6 +85,8 @@
 		B2DF651325FB5E0900C92386 /* Link Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651125FB5E0900C92386 /* Link Presentation.swift */; };
 		B2DF651725FB5EC200C92386 /* My Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651625FB5EC200C92386 /* My Image.swift */; };
 		B2DF651825FB5EC200C92386 /* My Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651625FB5EC200C92386 /* My Image.swift */; };
+		B2DF652125FD11D300C92386 /* Shortcut Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF652025FD11D300C92386 /* Shortcut Key.swift */; };
+		B2DF652225FD11D300C92386 /* Shortcut Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF652025FD11D300C92386 /* Shortcut Key.swift */; };
 		B2E0708F25F4AF6A00316112 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CAB25F20D490005B07C /* Main.storyboard */; };
 		B2E0709925F4D8DA00316112 /* Slide In Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709825F4D8DA00316112 /* Slide In Menu.swift */; };
 		B2E0709A25F4D8DA00316112 /* Slide In Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709825F4D8DA00316112 /* Slide In Menu.swift */; };
@@ -145,6 +147,7 @@
 		B2DF650D25FB4AC600C92386 /* Notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
 		B2DF651125FB5E0900C92386 /* Link Presentation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Link Presentation.swift"; sourceTree = "<group>"; };
 		B2DF651625FB5EC200C92386 /* My Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "My Image.swift"; sourceTree = "<group>"; };
+		B2DF652025FD11D300C92386 /* Shortcut Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Key.swift"; sourceTree = "<group>"; };
 		B2E0709825F4D8DA00316112 /* Slide In Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Slide In Menu.swift"; sourceTree = "<group>"; };
 		B2FD28CB25F6CA9D00F2B450 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -188,6 +191,7 @@
 				B2B82D0325F25DD10005B07C /* Banner.swift */,
 				B2B82D0225F25DD10005B07C /* Input Title.swift */,
 				B2B82D0425F25DD20005B07C /* Input.swift */,
+				B2C2643425F8BB9B0054D2ED /* Tile.swift */,
 				B2B82D1D25F27DD50005B07C /* Target View Modifiers.swift */,
 			);
 			name = "Reusable Views";
@@ -233,6 +237,7 @@
 				B2B82D2A25F27F840005B07C /* My Color.swift */,
 				B2FD28CB25F6CA9D00F2B450 /* Utility.swift */,
 				B2D84BE025F779B500966421 /* Debug Utilities.swift */,
+				B2DF652025FD11D300C92386 /* Shortcut Key.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -242,6 +247,7 @@
 			children = (
 				B2B82CE325F20F590005B07C /* Base.lproj */,
 				B2B82CA825F20D490005B07C /* AppDelegate.swift */,
+				B2DF651D25FCA78900C92386 /* New Group */,
 				B2B82CAB25F20D490005B07C /* Main.storyboard */,
 				B2B82CA525F20D490005B07C /* Info.plist */,
 				B2B82CA425F20D490005B07C /* Shortcut_Menu_Mac.entitlements */,
@@ -382,7 +388,6 @@
 				B2C2640D25F7E35E0054D2ED /* Setup Section List View.swift */,
 				B2C2640F25F7E35F0054D2ED /* Setup Shortcut List View.swift */,
 				B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */,
-				B2C2643425F8BB9B0054D2ED /* Tile.swift */,
 			);
 			name = "Shared Views";
 			sourceTree = "<group>";
@@ -410,6 +415,13 @@
 				B2B82C9625F20A5D0005B07C /* Status Menu.swift */,
 			);
 			name = "Stub classes";
+			sourceTree = "<group>";
+		};
+		B2DF651D25FCA78900C92386 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -519,6 +531,7 @@
 			files = (
 				B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */,
 				B28D428924475BB000C2577E /* Selection.swift in Sources */,
+				B2DF652125FD11D300C92386 /* Shortcut Key.swift in Sources */,
 				B2B82D2B25F27F840005B07C /* My Color.swift in Sources */,
 				B2B82D0D25F25DFB0005B07C /* Input Title.swift in Sources */,
 				B2B82D2625F27F450005B07C /* Palette.swift in Sources */,
@@ -563,6 +576,7 @@
 			files = (
 				B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */,
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
+				B2DF652225FD11D300C92386 /* Shortcut Key.swift in Sources */,
 				B2B82D1A25F27DBE0005B07C /* Message Box.swift in Sources */,
 				B2B82D2525F27F450005B07C /* Themes.swift in Sources */,
 				B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */,

@@ -7,35 +7,45 @@
 //
 
 import SwiftUI
+import Carbon.HIToolbox
 
 struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
-    @State var lockImage: String = ""
-    @State var lockColor: Color = .red
+    @State private var lockImage: String = ""
+    @State private var lockColor: Color = .red
+    @State private var settingShortcutKey: Bool = false
 
+    init(selection: Selection) {
+        self.selection = selection
+    }
+    
     var body: some View {
         
-        VStack(spacing: 0) {
+        ZStack {
             
-            titleBar()
+            VStack(spacing: 0) {
                 
-            Spacer()
-                .frame(height: 10.0)
-            
-            HStack {
+                titleBar()
+                
                 Spacer()
-                    .frame(width: 10.0)
+                    .frame(height: 10.0)
                 
-                if selection.editObject == .shortcut {
-                    shortcutForm()
-                } else if selection.editObject ==  .section {
-                    sectionForm()
+                HStack {
+                    Spacer()
+                        .frame(width: 10.0)
+                    
+                    if selection.editObject == .shortcut {
+                        shortcutForm()
+                    } else if selection.editObject ==  .section {
+                        sectionForm()
+                    }
                 }
+                
+                Spacer()
             }
+            .background(Color.white)
             
-            Spacer()
         }
-        .background(Color.white)
     }
     
     fileprivate func titleBar() -> some View {
@@ -78,6 +88,9 @@ struct SetupDetailView: View {
                             selection.updateShortcut(shortcut: selection.editShortcut)
                         }
                         selection.editAction = .none
+#if canImport(AppKit)
+                        StatusMenu.shared.updateShortcutKeys()
+#endif
                     }
                 }
                 
@@ -164,13 +177,13 @@ struct SetupDetailView: View {
             Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: selection.editAction != .none && selection.editShortcut.canEditCopyMessage)
             
             if MyApp.target == .macOS {
-                Input(title: "Keyboard equivalent", field: $selection.editShortcut.keyEquivalent, width: 50, isEnabled: selection.editAction != .none)
+                self.shortcutKey()
             }
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
     }
-        
+    
     private func detailTitle() -> String {
         
         switch selection.editObject {
@@ -280,6 +293,66 @@ struct SetupDetailView: View {
             StatusMenu.shared.bringToFront()
         }
 #endif
+    }
+    
+    private func shortcutKey() -> some View {
+        VStack {
+            Spacer().frame(height: inputTopHeight)
+            InputTitle(title: "Shortcut key", isEnabled: selection.editAction != .none)
+            Spacer().frame(height: 8)
+            HStack {
+                Spacer().frame(width: 32)
+                HStack {
+                    Spacer().frame(width: 10)
+                    Text(selection.editShortcut.keyEquivalent)
+                        
+                        .font(inputFont)
+                        .foregroundColor(selection.editAction != .none ? Palette.input.text : Palette.input.faintText)
+                        .font(defaultFont)
+                    Spacer()
+                }
+                .frame(width: 100, height: inputDefaultHeight)
+                .background(Palette.input.background)
+                .cornerRadius(10)
+                if selection.editAction != .none {
+                    Spacer().frame(width: 16)
+                    Button(action: {
+                        settingShortcutKey.toggle()
+                        if settingShortcutKey {
+                            ShortcutKeyMonitor.shared.startDefine(notify: shortcutKeyNotify)
+                        } else {
+                            ShortcutKeyMonitor.shared.stopDefine()
+                        }
+                    }) {
+                        Text(settingShortcutKey ? "Cancel" : (selection.editShortcut.keyEquivalent == "" ? "Add" : "Change"))
+                            .frame(width: 80, height: inputDefaultHeight)
+                            .background(Palette.enabledButton.background)
+                            .foregroundColor(Palette.enabledButton.text)
+                            .cornerRadius(10)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(selection.editAction == .none)
+                }
+                Spacer()
+            }
+                Spacer().frame(height: 8)
+                HStack {
+                    Spacer().frame(width: 32)
+                    Text(settingShortcutKey ? "Press key to set or Backspace to clear" : "")
+                        .font(messageFont)
+                        .foregroundColor(Palette.background.themeText)
+                        .frame(height: 10)
+                    Spacer()
+            }
+            Spacer()
+        }
+        .frame(height: inputDefaultHeight + inputTopHeight + 40)
+    }
+    
+    private func shortcutKeyNotify(_ key: String) {
+        selection.editShortcut.keyEquivalent = key
+        settingShortcutKey = false
+        selection.objectWillChange.send()
     }
 }
 

@@ -301,10 +301,12 @@ public class Selection : ObservableObject, Identifiable {
                                             var urlString: String?
                                             var urlSecurityBookmark: Data?
                                             if item.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+#if canImport(AppKit)
                                                 if let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
                                                     urlString = url.absoluteString
                                                     urlSecurityBookmark = bookmarkData
                                                 }
+#endif
                                             } else if item.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
                                                 urlString = url.absoluteString
                                             }

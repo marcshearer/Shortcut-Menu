@@ -36,6 +36,7 @@ let bannerHeight: CGFloat = (MyApp.target == .macOS ? 60 : 70)
 // Fonts
 var defaultFont = Font.system(size: (MyApp.target == .macOS ? 20.0 : 28.0))
 var captionFont = Font.system(size: (MyApp.target == .macOS ? 16.0 : 20.0))
+var inputFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
 var messageFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
 
 // Text for default section
