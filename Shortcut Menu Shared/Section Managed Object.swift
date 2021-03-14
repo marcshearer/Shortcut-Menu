@@ -11,10 +11,11 @@ import CoreData
 public class SectionMO : NSManagedObject {
 
     @NSManaged public var idString: String
+    @NSManaged public var isDefault: Bool
     @NSManaged public var name: String
     @NSManaged public var sequence64: Int64
     @NSManaged public var menuTitle: String
-
+    @NSManaged public var keyEquivalent: String
 }
 
 extension SectionMO: Identifiable {

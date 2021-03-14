@@ -60,7 +60,7 @@ public class Selection : ObservableObject, Identifiable {
         if self.selectedSection != nil {
             
             self.editSection = self.selectedSection!.copy()
-            self.editObject = (section.name == "" ? .none : .section)
+            self.editObject = .section
 
             if updateShortcuts {
                 self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
@@ -219,6 +219,7 @@ public class Selection : ObservableObject, Identifiable {
         if let removeIndex = self.master.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
             self.master.shortcuts.remove(at: removeIndex)
             shortcut.remove()
+            self.deselectShortcut()
             if self.selectedSection != nil {
                 self.selectSection(section: self.selectedSection!)
             }

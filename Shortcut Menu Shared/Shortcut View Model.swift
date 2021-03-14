@@ -190,13 +190,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         do {
             try context.save()
         } catch {
-            fatalError("Error writing section")
+            fatalError("Error writing shortcut")
         }
     }
     
     public func remove() {
         self.toManagedObject()
         context.delete(self.shortcutMO!)
+        self.save()
         self.shortcutMO = nil
     }
     

@@ -25,7 +25,7 @@ struct SetupSectionListView: View {
                     HStack{
                         Spacer()
                         if self.selection.editAction == .none {
-                            if self.selection.selectedSection != nil && self.selection.selectedSection?.name != "" {
+                            if self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
                                 ToolbarButton("minus.circle.fill") {
                                     self.selection.removeSection(section: self.selection.selectedSection!)
                                 }
@@ -44,7 +44,7 @@ struct SetupSectionListView: View {
                 List {
                     ForEach (self.selection.sections) { (section) in
                         if !master.isNested(section) {
-                            if section.name == "" || self.selection.editAction != .none {
+                            if section.isDefault || self.selection.editAction != .none {
                                 self.sectionRow(section)
                             } else {
                                 self.sectionRow(section)
@@ -67,7 +67,7 @@ struct SetupSectionListView: View {
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.name == "", tapAction: {
+        Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
             }

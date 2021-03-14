@@ -29,7 +29,7 @@ struct MainView : View {
                                 
                                 let exclude = (displayState.selectedSection == nil ? [] : [displayState.selectedSection!])
                                 
-                                let options = MasterData.shared.sectionsWithShortcuts(excludeSections: exclude, excludeNested: true).map{($0.name == "" ? defaultSectionMenuName : $0.name)}
+                                let options = MasterData.shared.sectionsWithShortcuts(excludeSections: exclude, excludeNested: true).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
                                 
                                 SlideInMenu.shared.show(title: "Select Section", options: options) { (section) in
                                     let selectedSection = (section == defaultSectionMenuName ? "" : section)

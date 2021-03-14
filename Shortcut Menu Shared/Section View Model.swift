@@ -19,10 +19,12 @@ public class SectionViewModel : ObservableObject, Identifiable {
 
     // Properties in core data model
     public let id: UUID
+    @Published public var isDefault: Bool
     @Published public var name:String
     @Published public var sequence: Int
     @Published public var menuTitle: String
-    
+    @Published public var keyEquivalent: String
+
     // Linked managed object
     private var sectionMO: SectionMO?
     
@@ -32,14 +34,17 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Other properties
     @Published public var nameError: String = ""
     @Published public var canSave: Bool = false
+    @Published public var canEditKeyEquivalent: Bool = false
 
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID = UUID(), name: String = "", sequence: Int = 0, menuTitle: String = "", sectionMO: SectionMO? = nil, master: MasterData?) {
+    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", sectionMO: SectionMO? = nil, master: MasterData?) {
         self.id = id
+        self.isDefault = isDefault
         self.name = name
         self.sequence = sequence
+        self.keyEquivalent = keyEquivalent
         self.menuTitle = menuTitle
         self.sectionMO = sectionMO
         self.master = master
@@ -52,15 +57,15 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     convenience init(sectionMO: SectionMO, master: MasterData) {
-        self.init(id: sectionMO.id, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, sectionMO: sectionMO, master: master)
+        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, sectionMO: sectionMO, master: master)
     }
     
     private func setupMappings() {
         
-        $name
+        Publishers.CombineLatest($name, $isDefault)
             .receive(on: RunLoop.main)
-            .map { name in
-                return (name.isEmpty ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
+            .map { (name, isDefault) in
+                return (name.isEmpty && !isDefault ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
             }
         .assign(to: \.nameError, on: self)
         .store(in: &cancellableSet)
@@ -72,7 +77,22 @@ public class SectionViewModel : ObservableObject, Identifiable {
             }
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
-
+        
+        Publishers.CombineLatest($menuTitle, $keyEquivalent)
+            .receive(on: RunLoop.main)
+            .map { (menuTitle, keyEquivalent) in
+                return (menuTitle == "" ? "" : keyEquivalent)
+            }
+        .assign(to: \.keyEquivalent, on: self)
+        .store(in: &cancellableSet)
+        
+        $menuTitle
+            .receive(on: RunLoop.main)
+            .map { (menuTitle) in
+                return (menuTitle != "")
+            }
+        .assign(to: \.canEditKeyEquivalent, on: self)
+        .store(in: &cancellableSet)
     }
     
     private func exists(name: String) -> Bool {
@@ -84,11 +104,11 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public func copy() -> SectionViewModel {
-        return SectionViewModel(id: self.id, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, sectionMO: self.sectionMO, master: self.master)
+        return SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, sectionMO: self.sectionMO, master: self.master)
     }
     
     public var displayName: String {
-        if self.name == "" {
+        if self.isDefault {
             return defaultSectionDisplayName
         } else {
             return self.name
@@ -96,7 +116,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public var menuName: String {
-        if self.name == "" {
+        if self.isDefault {
             return defaultSectionMenuName
         } else {
             return self.name
@@ -104,7 +124,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public var titleName: String {
-        if self.name == "" {
+        if self.isDefault {
             return defaultSectionTitleName
         } else {
             return self.name
@@ -137,8 +157,10 @@ public class SectionViewModel : ObservableObject, Identifiable {
             self.sectionMO = SectionMO(context: context)
         }
         self.sectionMO!.id = self.id
+        self.sectionMO!.isDefault = self.isDefault
         self.sectionMO!.name = self.name
         self.sectionMO!.sequence = self.sequence
+        self.sectionMO!.keyEquivalent = self.keyEquivalent
         self.sectionMO!.menuTitle = self.menuTitle
     }
 }

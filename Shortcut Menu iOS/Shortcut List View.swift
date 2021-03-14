@@ -166,7 +166,7 @@ class DisplayStateViewModel: ObservableObject {
         add(list: &list, section: "", depth: 0)
         
         let parent = add(list: &list, type: .section, text: "Other Shortcuts", depth: 0)
-        for section in MasterData.shared.sectionsWithShortcuts(excludeSections: ["", selectedSection ?? ""], excludeNested: true) {
+        for section in MasterData.shared.sectionsWithShortcuts(excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
             add(list: &list, section: section, depth: 1, expanded: false, parent: parent)
         }
         return list

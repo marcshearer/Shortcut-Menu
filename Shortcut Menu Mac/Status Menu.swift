@@ -33,7 +33,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private var defineWindowShowing = false
     
-    private var additionalStatusItems: [NSStatusItem] = []
+    private var additionalStatusItems: [String : NSStatusItem] = [:]
    
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
     
@@ -43,7 +43,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenu.autoenablesItems = false
         self.statusMenuButton = self.statusItem.button!
         self.statusMenuButton.registerForDraggedTypes([NSPasteboard.PasteboardType.URL])
-
+        
         super.init()
         
         self.changeImage(close: false)
@@ -118,7 +118,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             self.addSeparator()
         }
         
-        let nonEmptySections = self.master.sectionsWithShortcuts(excludeSections: [""]).count
+        let nonEmptySections = self.master.sectionsWithShortcuts(excludeDefault: true).count
         if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
             
             if self.addOtherShortcuts() > 0 {
@@ -139,14 +139,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func setupAdditionalMenus() {
-        for item in self.additionalStatusItems {
+        for (_, item) in self.additionalStatusItems {
             NSStatusBar.system.removeStatusItem(item)
         }
-        self.additionalStatusItems = []
-        for section in master.sections.filter({$0.menuTitle != "" && $0.shortcuts.count > 0}) {
+        self.additionalStatusItems = [:]
+        for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && $0.shortcuts.count > 0}) {
             let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             statusItem.menu = NSMenu()
-            self.additionalStatusItems.append(statusItem)
+            self.additionalStatusItems[section.name] = statusItem
             statusItem.button?.attributedTitle = NSAttributedString(string: section.menuTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 15)])
             self.addShortcuts(section: section.name, to: statusItem.menu)
         }
@@ -187,7 +187,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func addOtherShortcuts() -> Int {
         var added = 0
         let subMenu = self.addSubmenu("Other shortcuts")
-        for section in master.sections.filter({ $0.name != currentSection && $0.name != "" && $0.shortcuts.count > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
+        for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0 }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
                 if section.shortcuts.count > 1 {
                     let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
@@ -264,9 +264,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private func changeImage(close: Bool) {
         if close {
-            self.statusMenuButton.image = NSImage(systemSymbolName: "xmark.circle", accessibilityDescription: nil)!
+            self.statusMenuButton.title = "􀁠"
         } else {
-            self.statusMenuButton.image = NSImage(systemSymbolName: "arrowshape.turn.up.right.fill", accessibilityDescription: nil)!
+            let override = master.defaultSection?.menuTitle ?? ""
+            self.statusMenuButton.title = override != "" ? override : "􀉑"
         }
     }
     
@@ -419,14 +420,39 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     public func updateShortcutKeys() {
-        let shortcutKeys = master.shortcuts.filter{$0.keyEquivalent != ""}.map{($0.keyEquivalent, $0.name)}
-        ShortcutKeyMonitor.shared.updateMonitor(keys: shortcutKeys)
+        var keys: [(String, (ShortcutType?, String))] = []
+        
+        // Main menu
+        let key = master.defaultSection?.keyEquivalent ?? ""
+        if key != "" {
+            keys.append((key, (nil, "")))
+        }
+        
+        // Add additional sections
+        let sectionKeys = master.sections.filter{$0.keyEquivalent != "" && !$0.isDefault}.map{($0.keyEquivalent, (ShortcutType.section, $0.name))}
+        keys.append(contentsOf: sectionKeys)
+        
+        // Add shortcuts
+        let shortcutKeys = master.shortcuts.filter{$0.keyEquivalent != ""}.map{($0.keyEquivalent, (ShortcutType.shortcut, $0.name))}
+        keys.append(contentsOf: shortcutKeys)
+        
+        ShortcutKeyMonitor.shared.updateMonitor(keys: keys)
     }
     
     private func shortcutKeyNotify(_ id: Any?) {
-        if let name = id as? String,
-           let shortcut = master.shortcut(named: name) {
-            actionShortcut(shortcut: shortcut)
+        if let (type, name) = id as? (ShortcutType?, String) {
+            switch type {
+            case .section:
+                if let statusItem = additionalStatusItems[name] {
+                    statusItem.button?.performClick(self)
+                }
+            case .shortcut:
+                if let shortcut = master.shortcut(named: name) {
+                    actionShortcut(shortcut: shortcut)
+                }
+            default:
+                self.statusItem.button?.performClick(self)
+            }
         }
     }
 

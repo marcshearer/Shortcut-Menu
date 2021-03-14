@@ -57,16 +57,16 @@ public class MasterData : ObservableObject {
         }
         
         // Make sure default section existst
-        if self.sections.first(where: {$0.name == ""}) == nil {
+        if self.sections.first(where: {$0.isDefault}) == nil {
             // Need to create a default section
-            let defaultSection = SectionViewModel(id: UUID(), name: "", sequence: 1, master: self)
+            let defaultSection = SectionViewModel(id: UUID(), isDefault: true, name: "", sequence: 1, master: self)
             sections.insert(defaultSection, at: 0)
             defaultSection.save()
         }
     }
     
-    public func sectionsWithShortcuts(excludeSections: [String] = [], excludeNested: Bool = true) -> [SectionViewModel] {
-        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeNested || !isNested($0)) })
+    public func sectionsWithShortcuts(excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
+        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
     }
     
     public func isNested(_ section: SectionViewModel) -> Bool {
@@ -75,6 +75,10 @@ public class MasterData : ObservableObject {
     
     public func section(named name: String) -> SectionViewModel? {
         return sections.first(where: {$0.name == name})
+    }
+    
+    public var defaultSection: SectionViewModel? {
+        return sections.first(where: {$0.isDefault})
     }
 
     public func shortcut(named name: String) -> ShortcutViewModel? {

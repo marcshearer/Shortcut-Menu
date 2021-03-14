@@ -11,7 +11,7 @@ import Carbon.HIToolbox
 
 struct ShortcutKey {
     public var key: String
-    public var id: AnyHashable
+    public var id: Any
     fileprivate var characters: String
     fileprivate var modifiers: NSEvent.ModifierFlags
 }
@@ -20,8 +20,8 @@ class ShortcutKeyMonitor {
     
     static public var shared = ShortcutKeyMonitor()
 
-    private var monitorNotify: ((AnyHashable)->())?
-    private var monitorKeys: [String:[UInt:AnyHashable]] = [:]
+    private var monitorNotify: ((Any)->())?
+    private var monitorKeys: [String:[UInt:Any]] = [:]
     private var monitorContext: Any?
     private var defineNotify: ((String)->())?
     private var defineContext: Any?
@@ -29,7 +29,7 @@ class ShortcutKeyMonitor {
     
     // MARK: - Monitor shortcut key ======================================================================= -
 
-    public func startMonitor(keys: [(key: String, id: AnyHashable)] = [], notify: @escaping (AnyHashable)->()) {
+    public func startMonitor(keys: [(key: String, id: Any)] = [], notify: @escaping (Any)->()) {
         monitorNotify = notify
         let options = NSDictionary(object: kCFBooleanTrue!, forKey: kAXTrustedCheckOptionPrompt.takeUnretainedValue() as NSString) as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
@@ -49,7 +49,7 @@ class ShortcutKeyMonitor {
         monitorNotify = nil
     }
     
-    public func updateMonitor(keys: [(key: String, id: AnyHashable)]) {
+    public func updateMonitor(keys: [(key: String, id: Any)]) {
         monitorKeys = [:]
         for key in keys {
             if let (characters, modifiers) = decompose(key: key.key) {

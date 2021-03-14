@@ -139,11 +139,18 @@ struct SetupDetailView: View {
     fileprivate func sectionForm() -> some View {
         return VStack(spacing: 0) {
             
-            Input(title: "Section name", field: $selection.editSection.name, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
+            if !selection.editSection.isDefault {
+                Input(title: "Section name", field: $selection.editSection.name, message: $selection.editSection.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
+            }
             
-            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, message: $selection.editSection.nameError, width: 100, isEnabled: isEnabled)
+            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
             
+            if MyApp.target == .macOS {
+                self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
+            }
+
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
+            
         }
     }
     
@@ -184,7 +191,7 @@ struct SetupDetailView: View {
             Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
             
             if MyApp.target == .macOS {
-                self.shortcutKey()
+                self.shortcutKey(key: $selection.editShortcut.keyEquivalent, notify: shortcutKeyNotify, disabled: {false})
             }
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
@@ -302,43 +309,44 @@ struct SetupDetailView: View {
 #endif
     }
     
-    private func shortcutKey() -> some View {
+    private func shortcutKey(key: Binding<String>, notify: @escaping (String)->(), disabled: ()->(Bool)) -> some View {
         VStack {
+            let enable = (isEnabled || isSettingShortcutKey) && !disabled()
             Spacer().frame(height: inputTopHeight)
-            InputTitle(title: "Shortcut key", isEnabled: isEnabled || isSettingShortcutKey)
+            InputTitle(title: "Shortcut key", isEnabled: enable)
             Spacer().frame(height: 8)
             HStack {
                 Spacer().frame(width: 32)
                 HStack {
                     Spacer().frame(width: 10)
-                    Text(selection.editShortcut.keyEquivalent)
+                    Text(key.wrappedValue)
                         
                         .font(inputFont)
-                        .foregroundColor(isEnabled || isSettingShortcutKey ? Palette.input.text : Palette.input.faintText)
+                        .foregroundColor(enable ? Palette.input.text : Palette.input.faintText)
                         .font(defaultFont)
                     Spacer()
                 }
                 .frame(width: 100, height: inputDefaultHeight)
                 .background(Palette.input.background)
                 .cornerRadius(10)
-                if isEnabled || isSettingShortcutKey {
+                if enable {
                     Spacer().frame(width: 16)
                     Button(action: {
                         isSettingShortcutKey.toggle()
                         if isSettingShortcutKey {
-                            ShortcutKeyMonitor.shared.startDefine(notify: shortcutKeyNotify)
+                            ShortcutKeyMonitor.shared.startDefine(notify: notify)
                         } else {
                             ShortcutKeyMonitor.shared.stopDefine()
                         }
                     }) {
-                        Text(isSettingShortcutKey ? "Cancel" : (selection.editShortcut.keyEquivalent == "" ? "Add" : "Change"))
+                        Text(isSettingShortcutKey ? "Cancel" : (key.wrappedValue == "" ? "Add" : "Change"))
                             .frame(width: 80, height: inputDefaultHeight)
                             .background(Palette.enabledButton.background)
                             .foregroundColor(Palette.enabledButton.text)
                             .cornerRadius(10)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(!(isEnabled || isSettingShortcutKey))
+                    .disabled(!enable)
                 }
                 Spacer()
             }
@@ -358,6 +366,13 @@ struct SetupDetailView: View {
     
     private func shortcutKeyNotify(_ key: String) {
         selection.editShortcut.keyEquivalent = key
+        ShortcutKeyMonitor.shared.stopDefine()
+        isSettingShortcutKey = false
+        selection.objectWillChange.send()
+    }
+    
+    private func sectionKeyNotify(_ key: String) {
+        selection.editSection.keyEquivalent = key
         ShortcutKeyMonitor.shared.stopDefine()
         isSettingShortcutKey = false
         selection.objectWillChange.send()
