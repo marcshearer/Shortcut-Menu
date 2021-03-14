@@ -22,6 +22,7 @@ struct Input : View {
     var autoCapitalize: AutoCapitalization = .sentences
     var autoCorrect: Bool = true
     var isEnabled: Bool
+    var isReadOnly: Bool = false
     var onChange: ((String)->())?
 
     var body: some View {
@@ -55,34 +56,50 @@ struct Input : View {
                                 VStack {
                                     Spacer().frame(height: (MyApp.target == .macOS ? 2 :10))
                                     SecureField("", text: $field)
+                                        .font(inputFont)
                                         .onChange(of: field, perform: { (value) in onChange?(value) })
                                         .textFieldStyle(PlainTextFieldStyle())
-                                        .disabled(!isEnabled)
+                                        .disabled(!isEnabled || isReadOnly)
                                         .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
                                         .inputStyle(width: width, height: inputDefaultHeight)
                                         .frame(width: geometry.size.width - 56)
                                     Spacer()
                                 }
-                            } else if height > inputDefaultHeight {
+                            } else if height > inputDefaultHeight || !isEnabled || isReadOnly {
                                 VStack {
                                     if MyApp.target == .macOS {
                                         Spacer().frame(height: 2)
                                     }
-                                    TextEditor(text: $field)
-                                        .onChange(of: field, perform: { (value) in onChange?(value) })
-                                        .disabled(!isEnabled)
-                                        .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
-                                        .inputStyle(width: width, height: height - (MyApp.target == .macOS ? 16 : 0), padding: 5.0)
-                                        .myKeyboardType(self.keyboardType)
-                                        .myAutocapitalization(autoCapitalize)
-                                        .disableAutocorrection(!autoCorrect)
+                                    if isEnabled && !isReadOnly {
+                                        TextEditor(text: $field)
+                                            .font(inputFont)
+                                            .onChange(of: field, perform: { (value) in onChange?(value) })
+                                            .disabled(!isEnabled || isReadOnly)
+                                            .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
+                                            .inputStyle(width: width, height: height - (MyApp.target == .macOS ? 16 : 0), padding: 5.0)
+                                            .myKeyboardType(self.keyboardType)
+                                            .myAutocapitalization(autoCapitalize)
+                                            .disableAutocorrection(!autoCorrect)
+                                    } else {
+                                        VStack {
+                                            Spacer().frame(height: 10)
+                                            HStack {
+                                                Spacer().frame(width: 10)
+                                                Text(field)
+                                                    .foregroundColor(Palette.input.faintText)
+                                                    .font(inputFont)
+                                                Spacer()
+                                            }
+                                            Spacer()
+                                        }
+                                    }
                                 }
                             } else {
                                 TextField("", text: $field)
+                                    .font(inputFont)
                                     .onChange(of: field, perform: { (value) in onChange?(value) })
                                     .textFieldStyle(PlainTextFieldStyle())
-                                    .disabled(!isEnabled)
-                                    .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
+                                    .foregroundColor(Palette.input.text)
                                     .inputStyle(width: width, height: height)
                                     .myKeyboardType(self.keyboardType)
                                     .myAutocapitalization(autoCapitalize)

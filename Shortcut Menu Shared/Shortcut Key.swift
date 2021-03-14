@@ -30,23 +30,23 @@ class ShortcutKeyMonitor {
     // MARK: - Monitor shortcut key ======================================================================= -
 
     public func startMonitor(keys: [(key: String, id: AnyHashable)] = [], notify: @escaping (AnyHashable)->()) {
-        self.monitorNotify = notify
+        monitorNotify = notify
         let options = NSDictionary(object: kCFBooleanTrue!, forKey: kAXTrustedCheckOptionPrompt.takeUnretainedValue() as NSString) as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
         if (trusted) {
-            defineContext = NSEvent.addGlobalMonitorForEvents(matching: .keyDown, handler: self.monitorHandler)
+            monitorContext = NSEvent.addGlobalMonitorForEvents(matching: .keyDown, handler: monitorHandler)
         }
-        if defineContext != nil {
-            self.updateMonitor(keys: keys)
+        if monitorContext != nil {
+            updateMonitor(keys: keys)
         }
     }
     
     public func stopMonitor() {
-        if let defineContext = defineContext {
-            NSEvent.removeMonitor(defineContext)
+        if let monitorContext = monitorContext {
+            NSEvent.removeMonitor(monitorContext)
         }
-        defineContext = nil
-        defineNotify = nil
+        monitorContext = nil
+        monitorNotify = nil
     }
     
     public func updateMonitor(keys: [(key: String, id: AnyHashable)]) {
@@ -61,7 +61,7 @@ class ShortcutKeyMonitor {
         }
     }
     
-    private func decompose(key: String) -> (String, NSEvent.ModifierFlags)? {
+    public func decompose(key: String) -> (String, NSEvent.ModifierFlags)? {
         var key = key
         var modifiers = NSEvent.ModifierFlags()
         if key.contains("⇧") {
@@ -88,27 +88,27 @@ class ShortcutKeyMonitor {
             case "F1":
                 functionKey = NSF1FunctionKey
             case "F2":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF2FunctionKey
             case "F3":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF3FunctionKey
             case "F4":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF4FunctionKey
             case "F5":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF5FunctionKey
             case "F6":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF6FunctionKey
             case "F7":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF7FunctionKey
             case "F8":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF8FunctionKey
             case "F9":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF9FunctionKey
             case "F10":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF10FunctionKey
             case "F11":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF11FunctionKey
             case "F12":
-                functionKey = NSF1FunctionKey
+                functionKey = NSF12FunctionKey
             default:
                 return nil
             }
@@ -139,8 +139,8 @@ class ShortcutKeyMonitor {
         let options = NSDictionary(object: kCFBooleanTrue!, forKey: kAXTrustedCheckOptionPrompt.takeUnretainedValue() as NSString) as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
         if (trusted) {
-            defineContext = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: self.defineHandler)
-            self.defineNotify = notify
+            defineContext = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: defineHandler)
+            defineNotify = notify
         }
     }
     
@@ -148,8 +148,8 @@ class ShortcutKeyMonitor {
         if let defineContext = defineContext {
             NSEvent.removeMonitor(defineContext)
         }
-        self.defineContext = nil
-        self.defineNotify = nil
+        defineContext = nil
+        defineNotify = nil
     }
     
     private func defineHandler(event: NSEvent) -> NSEvent? {

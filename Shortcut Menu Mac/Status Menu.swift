@@ -291,7 +291,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         if menu == nil {
             menu = self.statusMenu
         }
-        let menuItem = menu!.addItem(withTitle: text, action: action, keyEquivalent: keyEquivalent)
+        let menuItem = menu!.addItem(withTitle: text, action: action, keyEquivalent: "")
+        if keyEquivalent != "" {
+            if let (characters, modifiers) = ShortcutKeyMonitor.shared.decompose(key: keyEquivalent) {
+                menuItem.keyEquivalent = characters
+                menuItem.keyEquivalentModifierMask = (modifiers.isEmpty ? [.command] : modifiers)
+            }
+        }
+
         if action == nil {
             menuItem.isEnabled = false
         } else {

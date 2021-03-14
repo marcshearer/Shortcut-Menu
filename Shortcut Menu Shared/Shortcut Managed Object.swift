@@ -44,9 +44,8 @@ extension ShortcutMO: Identifiable {
         }
     }
     
-    public var type: ShortcutViewModel.ShortcutType {
-        get { ShortcutViewModel.ShortcutType(rawValue: Int(self.type16)) ?? .shortcut }
+    public var type: ShortcutType {
+        get { ShortcutType(rawValue: Int(self.type16)) ?? .shortcut }
         set { self.type16 = Int16(newValue.rawValue) }
     }
-    
 }

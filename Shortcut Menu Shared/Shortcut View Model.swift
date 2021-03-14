@@ -12,12 +12,12 @@ import SwiftUI
 import CoreData
 import UniformTypeIdentifiers
 
-public class ShortcutViewModel: ObservableObject, Identifiable {
+public enum ShortcutType: Int {
+    case shortcut = 0
+    case section = 1
+}
 
-    public enum ShortcutType: Int {
-        case shortcut = 0
-        case section = 1
-    }
+public class ShortcutViewModel: ObservableObject, Identifiable {
     
     // Managed object context
     let context: NSManagedObjectContext! = MasterData.context

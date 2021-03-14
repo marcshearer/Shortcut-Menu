@@ -13,7 +13,10 @@ struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
     @State private var lockImage: String = ""
     @State private var lockColor: Color = .red
-    @State private var settingShortcutKey: Bool = false
+    @State private var isSettingShortcutKey: Bool = false
+    private var isEnabled: Bool {
+        selection.editAction != .none && !isSettingShortcutKey
+    }
 
     init(selection: Selection) {
         self.selection = selection
@@ -59,7 +62,7 @@ struct SetupDetailView: View {
             
             Spacer()
                         
-            if selection.editObject == .section && selection.editAction == .none {
+            if selection.editObject == .section && !isEnabled {
                 if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
                     // Nested section - add button to un-nest it
                     ToolbarButton("remove nest") {
@@ -70,14 +73,14 @@ struct SetupDetailView: View {
                 Spacer().frame(width: 10)
             }
             
-            if selection.editObject != .none && selection.editAction == .none {
+            if selection.editObject != .none && !isEnabled && !isSettingShortcutKey {
                 ToolbarButton("pencil.circle.fill") {
                     selection.editAction = .amend
                     self.formatLockButton()
                 }
             }
             
-            if selection.editObject != .none && selection.editAction != .none {
+            if selection.editObject != .none && (isEnabled || isSettingShortcutKey) {
                 
                 if self.canSave() {
                     ToolbarButton("checkmark.circle.fill") {
@@ -89,6 +92,8 @@ struct SetupDetailView: View {
                         }
                         selection.editAction = .none
 #if canImport(AppKit)
+                        isSettingShortcutKey = false
+                        ShortcutKeyMonitor.shared.stopDefine()
                         StatusMenu.shared.updateShortcutKeys()
 #endif
                     }
@@ -105,6 +110,8 @@ struct SetupDetailView: View {
                             selection.selectShortcut(shortcut: selection.selectedShortcut!)
                         }
                     }
+                    isSettingShortcutKey = false
+                    ShortcutKeyMonitor.shared.stopDefine()
                     selection.editAction = .none
                 }
             }
@@ -132,9 +139,9 @@ struct SetupDetailView: View {
     fileprivate func sectionForm() -> some View {
         return VStack(spacing: 0) {
             
-            Input(title: "Section name", field: $selection.editSection.name, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: selection.editAction != .none)
+            Input(title: "Section name", field: $selection.editSection.name, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
             
-            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, message: $selection.editSection.nameError, width: 100, isEnabled: selection.editAction != .none)
+            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, message: $selection.editSection.nameError, width: 100, isEnabled: isEnabled)
             
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
@@ -142,14 +149,14 @@ struct SetupDetailView: View {
     
     fileprivate func shortcutForm() -> some View {
         return VStack(spacing: 0) {
-            let finderVisible = (selection.editAction != .none && MyApp.target == .macOS)
-            let hideVisible = (selection.editAction != .none && $selection.editShortcut.copyText.wrappedValue != "")
+            let finderVisible = (isEnabled && MyApp.target == .macOS)
+            let hideVisible = (isEnabled && $selection.editShortcut.copyText.wrappedValue != "")
             
-            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: selection.editAction != .none)
+            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
 
             OverlapButton( {
                 let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: selection.editAction != .none && selection.editShortcut.canEditUrl)
+                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && selection.editShortcut.canEditUrl)
             }, {
                 if finderVisible {
                     if selection.editShortcut.canEditUrl {
@@ -162,7 +169,7 @@ struct SetupDetailView: View {
             
             OverlapButton( {
                 let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: selection.editAction != .none,
+                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: isEnabled,
                       onChange: { (value) in
                         if value == "" {
                             $selection.editShortcut.copyPrivate.wrappedValue = false
@@ -174,7 +181,7 @@ struct SetupDetailView: View {
                 }
             })
             
-            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: selection.editAction != .none && selection.editShortcut.canEditCopyMessage)
+            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
             
             if MyApp.target == .macOS {
                 self.shortcutKey()
@@ -234,7 +241,7 @@ struct SetupDetailView: View {
                 .frame(width: 24, height: 24)
         })
         .buttonStyle(PlainButtonStyle())
-        .disabled(selection.editAction == .none)
+        .disabled(!isEnabled)
     }
     
     private func clearButton() -> some View {
@@ -264,7 +271,7 @@ struct SetupDetailView: View {
                 .foregroundColor(Color.blue)
         })
         .buttonStyle(PlainButtonStyle())
-        .disabled(selection.editAction == .none)
+        .disabled(!isEnabled)
     }
     
     static public func findFile(relativeTo: URL? = nil,completion: @escaping (URL, Data)->()) {
@@ -298,7 +305,7 @@ struct SetupDetailView: View {
     private func shortcutKey() -> some View {
         VStack {
             Spacer().frame(height: inputTopHeight)
-            InputTitle(title: "Shortcut key", isEnabled: selection.editAction != .none)
+            InputTitle(title: "Shortcut key", isEnabled: isEnabled || isSettingShortcutKey)
             Spacer().frame(height: 8)
             HStack {
                 Spacer().frame(width: 32)
@@ -307,38 +314,38 @@ struct SetupDetailView: View {
                     Text(selection.editShortcut.keyEquivalent)
                         
                         .font(inputFont)
-                        .foregroundColor(selection.editAction != .none ? Palette.input.text : Palette.input.faintText)
+                        .foregroundColor(isEnabled || isSettingShortcutKey ? Palette.input.text : Palette.input.faintText)
                         .font(defaultFont)
                     Spacer()
                 }
                 .frame(width: 100, height: inputDefaultHeight)
                 .background(Palette.input.background)
                 .cornerRadius(10)
-                if selection.editAction != .none {
+                if isEnabled || isSettingShortcutKey {
                     Spacer().frame(width: 16)
                     Button(action: {
-                        settingShortcutKey.toggle()
-                        if settingShortcutKey {
+                        isSettingShortcutKey.toggle()
+                        if isSettingShortcutKey {
                             ShortcutKeyMonitor.shared.startDefine(notify: shortcutKeyNotify)
                         } else {
                             ShortcutKeyMonitor.shared.stopDefine()
                         }
                     }) {
-                        Text(settingShortcutKey ? "Cancel" : (selection.editShortcut.keyEquivalent == "" ? "Add" : "Change"))
+                        Text(isSettingShortcutKey ? "Cancel" : (selection.editShortcut.keyEquivalent == "" ? "Add" : "Change"))
                             .frame(width: 80, height: inputDefaultHeight)
                             .background(Palette.enabledButton.background)
                             .foregroundColor(Palette.enabledButton.text)
                             .cornerRadius(10)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(selection.editAction == .none)
+                    .disabled(!(isEnabled || isSettingShortcutKey))
                 }
                 Spacer()
             }
                 Spacer().frame(height: 8)
                 HStack {
                     Spacer().frame(width: 32)
-                    Text(settingShortcutKey ? "Press key to set or Backspace to clear" : "")
+                    Text(isSettingShortcutKey ? "Press key to set or Backspace to clear" : "")
                         .font(messageFont)
                         .foregroundColor(Palette.background.themeText)
                         .frame(height: 10)
@@ -351,7 +358,8 @@ struct SetupDetailView: View {
     
     private func shortcutKeyNotify(_ key: String) {
         selection.editShortcut.keyEquivalent = key
-        settingShortcutKey = false
+        ShortcutKeyMonitor.shared.stopDefine()
+        isSettingShortcutKey = false
         selection.objectWillChange.send()
     }
 }
