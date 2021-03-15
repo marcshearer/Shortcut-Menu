@@ -43,3 +43,6 @@ var messageFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
 let defaultSectionDisplayName = "Default Section"
 let defaultSectionTitleName = "Default"
 let defaultSectionMenuName = "Defaults only"
+
+let backupDirectoryDateFormat = "yyyy-MM-dd-HH-mm-ss-SSS"
+let backupDateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"

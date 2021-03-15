@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B20B324924557E0C003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
+		B22DED5625FF48F900E4BA15 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5525FF48F900E4BA15 /* Backup.swift */; };
+		B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5525FF48F900E4BA15 /* Backup.swift */; };
 		B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24DED6725F0D8BD00F76629 /* Whisper View.swift */; };
 		B26F4428244B3837004D794E /* Toolbar Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* Toolbar Button.swift */; };
 		B26F4429244B390C004D794E /* Toolbar Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* Toolbar Button.swift */; };
@@ -96,6 +98,7 @@
 
 /* Begin PBXFileReference section */
 		B20B324824557E0C003F6664 /* String Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String Extensions.swift"; sourceTree = "<group>"; };
+		B22DED5525FF48F900E4BA15 /* Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backup.swift; sourceTree = "<group>"; };
 		B24DED6725F0D8BD00F76629 /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* Toolbar Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Toolbar Button.swift"; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -261,6 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				B29D46CE244DD9170001F984 /* Constraint.swift */,
+				B22DED5525FF48F900E4BA15 /* Backup.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -538,6 +542,7 @@
 				B2C2641E25F7E43A0054D2ED /* Shortcut List View.swift in Sources */,
 				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B2DF651725FB5EC200C92386 /* My Image.swift in Sources */,
+				B22DED5625FF48F900E4BA15 /* Backup.swift in Sources */,
 				B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */,
 				B20B324924557E0C003F6664 /* String Extensions.swift in Sources */,
 				B2C2642525F7EDDA0054D2ED /* Actions.swift in Sources */,
@@ -583,6 +588,7 @@
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
 				B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */,
 				B2DF651825FB5EC200C92386 /* My Image.swift in Sources */,
+				B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */,
 				B2C2642825F8B4540054D2ED /* Setup View.swift in Sources */,
 				B2B82D0525F25DD20005B07C /* Input Title.swift in Sources */,
 				B28D427F244753FC00C2577E /* Section Managed Object.swift in Sources */,
