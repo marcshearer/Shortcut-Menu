@@ -78,10 +78,10 @@ public class SectionViewModel : ObservableObject, Identifiable {
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
         
-        Publishers.CombineLatest($menuTitle, $keyEquivalent)
+        $menuTitle
             .receive(on: RunLoop.main)
-            .map { (menuTitle, keyEquivalent) in
-                return (menuTitle == "" ? "" : keyEquivalent)
+            .map { (menuTitle) in
+                return (menuTitle == "" ? "" : self.keyEquivalent)
             }
         .assign(to: \.keyEquivalent, on: self)
         .store(in: &cancellableSet)

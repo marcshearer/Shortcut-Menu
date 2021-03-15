@@ -30,10 +30,10 @@ class ShortcutKeyMonitor {
     // MARK: - Monitor shortcut key ======================================================================= -
 
     public func startMonitor(keys: [(key: String, id: Any)] = [], notify: @escaping (Any)->()) {
-        monitorNotify = notify
         let options = NSDictionary(object: kCFBooleanTrue!, forKey: kAXTrustedCheckOptionPrompt.takeUnretainedValue() as NSString) as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
         if (trusted) {
+            monitorNotify = notify
             monitorContext = NSEvent.addGlobalMonitorForEvents(matching: .keyDown, handler: monitorHandler)
         }
         if monitorContext != nil {
