@@ -77,7 +77,7 @@ class Backup {
             if specialValue.keys.first == "date" {
                 result = Utility.dateFromString(specialValue["date"]!, format: backupDateFormat, localized: false)
             } else if specialValue.keys.first == "uuid" {
-                result = UUID(uuidString: specialValue["date"]!)
+                result = UUID(uuidString: specialValue["uuid"]!)
             } else if specialValue.keys.first == "data" {
                 result = Data(base64Encoded: specialValue["data"] ?? "")
             } else if specialValue.keys.first == "asset" {

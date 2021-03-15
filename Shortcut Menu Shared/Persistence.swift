@@ -32,11 +32,38 @@ struct PersistenceController {
     }()
 
     let container: NSPersistentContainer
-
+    
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "Shortcut_Menu")
+        
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            // Get core data directory
+            let storeDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            
+            // Create a store description for a local store
+            let localStoreLocation = storeDirectory.appendingPathComponent("Shortcut Menu Mac").appendingPathComponent("Shortcut_Menu_Mac.sqlite")
+            let localStoreDescription =
+                NSPersistentStoreDescription(url: localStoreLocation)
+            localStoreDescription.configuration = "Local"
+            
+            // Create a store description for a CloudKit-backed local store
+            let cloudStoreLocation = storeDirectory.appendingPathComponent("Shortcut_Cloud.sqlite")
+            let cloudStoreDescription =
+                NSPersistentStoreDescription(url: cloudStoreLocation)
+            cloudStoreDescription.configuration = "Cloud"
+            
+            // Set the container options on the cloud store
+            cloudStoreDescription.cloudKitContainerOptions =
+                NSPersistentCloudKitContainerOptions(
+                    containerIdentifier: "iCloud.ShearerOnline.Shortcuts")
+            
+            // Update the container's list of store descriptions
+            container.persistentStoreDescriptions = [
+                cloudStoreDescription,
+                localStoreDescription
+            ]
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {

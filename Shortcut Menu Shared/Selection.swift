@@ -250,24 +250,22 @@ public class Selection : ObservableObject, Identifiable {
         return self.sections.first(where: { $0.id == id })
     }
     
-    @discardableResult public func updateShortcutSequence(leavingGapAfter: ShortcutViewModel? = nil, section: SectionViewModel? = nil) -> Int {
-        var last = 1
+    @discardableResult public func updateShortcutSequence(leavingGapAfter: ShortcutViewModel? = nil) -> Int {
+        var last = 0
         var gapSequence = 0
         
-        if let section = section ?? self.selectedSection {
-            for shortcut in section.shortcuts {
-                if shortcut.sequence != last + 1 {
-                    shortcut.sequence = last + 1
-                    shortcut.save()
-                    if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
-                        self.editShortcut.sequence = shortcut.sequence
-                    }
+        for shortcut in self.shortcuts {
+            if shortcut.sequence != last + 1 {
+                shortcut.sequence = last + 1
+                shortcut.save()
+                if shortcut.id == self.editShortcut.id && shortcut.sequence != self.editShortcut.sequence {
+                    self.editShortcut.sequence = shortcut.sequence
                 }
-                last = shortcut.sequence
-                if shortcut.id == leavingGapAfter?.id {
-                    gapSequence = last + 1
-                    last += 1
-                }
+            }
+            last = shortcut.sequence
+            if shortcut.id == leavingGapAfter?.id {
+                gapSequence = last + 1
+                last += 1
             }
         }
         return gapSequence
@@ -321,7 +319,7 @@ public class Selection : ObservableObject, Identifiable {
                                                 // Work out where to put it - if no index insert at end
                                                 let insertAfterIndex = afterIndex ?? section.shortcuts.count
                                                 let insertAfter = (insertAfterIndex == 0 ? nil : section.shortcuts[insertAfterIndex - 1])
-                                                shortcut.sequence = self.updateShortcutSequence(leavingGapAfter: insertAfter, section: section)
+                                                shortcut.sequence = self.updateShortcutSequence(leavingGapAfter: insertAfter)
                                                 
                                                 // Create the shortcut
                                                 self.newShortcut(section: (section), shortcut: shortcut)

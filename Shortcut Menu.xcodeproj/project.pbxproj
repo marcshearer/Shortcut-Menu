@@ -78,6 +78,8 @@
 		B2C2643125F8B45E0054D2ED /* Setup Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */; };
 		B2C2643525F8BB9B0054D2ED /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2643425F8BB9B0054D2ED /* Tile.swift */; };
 		B2C2643625F8BB9B0054D2ED /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2643425F8BB9B0054D2ED /* Tile.swift */; };
+		B2C9F96025FE95E00004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */; };
+		B2C9F96225FE95F60004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F96125FE95F60004E4E4 /* CloudKit.framework */; };
 		B2D84BE125F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BE225F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE925F7C22A00966421 /* Persistence.swift */; };
@@ -145,6 +147,9 @@
 		B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 		B2C2642425F7EDDA0054D2ED /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		B2C2643425F8BB9B0054D2ED /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
+		B2C9F95D25FE95D50004E4E4 /* Shortcut Menu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Shortcut Menu.entitlements"; sourceTree = "<group>"; };
+		B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B2C9F96125FE95F60004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
 		B2D84BE025F779B500966421 /* Debug Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Debug Utilities.swift"; sourceTree = "<group>"; };
 		B2D84BE925F7C22A00966421 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		B2DF650D25FB4AC600C92386 /* Notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
@@ -160,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2C9F96025FE95E00004E4E4 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +173,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2C9F96225FE95F60004E4E4 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,11 +295,13 @@
 		B28D41DC2443538B00C2577E = {
 			isa = PBXGroup;
 			children = (
+				B2C9F95D25FE95D50004E4E4 /* Shortcut Menu.entitlements */,
 				B2DF650D25FB4AC600C92386 /* Notes.txt */,
 				B28D42862447573900C2577E /* Shortcut Menu Shared */,
 				B28D41E72443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42662447515100C2577E /* Shortcut Menu Mac */,
 				B28D41E62443538B00C2577E /* Products */,
+				B2C9F95E25FE95E00004E4E4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -411,6 +420,15 @@
 				B2C2642425F7EDDA0054D2ED /* Actions.swift */,
 			);
 			name = Actions;
+			sourceTree = "<group>";
+		};
+		B2C9F95E25FE95E00004E4E4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B2C9F96125FE95F60004E4E4 /* CloudKit.framework */,
+				B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B2D84BF625F7D8D500966421 /* Stub classes */ = {
@@ -763,6 +781,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
@@ -783,6 +802,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;

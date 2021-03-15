@@ -32,8 +32,19 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="Test" representedClassName="Test" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+    </entity>
+    <configuration name="Cloud">
+        <memberEntity name="Test"/>
+    </configuration>
+    <configuration name="Local">
+        <memberEntity name="Section"/>
+        <memberEntity name="Shortcut"/>
+    </configuration>
     <elements>
         <element name="Section" positionX="-54" positionY="-9" width="128" height="119"/>
         <element name="Shortcut" positionX="-27" positionY="36" width="128" height="209"/>
+        <element name="Test" positionX="-36" positionY="108" width="128" height="44"/>
     </elements>
 </model>
