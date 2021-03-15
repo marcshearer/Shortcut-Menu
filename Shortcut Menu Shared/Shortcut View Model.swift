@@ -214,8 +214,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.shortcutMO!.copyText = self.copyText
         self.shortcutMO!.copyMessage = self.copyMessage
         self.shortcutMO!.copyPrivate = self.copyPrivate
-        self.shortcutMO!.section = self.section?.name ?? ""
-        self.shortcutMO!.nestedSection = self.nestedSection?.name ?? ""
+        self.shortcutMO!.sectionId = self.section?.id
+        self.shortcutMO!.nestedSectionId = self.nestedSection?.id
         self.shortcutMO!.keyEquivalent = self.keyEquivalent
         self.shortcutMO!.sequence = self.sequence
     }

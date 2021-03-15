@@ -93,7 +93,7 @@ struct SetupSectionListView: View {
                 self.selection.removeShortcut(shortcut: shortcut)
                 
                 // Find the section and move it to the drop location
-                if let sectionIndex = self.selection.sections.firstIndex(where: {$0.name == shortcut.name}) {
+                if let sectionIndex = self.selection.sections.firstIndex(where: {$0.id == shortcut.id}) {
                     self.selection.sections.move(fromOffsets: [sectionIndex], toOffset: to)
                     self.selection.updateSectionSequence()
                 }

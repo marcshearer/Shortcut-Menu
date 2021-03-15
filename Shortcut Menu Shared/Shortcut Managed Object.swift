@@ -10,30 +10,21 @@ import CoreData
 
 public class ShortcutMO : NSManagedObject {
 
-    @NSManaged public var idString: String
+    @NSManaged public var id: UUID
     @NSManaged public var name: String
     @NSManaged public var url: String
     @NSManaged public var urlSecurityBookmark: Data?
     @NSManaged public var copyPrivate: Bool
     @NSManaged public var copyText: String
     @NSManaged public var copyMessage: String
-    @NSManaged public var section: String
+    @NSManaged public var sectionId: UUID?
     @NSManaged public var sequence64: Int64
     @NSManaged public var type16: Int16
-    @NSManaged public var nestedSection: String
+    @NSManaged public var nestedSectionId: UUID?
     @NSManaged public var keyEquivalent: String
 }
 
 extension ShortcutMO: Identifiable {
-    
-    public var id: UUID {
-        get {
-            return UUID(uuidString: idString) ?? UUID()
-        }
-        set {
-            self.idString = newValue.uuidString
-        }
-    }
     
     public var sequence: Int {
         get {

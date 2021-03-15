@@ -32,10 +32,9 @@ public class MasterData : ObservableObject {
         // Fetch core data
         self.sectionMOs = self.fetch(from: "Section", sort: [(key: "sequence64", ascending: true)])
         
-        self.shortcutMOs = self.fetch(from: "Shortcut", sort: [(key: "section", ascending: true),
+        self.shortcutMOs = self.fetch(from: "Shortcut", sort: [(key: "sectionId", ascending: true),
                                                                (key: "sequence64", ascending: true)])
  
-        
         // Build section list
         for sectionMO in self.sectionMOs {
             sections.append(SectionViewModel(sectionMO: sectionMO, master: self))
@@ -43,16 +42,16 @@ public class MasterData : ObservableObject {
         
         // Build shortcut list
         for shortcutMO in self.shortcutMOs {
-            var section = sections.first(where: {$0.name == shortcutMO.section})
+            var section = sections.first(where: {$0.id == shortcutMO.sectionId})
             if section == nil {
                 // Section not found in current list - add it
-                section = SectionViewModel()
-                section?.name = shortcutMO.section
+                section = SectionViewModel(id: shortcutMO.sectionId!, master: MasterData.shared)
                 section?.sequence = self.nextSectionSequence()
+                section?.name = shortcutMO.sectionId?.uuidString ?? "Error"
                 sections.append(section!)
                 section?.save()
             }
-            let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.name == shortcutMO.nestedSection}) : nil)
+            let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.id == shortcutMO.nestedSectionId}) : nil)
             shortcuts.append(ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, master: self))
         }
         
@@ -63,6 +62,7 @@ public class MasterData : ObservableObject {
             sections.insert(defaultSection, at: 0)
             defaultSection.save()
         }
+
     }
     
     public func sectionsWithShortcuts(excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
@@ -70,7 +70,7 @@ public class MasterData : ObservableObject {
     }
     
     public func isNested(_ section: SectionViewModel) -> Bool {
-        return self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.name == section.name}) != nil
+        return self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id}) != nil
     }
     
     public func section(named name: String) -> SectionViewModel? {
@@ -90,7 +90,7 @@ public class MasterData : ObservableObject {
     }
 
     public func nextShortcutSequence(section: SectionViewModel) -> Int {
-        return self.shortcuts.filter {$0.section?.name == section.name}.map { $0.sequence }.reduce(0) {max($0, $1)} + 1
+        return self.shortcuts.filter {$0.section?.id == section.id}.map { $0.sequence }.reduce(0) {max($0, $1)} + 1
     }
     
     private func fetch<MO: NSManagedObject>(from entityName: String,

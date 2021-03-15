@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Section" representedClassName=".SectionMO" syncable="YES">
-        <attribute name="idString" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
         <attribute name="menuTitle" optional="YES" attributeType="String"/>
@@ -9,7 +9,7 @@
         <attribute name="sequence64" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
-                <constraint value="idString"/>
+                <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
@@ -17,18 +17,18 @@
         <attribute name="copyMessage" attributeType="String"/>
         <attribute name="copyPrivate" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="copyText" attributeType="String"/>
-        <attribute name="idString" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
-        <attribute name="nestedSection" optional="YES" attributeType="String"/>
-        <attribute name="section" attributeType="String"/>
+        <attribute name="nestedSectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sequence64" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="type16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="url" attributeType="String"/>
         <attribute name="urlSecurityBookmark" optional="YES" attributeType="Binary"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
-                <constraint value="idString"/>
+                <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>

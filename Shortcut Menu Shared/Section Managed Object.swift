@@ -10,7 +10,7 @@ import CoreData
 
 public class SectionMO : NSManagedObject {
 
-    @NSManaged public var idString: String
+    @NSManaged public var id: UUID
     @NSManaged public var isDefault: Bool
     @NSManaged public var name: String
     @NSManaged public var sequence64: Int64
@@ -19,15 +19,6 @@ public class SectionMO : NSManagedObject {
 }
 
 extension SectionMO: Identifiable {
-    
-    public var id: UUID {
-        get {
-            return UUID(uuidString: idString) ?? UUID()
-        }
-        set {
-            self.idString = newValue.uuidString
-        }
-    }
     
     public var sequence: Int {
         get {

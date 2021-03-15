@@ -63,7 +63,7 @@ public class Selection : ObservableObject, Identifiable {
             self.editObject = .section
 
             if updateShortcuts {
-                self.shortcuts = self.master.shortcuts.filter( { $0.section?.name == self.selectedSection?.name} ).sorted(by: {$0.sequence < $1.sequence })
+                self.shortcuts = self.master.shortcuts.filter( { $0.section?.id == self.selectedSection?.id} ).sorted(by: {$0.sequence < $1.sequence })
                 self.shortcutsTitle = "\(self.selectedSection!.titleName) Shortcuts"
             }
             
@@ -97,14 +97,6 @@ public class Selection : ObservableObject, Identifiable {
         section.save()
 
         self.sections = master.sections
-
-        // Need to update section names on shortcuts in this section
-        for shortcut in self.master.shortcuts.filter({$0.section?.name == oldName}) {
-            shortcut.section = section
-            if oldName != section.name {
-                self.updateShortcut(shortcut: shortcut)
-            }
-        }
         
         // Need to update section names on shortcuts which nest this section
         for shortcut in self.master.shortcuts.filter({$0.type == .section && $0.nestedSection?.name == oldName}) {
@@ -120,7 +112,7 @@ public class Selection : ObservableObject, Identifiable {
     
     func removeSection(section: SectionViewModel) {
         
-        for shortcut in self.master.shortcuts.filter({$0.section?.name == section.name}) {
+        for shortcut in self.master.shortcuts.filter({$0.section?.id == section.id}) {
             self.removeShortcut(shortcut: shortcut)
         }
         
