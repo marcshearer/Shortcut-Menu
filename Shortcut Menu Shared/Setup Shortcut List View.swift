@@ -82,7 +82,7 @@ struct SetupShortcutListView: View {
     func onInsertShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             print("from: \(from) to: \(to)")
-            selection.shortcuts.move(fromOffsets: [from], toOffset: to)
+            selection.shortcuts.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
             selection.updateShortcutSequence()
         }
     }

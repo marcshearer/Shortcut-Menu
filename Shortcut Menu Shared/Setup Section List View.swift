@@ -79,7 +79,7 @@ struct SetupSectionListView: View {
     func onInsertSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             if to > 0 {
-                self.selection.sections.move(fromOffsets: [from], toOffset: to)
+                self.selection.sections.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
                 self.selection.updateSectionSequence()
             }
         }
