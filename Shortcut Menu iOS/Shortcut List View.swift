@@ -31,7 +31,7 @@ struct ShortcutListView: View {
                                  tapAction: {
                                     displayState.set(expanded: !entry.expanded, on: entry)
                                  }
-                            )
+                            ).debugPrint("depth: \(entry.depth), type: \(entry.type) - \(entry.text)")
                             
                         } else {
                             // Shortcut
@@ -44,11 +44,16 @@ struct ShortcutListView: View {
                                                     bottom: 2,
                                                     trailing: 12),
                                  tapAction: {
-                                    shortcutAction(shortcut: entry.text)
+                                    if let shortcut = MasterData.shared.shortcut(withId: entry.linkId) {
+                                        shortcutAction(shortcut: shortcut)
+                                    }
                                  })
                         }
                     }
                 }
+            }
+            .onAppear {
+                displayState.setupList(section: displayState.selectedSection)
             }
         }
     }
@@ -56,25 +61,22 @@ struct ShortcutListView: View {
     func expandButtons(entry: DisplayStateViewModel.Entry) -> AnyView {
             return AnyView(Image(systemName: "chevron.\(entry.expanded ? "down" : "forward").circle.fill")
                     .font(defaultFont)
-                    .foregroundColor(entry.color.text)
-                    .debugPrint("\(entry.text) \(entry.expanded)"))
+                    .foregroundColor(entry.color.text))
     }
     
-    func shortcutAction(shortcut name: String) {
-        if let shortcut = MasterData.shared.shortcut(named: name) {
-            displayState.selectedShortcut = shortcut.name
-            var message = ""
-            if shortcut.url != "" {
-                message = "Linking to \(shortcut.name)...\n\n"
+    func shortcutAction(shortcut: ShortcutViewModel) {
+        displayState.selectedShortcut = shortcut.name
+        var message = ""
+        if shortcut.url != "" {
+            message = "Linking to \(shortcut.name)...\n\n"
+        }
+        Actions.shortcut(name: shortcut.name) { (copyMessage) in
+            if let copyMessage = copyMessage {
+                message += copyMessage
             }
-            Actions.shortcut(name: shortcut.name) { (copyMessage) in
-                if let copyMessage = copyMessage {
-                    message += copyMessage
-                }
-                MessageBox.shared.show(message, closeButton: false, hideAfter: 3)
-                Utility.executeAfter(delay: 3) {
-                    displayState.selectedShortcut = nil
-                }
+            MessageBox.shared.show(message, closeButton: false, hideAfter: 3)
+            Utility.executeAfter(delay: 3) {
+                displayState.selectedShortcut = nil
             }
         }
     }
@@ -83,8 +85,9 @@ struct ShortcutListView: View {
 class DisplayStateViewModel: ObservableObject {
     
     class Entry: Identifiable, ObservableObject {
-        var id: UUID
-        @Published var type: ShortcutViewModel.ShortcutType
+        internal var id = UUID()
+        @Published var type: ShortcutType
+        @Published var linkId: UUID
         @Published var text: String
         @Published var depth: Int
         @Published var expanded: Bool
@@ -95,8 +98,8 @@ class DisplayStateViewModel: ObservableObject {
                                          (depth == 0        ? Palette.header :
                                                               Palette.subHeader)) }
         
-        init(type: ShortcutViewModel.ShortcutType, text: String, depth: Int, expanded: Bool = true, visible: Bool = true, parent: Entry? = nil) {
-            self.id = UUID()
+        init(type: ShortcutType, linkId: UUID, text: String, depth: Int, expanded: Bool = true, visible: Bool = true, parent: Entry? = nil) {
+            self.linkId = linkId
             self.type = type
             self.text = text
             self.depth = depth
@@ -106,7 +109,7 @@ class DisplayStateViewModel: ObservableObject {
         }
     }
     
-    @Published var selectedSection: String?
+    var selectedSection: String?
     @Published var selectedShortcut: String?
     @Published var list: [Entry] = []
     
@@ -121,7 +124,7 @@ class DisplayStateViewModel: ObservableObject {
     public func set(expanded: Bool, on entry: Entry) {
         var changed = false
         for listEntry in list {
-            if listEntry.id == entry.id {
+            if listEntry.linkId == entry.linkId {
                 if entry.expanded != expanded {
                     entry.expanded = expanded
                     changed = true
@@ -146,58 +149,63 @@ class DisplayStateViewModel: ObservableObject {
     }
     
     private func setupMappings() {
-        $selectedSection
+/*        $selectedSection
             .receive(on: RunLoop.main)
             .map { (selectedSection) in
                 return (self.setupList(section: selectedSection))
             }
         .assign(to: \.list, on: self)
         .store(in: &cancellableSet)
-    }
+*/    }
     
-    private func setupList(section: String?) -> [Entry] {
+    public func setupList(section: String?) {
         var list: [Entry] = []
-        if selectedSection != nil {
-            if selectedSection != "" {
-                add(list: &list, section: selectedSection!)
+        if let section = section {
+            if let selectedSection = MasterData.shared.section(named: section) {
+                if !selectedSection.isDefault {
+                    add(list: &list, section: selectedSection)
+                }
             }
         }
         
-        add(list: &list, section: "", depth: 0)
+        if let defaultSection = MasterData.shared.defaultSection {
+            add(list: &list, section: defaultSection)
+        }
         
-        let parent = add(list: &list, type: .section, text: "Other Shortcuts", depth: 0)
+        let parent = add(list: &list, type: .section, id: UUID(), text: "Other Shortcuts", depth: 0)
         for section in MasterData.shared.sectionsWithShortcuts(excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
             add(list: &list, section: section, depth: 1, expanded: false, parent: parent)
         }
-        return list
-    }
-    
-    private func add(list: inout [Entry], section name: String, depth: Int = 0, header: Bool = true) {
-        if let section = MasterData.shared.section(named: name) {
-            add(list: &list, section: section, depth: depth, header: header)
-        }
+        self.list = list
+        self.objectWillChange.send()
     }
     
     private func add(list: inout [Entry], section: SectionViewModel, depth: Int = 0, expanded: Bool = true, header: Bool = true, parent: Entry? = nil) {
         var parent = parent
+        let shortcuts = section.shortcuts
+        var depth = depth
         
-        if header {
-            parent = add(list: &list, type: .section, text: section.name, depth: depth, expanded: expanded, visible: depth <= 1, parent: parent)
-        }
-        
-        for shortcut in section.shortcuts {
-            if shortcut.type == .section {
-                if let nestedSection = shortcut.nestedSection {
-                    add(list: &list, section: nestedSection, depth: depth + 1, expanded: false, parent: parent)
+        if shortcuts.count > 0 {
+            
+            if header && shortcuts.count > 1 {
+                parent = add(list: &list, type: .section, id: section.id, text: section.name, depth: depth, expanded: expanded, visible: depth <= 1, parent: parent)
+                depth += 1
+            }
+            
+            for shortcut in shortcuts {
+                if shortcut.type == .section {
+                    if let nestedSection = shortcut.nestedSection {
+                        add(list: &list, section: nestedSection, depth: depth, expanded: false, parent: parent)
+                    }
+                } else {
+                    add(list: &list, type: .shortcut, id: shortcut.id, text: shortcut.name, depth: depth, expanded: expanded, visible: expanded, parent: parent)
                 }
-            } else {
-                add(list: &list, type: .shortcut, text: shortcut.name, depth: depth + 1, visible: depth == 0, parent: parent)
             }
         }
     }
     
-    @discardableResult private func add(list: inout [Entry], type: ShortcutViewModel.ShortcutType, text: String, depth: Int, expanded: Bool =  true, visible: Bool = true, parent: Entry? = nil) -> Entry {
-        let entry = Entry(type: type, text: text, depth: depth, expanded: expanded, visible: visible, parent: parent)
+    @discardableResult private func add(list: inout [Entry], type: ShortcutType, id: UUID, text: String, depth: Int, expanded: Bool =  true, visible: Bool = true, parent: Entry? = nil) -> Entry {
+        let entry = Entry(type: type, linkId: id, text: text, depth: depth, expanded: expanded, visible: visible, parent: parent)
         list.append(entry)
         return entry
     }

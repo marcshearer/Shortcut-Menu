@@ -16,6 +16,7 @@ public class SectionMO : NSManagedObject {
     @NSManaged public var sequence64: Int64
     @NSManaged public var menuTitle: String
     @NSManaged public var keyEquivalent: String
+    @NSManaged public var inline: Bool
 }
 
 extension SectionMO: Identifiable {

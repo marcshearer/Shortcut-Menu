@@ -6,14 +6,43 @@
 //  Copyright © 2021 Marc Shearer. All rights reserved.
 //
 
-import Cocoa
 import CoreData
+#if canImport(AppKit)
+import AppKit
+#endif
 
 class Backup {
     
     public static let shared = Backup()
     
-    public func backup(entity: NSEntityDescription, groupName: String, elementName: String, sort: [(key: String, ascending: Bool)] = [], directory: URL, assetsDirectory: URL) {
+    public func backup() {
+        let fileManager = FileManager()
+        let (backupsUrl, assetsBackupUrl) = self.getDirectories()
+        let dateString = Utility.dateString(Date(), format: backupDirectoryDateFormat, localized: false)
+        let thisBackupUrl = backupsUrl.appendingPathComponent(dateString)
+        _ = (try! fileManager.createDirectory(at: thisBackupUrl, withIntermediateDirectories: true))
+        _ = (try! fileManager.createDirectory(at: assetsBackupUrl, withIntermediateDirectories: true))
+
+        Backup.shared.backup(entity: SectionMO.entity(), groupName: "data", elementName: "Sections", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
+        Backup.shared.backup(entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
+    }
+    
+    public func restore(dateString: String) {
+        let (backupsUrl, assetsBackupUrl) = self.getDirectories()
+        let thisBackupUrl = backupsUrl.appendingPathComponent(dateString)
+        
+        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: SectionMO.entity(), groupName: "data", elementName: "Sections")
+        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts")
+    }
+    
+    private func getDirectories() -> (URL, URL) {
+        let documentsUrl:URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last! as URL
+        let backupsUrl = documentsUrl.appendingPathComponent("backups")
+        let assetsBackupUrl = backupsUrl.appendingPathComponent("assets")
+        return (backupsUrl, assetsBackupUrl)
+    }
+    
+    private func backup(entity: NSEntityDescription, groupName: String, elementName: String, sort: [(key: String, ascending: Bool)] = [], directory: URL, assetsDirectory: URL) {
         var records = 0
         
         let recordType = entity.name!
@@ -38,7 +67,7 @@ class Backup {
         }
     }
     
-    public func restore(directory: URL, assetsDirectory: URL, entity: NSEntityDescription, groupName: String, elementName: String) {
+    private func restore(directory: URL, assetsDirectory: URL, entity: NSEntityDescription, groupName: String, elementName: String) {
         
         let recordType = entity.name!
         self.initialise(recordType: recordType)
@@ -117,6 +146,7 @@ class Backup {
             } else if let data = value! as? Data {
                 dictionary[key] = ["data" : data.base64EncodedString()]
             } else if let asset = value as? CKAsset {
+#if canImport(AppKit)
                 if let data = try? Data.init(contentsOf: asset.fileURL!) {
                     let imageFileURL = assetsDirectory.appendingPathComponent(record.objectID.uriRepresentation().absoluteString).appendingPathExtension("jpeg")
                     if (try? FileManager.default.removeItem(at: imageFileURL)) == nil {
@@ -132,7 +162,8 @@ class Backup {
                         }
                     }
                 }
-                // Failed - just insert and will probably crash
+#endif
+               // Failed - just insert and will probably crash
                 dictionary[key] = value!
             } else {
                 dictionary[key] = value!

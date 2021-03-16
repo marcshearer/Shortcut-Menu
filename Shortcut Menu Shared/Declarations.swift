@@ -29,9 +29,10 @@ let defaultSectionWidth: CGFloat = 200.0
 let defaultShortcutWidth: CGFloat = 300.0
 let defaultDetailWidth: CGFloat = 400.0
 let defaultFormHeight: CGFloat = 600.0
-let inputTopHeight: CGFloat = (MyApp.target == .macOS ? 10 : 30.0)
+let inputTopHeight: CGFloat = (MyApp.target == .macOS ? 10.0 : 30.0)
 let inputDefaultHeight: CGFloat = 30.0
-let bannerHeight: CGFloat = (MyApp.target == .macOS ? 60 : 70)
+let inputToggleDefaultHeight: CGFloat = (MyApp.target == .macOS ? 16.0 : 30.0)
+let bannerHeight: CGFloat = (MyApp.target == .macOS ? 60.0 : 70.0)
 
 // Fonts
 var defaultFont = Font.system(size: (MyApp.target == .macOS ? 20.0 : 28.0))

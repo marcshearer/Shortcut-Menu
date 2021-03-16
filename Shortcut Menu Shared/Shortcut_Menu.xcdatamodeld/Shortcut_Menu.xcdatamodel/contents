@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Section" representedClassName=".SectionMO" syncable="YES">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="inline" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
         <attribute name="menuTitle" optional="YES" attributeType="String"/>
@@ -43,7 +44,7 @@
         <memberEntity name="Shortcut"/>
     </configuration>
     <elements>
-        <element name="Section" positionX="-54" positionY="-9" width="128" height="119"/>
+        <element name="Section" positionX="-54" positionY="-9" width="128" height="134"/>
         <element name="Shortcut" positionX="-27" positionY="36" width="128" height="209"/>
         <element name="Test" positionX="-36" positionY="108" width="128" height="44"/>
     </elements>

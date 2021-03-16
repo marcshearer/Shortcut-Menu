@@ -305,7 +305,7 @@ public class Selection : ObservableObject, Identifiable {
                                             if let urlString = urlString {
                                                 
                                                 // Use provided section or if none use selected section or default
-                                                let section = section ?? self.selectedSection ?? MasterData.shared.section(named: "")!
+                                                let section = section ?? self.selectedSection ?? MasterData.shared.defaultSection!
                                                 
                                                 // Switch to this section
                                                 self.selectSection(section: section)

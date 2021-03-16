@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Carbon.HIToolbox
 
 struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
@@ -111,7 +110,9 @@ struct SetupDetailView: View {
                         }
                     }
                     isSettingShortcutKey = false
+#if canImport(AppKit)
                     ShortcutKeyMonitor.shared.stopDefine()
+#endif
                     selection.editAction = .none
                 }
             }
@@ -141,6 +142,10 @@ struct SetupDetailView: View {
             
             if !selection.editSection.isDefault {
                 Input(title: "Section name", field: $selection.editSection.name, message: $selection.editSection.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
+            }
+            
+            if MasterData.shared.isNested(selection.editSection) {
+                InputToggle(title: "Show Inline", text: "Show contents of section inline", field: $selection.editSection.inline, isEnabled: isEnabled)
             }
             
             Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
@@ -333,11 +338,13 @@ struct SetupDetailView: View {
                     Spacer().frame(width: 16)
                     Button(action: {
                         isSettingShortcutKey.toggle()
+#if canImport(AppKit)
                         if isSettingShortcutKey {
                             ShortcutKeyMonitor.shared.startDefine(notify: notify)
                         } else {
                             ShortcutKeyMonitor.shared.stopDefine()
                         }
+#endif
                     }) {
                         Text(isSettingShortcutKey ? "Cancel" : (key.wrappedValue == "" ? "Add" : "Change"))
                             .frame(width: 80, height: inputDefaultHeight)
@@ -366,14 +373,18 @@ struct SetupDetailView: View {
     
     private func shortcutKeyNotify(_ key: String) {
         selection.editShortcut.keyEquivalent = key
+#if canImport(AppKit)
         ShortcutKeyMonitor.shared.stopDefine()
+#endif
         isSettingShortcutKey = false
         selection.objectWillChange.send()
     }
     
     private func sectionKeyNotify(_ key: String) {
         selection.editSection.keyEquivalent = key
+#if canImport(AppKit)
         ShortcutKeyMonitor.shared.stopDefine()
+#endif
         isSettingShortcutKey = false
         selection.objectWillChange.send()
     }

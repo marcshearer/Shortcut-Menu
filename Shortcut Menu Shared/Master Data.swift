@@ -29,6 +29,8 @@ public class MasterData : ObservableObject {
         
     init() {
         
+        // Backup.shared.backup / restore("2021-03-15-10-31-22-391")
+        
         // Fetch core data
         self.sectionMOs = MasterData.fetch(from: "Section", sort: [(key: "sequence64", ascending: true)])
         
@@ -83,6 +85,10 @@ public class MasterData : ObservableObject {
 
     public func shortcut(named name: String) -> ShortcutViewModel? {
         return shortcuts.first(where: {$0.name == name})
+    }
+    
+    public func shortcut(withId id: UUID) -> ShortcutViewModel? {
+        return shortcuts.first(where: {$0.id == id})
     }
 
     public func nextSectionSequence() -> Int {
@@ -139,33 +145,5 @@ public class MasterData : ObservableObject {
         }
         
         return results
-    }
-    
-    private func backup() {
-        let fileManager = FileManager()
-        let (backupsUrl, assetsBackupUrl) = self.getDirectories()
-        let dateString = Utility.dateString(Date(), format: backupDirectoryDateFormat, localized: false)
-        let thisBackupUrl = backupsUrl.appendingPathComponent(dateString)
-        _ = (try! fileManager.createDirectory(at: thisBackupUrl, withIntermediateDirectories: true))
-        _ = (try! fileManager.createDirectory(at: assetsBackupUrl, withIntermediateDirectories: true))
-
-        Backup.shared.backup(entity: SectionMO.entity(), groupName: "data", elementName: "Sections", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
-        Backup.shared.backup(entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
-    }
-    
-    private func restore() {
-        let (backupsUrl, assetsBackupUrl) = self.getDirectories()
-        let dateString = "2021-03-15-10-31-22-391"
-        let thisBackupUrl = backupsUrl.appendingPathComponent(dateString)
-        
-        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: SectionMO.entity(), groupName: "data", elementName: "Sections")
-        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts")
-    }
-    
-    private func getDirectories() -> (URL, URL) {
-        let documentsUrl:URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last! as URL
-        let backupsUrl = documentsUrl.appendingPathComponent("backups")
-        let assetsBackupUrl = backupsUrl.appendingPathComponent("assets")
-        return (backupsUrl, assetsBackupUrl)
     }
 }

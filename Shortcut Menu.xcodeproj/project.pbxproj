@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		B20B324924557E0C003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
 		B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20B324824557E0C003F6664 /* String Extensions.swift */; };
-		B22DED5625FF48F900E4BA15 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5525FF48F900E4BA15 /* Backup.swift */; };
 		B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5525FF48F900E4BA15 /* Backup.swift */; };
+		B22DED5D25FF845B00E4BA15 /* Input Toggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */; };
+		B22DED5E25FF845B00E4BA15 /* Input Toggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */; };
+		B22DED6725FFCF5700E4BA15 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22DED5525FF48F900E4BA15 /* Backup.swift */; };
 		B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24DED6725F0D8BD00F76629 /* Whisper View.swift */; };
 		B26F4428244B3837004D794E /* Toolbar Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* Toolbar Button.swift */; };
 		B26F4429244B390C004D794E /* Toolbar Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F4427244B3837004D794E /* Toolbar Button.swift */; };
@@ -89,7 +91,6 @@
 		B2DF651325FB5E0900C92386 /* Link Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651125FB5E0900C92386 /* Link Presentation.swift */; };
 		B2DF651725FB5EC200C92386 /* My Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651625FB5EC200C92386 /* My Image.swift */; };
 		B2DF651825FB5EC200C92386 /* My Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651625FB5EC200C92386 /* My Image.swift */; };
-		B2DF652125FD11D300C92386 /* Shortcut Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF652025FD11D300C92386 /* Shortcut Key.swift */; };
 		B2DF652225FD11D300C92386 /* Shortcut Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF652025FD11D300C92386 /* Shortcut Key.swift */; };
 		B2E0708F25F4AF6A00316112 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CAB25F20D490005B07C /* Main.storyboard */; };
 		B2E0709925F4D8DA00316112 /* Slide In Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E0709825F4D8DA00316112 /* Slide In Menu.swift */; };
@@ -101,6 +102,7 @@
 /* Begin PBXFileReference section */
 		B20B324824557E0C003F6664 /* String Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String Extensions.swift"; sourceTree = "<group>"; };
 		B22DED5525FF48F900E4BA15 /* Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backup.swift; sourceTree = "<group>"; };
+		B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Input Toggle.swift"; sourceTree = "<group>"; };
 		B24DED6725F0D8BD00F76629 /* Whisper View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Whisper View.swift"; sourceTree = "<group>"; };
 		B26F4427244B3837004D794E /* Toolbar Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Toolbar Button.swift"; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -201,6 +203,7 @@
 				B2B82D0325F25DD10005B07C /* Banner.swift */,
 				B2B82D0225F25DD10005B07C /* Input Title.swift */,
 				B2B82D0425F25DD20005B07C /* Input.swift */,
+				B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */,
 				B2C2643425F8BB9B0054D2ED /* Tile.swift */,
 				B2B82D1D25F27DD50005B07C /* Target View Modifiers.swift */,
 			);
@@ -553,14 +556,14 @@
 			files = (
 				B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */,
 				B28D428924475BB000C2577E /* Selection.swift in Sources */,
-				B2DF652125FD11D300C92386 /* Shortcut Key.swift in Sources */,
 				B2B82D2B25F27F840005B07C /* My Color.swift in Sources */,
 				B2B82D0D25F25DFB0005B07C /* Input Title.swift in Sources */,
 				B2B82D2625F27F450005B07C /* Palette.swift in Sources */,
 				B2C2641E25F7E43A0054D2ED /* Shortcut List View.swift in Sources */,
+				B22DED5D25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
 				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B2DF651725FB5EC200C92386 /* My Image.swift in Sources */,
-				B22DED5625FF48F900E4BA15 /* Backup.swift in Sources */,
+				B22DED6725FFCF5700E4BA15 /* Backup.swift in Sources */,
 				B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */,
 				B20B324924557E0C003F6664 /* String Extensions.swift in Sources */,
 				B2C2642525F7EDDA0054D2ED /* Actions.swift in Sources */,
@@ -604,6 +607,7 @@
 				B2B82D2525F27F450005B07C /* Themes.swift in Sources */,
 				B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */,
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
+				B22DED5E25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
 				B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */,
 				B2DF651825FB5EC200C92386 /* My Image.swift in Sources */,
 				B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */,

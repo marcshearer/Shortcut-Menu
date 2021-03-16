@@ -24,6 +24,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     @Published public var sequence: Int
     @Published public var menuTitle: String
     @Published public var keyEquivalent: String
+    @Published public var inline: Bool
 
     // Linked managed object
     private var sectionMO: SectionMO?
@@ -39,12 +40,13 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", sectionMO: SectionMO? = nil, master: MasterData?) {
+    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, sectionMO: SectionMO? = nil, master: MasterData?) {
         self.id = id
         self.isDefault = isDefault
         self.name = name
         self.sequence = sequence
         self.keyEquivalent = keyEquivalent
+        self.inline = inline
         self.menuTitle = menuTitle
         self.sectionMO = sectionMO
         self.master = master
@@ -57,7 +59,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     convenience init(sectionMO: SectionMO, master: MasterData) {
-        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, sectionMO: sectionMO, master: master)
+        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, inline: sectionMO.inline, sectionMO: sectionMO, master: master)
     }
     
     private func setupMappings() {
@@ -161,6 +163,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
         self.sectionMO!.name = self.name
         self.sectionMO!.sequence = self.sequence
         self.sectionMO!.keyEquivalent = self.keyEquivalent
+        self.sectionMO!.inline = self.inline
         self.sectionMO!.menuTitle = self.menuTitle
     }
 }
