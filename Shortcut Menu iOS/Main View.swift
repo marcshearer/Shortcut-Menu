@@ -34,7 +34,6 @@ struct MainView : View {
                                 SlideInMenu.shared.show(title: "Select Section", options: options) { (section) in
                                     let selectedSection = (section == defaultSectionMenuName ? "" : section)
                                     displayState.selectedSection = selectedSection
-                                    displayState.setupList(section: selectedSection)
                                     if let selectedSection = selectedSection {
                                         UserDefault.currentSection.set(selectedSection)
                                     }

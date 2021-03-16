@@ -31,7 +31,7 @@ struct ShortcutListView: View {
                                  tapAction: {
                                     displayState.set(expanded: !entry.expanded, on: entry)
                                  }
-                            ).debugPrint("depth: \(entry.depth), type: \(entry.type) - \(entry.text)")
+                            )
                             
                         } else {
                             // Shortcut
@@ -51,9 +51,6 @@ struct ShortcutListView: View {
                         }
                     }
                 }
-            }
-            .onAppear {
-                displayState.setupList(section: displayState.selectedSection)
             }
         }
     }
@@ -109,7 +106,7 @@ class DisplayStateViewModel: ObservableObject {
         }
     }
     
-    var selectedSection: String?
+    @Published var selectedSection: String?
     @Published var selectedShortcut: String?
     @Published var list: [Entry] = []
     
@@ -149,16 +146,16 @@ class DisplayStateViewModel: ObservableObject {
     }
     
     private func setupMappings() {
-/*        $selectedSection
+        $selectedSection
             .receive(on: RunLoop.main)
             .map { (selectedSection) in
                 return (self.setupList(section: selectedSection))
             }
         .assign(to: \.list, on: self)
         .store(in: &cancellableSet)
-*/    }
+    }
     
-    public func setupList(section: String?) {
+    public func setupList(section: String?) -> [Entry] {
         var list: [Entry] = []
         if let section = section {
             if let selectedSection = MasterData.shared.section(named: section) {
@@ -176,8 +173,7 @@ class DisplayStateViewModel: ObservableObject {
         for section in MasterData.shared.sectionsWithShortcuts(excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
             add(list: &list, section: section, depth: 1, expanded: false, parent: parent)
         }
-        self.list = list
-        self.objectWillChange.send()
+        return list
     }
     
     private func add(list: inout [Entry], section: SectionViewModel, depth: Int = 0, expanded: Bool = true, header: Bool = true, parent: Entry? = nil) {
