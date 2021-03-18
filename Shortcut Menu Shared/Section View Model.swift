@@ -107,7 +107,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
             .sink { (shared) in
                 if !shared {
                     // Propagate to children
-                    self.cascadeNotShared()
+                    self.cascadeShared(shared: shared)
                 }
             }
             .store(in: &cancellableSet)
@@ -170,14 +170,14 @@ public class SectionViewModel : ObservableObject, Identifiable {
         return self.canShare && self.shared
     }
     
-    public func cascadeNotShared() {
+    public func cascadeShared(shared: Bool) {
         for shortcut in self.shortcuts {
-            shortcut.shared = false
+            shortcut.shared = shared
             shortcut.save()
             if shortcut.type == .section {
                 if let nested = shortcut.nestedSection {
-                    if nested.shared {
-                        nested.shared = false
+                    if nested.shared != shared {
+                        nested.shared = shared
                         nested.save()
                     }
                 }
