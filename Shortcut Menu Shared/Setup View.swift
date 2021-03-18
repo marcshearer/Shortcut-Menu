@@ -36,18 +36,21 @@ struct SetupView: View {
                     let detailWidth: CGFloat = geometry.size.width * 0.4
                     
                     HStack(spacing: 0) {
-                        SetupSectionListView(selection: selection, width: sectionWidth).frame(width: sectionWidth, height: formHeight, alignment: .leading)
+                        SetupSectionListView(selection: selection, width: sectionWidth)
+                            .frame(width: sectionWidth, height: formHeight, alignment: .leading)
                         
                         Divider()
                             .background(Color.white)
                             .frame(width: 2.0)
                         
-                        SetupShortcutListView(selection: selection, width: shortcutWidth).frame(width: shortcutWidth, height: formHeight, alignment: .leading)
+                        SetupShortcutListView(selection: selection, width: shortcutWidth)
+                            .frame(width: shortcutWidth, height: formHeight, alignment: .leading)
                         
                         Divider()
                             .background(Color.white)
                         
-                        SetupDetailView(selection: selection).frame(width: detailWidth, height: formHeight, alignment: .leading)
+                        SetupDetailView(selection: selection)
+                            .frame(width: detailWidth, height: formHeight, alignment: .leading)
                     }
                     .background(Palette.background.background)
                 }

@@ -35,13 +35,12 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var sequence: Int
     @Published public var type: ShortcutType
     @Published public var keyEquivalent: String
-    
+    @Published public var shared: Bool
+
     // Linked managed object
     private var shortcutMO: ShortcutMO?
-    
-    // Link to master data (required for checking duplicates)
-    private var master: MasterData?
-    
+    private var cloudShortcutMO: CloudShortcutMO?
+
     // Other properties
     @Published public var nameError: String = ""
     @Published public var urlError: String = ""
@@ -50,11 +49,12 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     @Published public var canSave: Bool = false
     @Published public var canEditCopyMessage: Bool = false
     @Published public var canEditUrl: Bool = true
+    @Published public var canShare: Bool = true
     
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", sequence: Int = 0, shortcutMO: ShortcutMO? = nil, master: MasterData?) {
+    init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", shared: Bool = false, sequence: Int = 0) {
         self.id = id
         self.type = type
         self.name = name
@@ -66,19 +66,24 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         self.section = section
         self.nestedSection = nestedSection
         self.keyEquivalent = keyEquivalent
+        self.shared = shared
         self.sequence = sequence
-        self.shortcutMO = shortcutMO
-        self.master = master
-        
+         
         self.setupMappings()
     }
     
-    convenience init(shortcutMO: ShortcutMO, section: SectionViewModel, nestedSection: SectionViewModel? = nil, master: MasterData) {
-        self.init(id: shortcutMO.id, name: shortcutMO.name, type: shortcutMO.type, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, nestedSection: nestedSection, keyEquivalent: shortcutMO.keyEquivalent, sequence: shortcutMO.sequence, shortcutMO: shortcutMO, master: master)
+    convenience init(shortcutMO: ShortcutBaseMO, section: SectionViewModel, nestedSection: SectionViewModel? = nil, shared: Bool) {
+        self.init(id: shortcutMO.id, name: shortcutMO.name, type: shortcutMO.type, url: shortcutMO.url, urlSecurityBookmark: shortcutMO.urlSecurityBookmark, copyText: shortcutMO.copyText, copyMessage: shortcutMO.copyMessage, copyPrivate: shortcutMO.copyPrivate, section: section, nestedSection: nestedSection, keyEquivalent: shortcutMO.keyEquivalent, shared: shortcutMO.shared, sequence: shortcutMO.sequence)
+        if shared {
+            self.cloudShortcutMO = shortcutMO as? CloudShortcutMO
+        } else {
+            self.shortcutMO = shortcutMO as? ShortcutMO
+        }
+
     }
     
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", url: "", master: master)
+        self.init(id: UUID(), name: "", url: "")
     }
      
     private func setupMappings() {
@@ -159,10 +164,23 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
             }
         .assign(to: \.canSave, on: self)
         .store(in: &cancellableSet)
+        
+        // Make private if the copy private flag is set or it has bookmark data
+        Publishers.CombineLatest($copyPrivate, $urlSecurityBookmark)
+            .map { (copyPrivate, urlSecurityBookmark) in
+                return (!copyPrivate && urlSecurityBookmark == nil)
+            }
+            .sink(receiveValue: { canShare in
+                if !canShare && self.shared  {
+                    self.shared = false
+                }
+                self.canShare = canShare
+            })
+        .store(in: &cancellableSet)
     }
     
     private func exists(name: String) -> Bool {
-        return self.master?.shortcuts.contains(where: {$0.name == name && $0.id != self.id}) ?? false
+        return MasterData.shared.shortcuts.contains(where: {$0.name == name && $0.id != self.id})
     }
     
     private func validUrl(value: String) -> Bool {
@@ -174,7 +192,10 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
     
     public func copy() -> ShortcutViewModel {
-        return ShortcutViewModel(id: self.id, name: self.name, url: self.url, urlSecurityBookmark: self.urlSecurityBookmark, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, nestedSection: self.nestedSection, keyEquivalent: self.keyEquivalent, sequence: self.sequence, shortcutMO: self.shortcutMO, master: self.master)
+        let copy = ShortcutViewModel(id: self.id, name: self.name, url: self.url, urlSecurityBookmark: self.urlSecurityBookmark, copyText: copyText, copyMessage: copyMessage, copyPrivate: copyPrivate, section: self.section, nestedSection: self.nestedSection, keyEquivalent: self.keyEquivalent, shared: self.shared, sequence: self.sequence)
+        copy.shortcutMO = self.shortcutMO
+        copy.cloudShortcutMO = self.cloudShortcutMO
+        return copy
     }
     
     public var itemProvider: NSItemProvider {
@@ -185,8 +206,37 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         }
     }
     
+    public var isShared: Bool {
+        let shared = (self.type == .section ? (self.nestedSection?.shared ?? false) : self.shared)
+        return shared && (self.section?.isShared ?? false) && !self.copyPrivate && self.urlSecurityBookmark == nil
+    }
+    
     public func save() {
-        self.toManagedObject()
+        if self.isShared {
+            if self.shortcutMO != nil {
+                // Need to delete local record
+                context.delete(self.shortcutMO!)
+                self.shortcutMO = nil
+            }
+            if self.cloudShortcutMO == nil {
+                // Need to create cloud record
+                self.cloudShortcutMO = CloudShortcutMO(context: context)
+            }
+            self.shared = true
+            self.toManagedObject(shortcutMO: self.cloudShortcutMO!)
+        } else {
+            if self.cloudShortcutMO != nil {
+                // Need to delete cloud record
+                context.delete(self.cloudShortcutMO!)
+                self.cloudShortcutMO = nil
+            }
+            if self.shortcutMO == nil {
+                // Need to create local record
+                self.shortcutMO = ShortcutMO(context: context)
+            }
+            self.shared = false
+            self.toManagedObject(shortcutMO: self.shortcutMO!)
+        }
         do {
             try context.save()
         } catch {
@@ -194,30 +244,39 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
         }
     }
     
-    public func remove() {
-        self.toManagedObject()
-        context.delete(self.shortcutMO!)
-        self.save()
-        self.shortcutMO = nil
+    public func toManagedObject(shortcutMO: ShortcutBaseMO) {
+        shortcutMO.id = self.id
+        shortcutMO.name = self.name
+        shortcutMO.type = self.type
+        shortcutMO.url = self.url
+        shortcutMO.urlSecurityBookmark = self.urlSecurityBookmark
+        shortcutMO.copyText = self.copyText
+        shortcutMO.copyMessage = self.copyMessage
+        shortcutMO.copyPrivate = self.copyPrivate
+        shortcutMO.sectionId = self.section?.id
+        shortcutMO.nestedSectionId = self.nestedSection?.id
+        shortcutMO.keyEquivalent = self.keyEquivalent
+        shortcutMO.shared = shared
+        shortcutMO.sequence = self.sequence
+        shortcutMO.lastUpdate = Date()
     }
     
-    public func toManagedObject() {
-        if self.shortcutMO == nil {
-            // No managed object - create one
-            self.shortcutMO = ShortcutMO(context: context)
+    public func remove() {
+        if self.shortcutMO != nil {
+            context.delete(self.shortcutMO!)
         }
-        self.shortcutMO!.id = self.id
-        self.shortcutMO!.name = self.name
-        self.shortcutMO!.type = self.type
-        self.shortcutMO!.url = self.url
-        self.shortcutMO!.urlSecurityBookmark = self.urlSecurityBookmark
-        self.shortcutMO!.copyText = self.copyText
-        self.shortcutMO!.copyMessage = self.copyMessage
-        self.shortcutMO!.copyPrivate = self.copyPrivate
-        self.shortcutMO!.sectionId = self.section?.id
-        self.shortcutMO!.nestedSectionId = self.nestedSection?.id
-        self.shortcutMO!.keyEquivalent = self.keyEquivalent
-        self.shortcutMO!.sequence = self.sequence
+        self.shortcutMO = nil
+        
+        if self.cloudShortcutMO != nil {
+            context.delete(self.cloudShortcutMO!)
+        }
+        self.cloudShortcutMO = nil
+        
+        do {
+            try context.save()
+        } catch {
+            fatalError("Error removing shortcut")
+        }
     }
 }
 

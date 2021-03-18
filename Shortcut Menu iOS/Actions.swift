@@ -27,11 +27,7 @@ class Actions {
                     pasteboard.setString(shortcut.copyText, forType: .string)
                     #endif
                     
-                    if shortcut.url.isEmpty {
-                        // Can't insert into paste buffer on iOS
-                    } else {
-                        message = shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage + " copied to clipboard"
-                    }
+                    message = "'\(shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage)' \n\ncopied to clipboard"
                 }
             }
             

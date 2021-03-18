@@ -8,7 +8,19 @@
 
 import CoreData
 
-public class ShortcutMO : NSManagedObject {
+public class ShortcutMO : ShortcutBaseMO, ManagedObject {
+    
+    static public let tableName = "Shortcut"
+    
+}
+
+public class CloudShortcutMO : ShortcutBaseMO, ManagedObject {
+    
+    static public let tableName = "CloudShortcut"
+    
+}
+
+public class ShortcutBaseMO : NSManagedObject, Identifiable {
 
     @NSManaged public var id: UUID
     @NSManaged public var name: String
@@ -22,9 +34,8 @@ public class ShortcutMO : NSManagedObject {
     @NSManaged public var type16: Int16
     @NSManaged public var nestedSectionId: UUID?
     @NSManaged public var keyEquivalent: String
-}
-
-extension ShortcutMO: Identifiable {
+    @NSManaged public var shared: Bool
+    @NSManaged public var lastUpdate: Date
     
     public var sequence: Int {
         get {

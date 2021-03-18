@@ -8,7 +8,19 @@
 
 import CoreData
 
-public class SectionMO : NSManagedObject {
+public class SectionMO : SectionBaseMO, ManagedObject {
+    
+    static public let tableName = "Section"
+    
+}
+
+public class CloudSectionMO : SectionBaseMO, ManagedObject {
+
+    static public let tableName = "CloudSection"
+    
+}
+
+public class SectionBaseMO : NSManagedObject, Identifiable {
 
     @NSManaged public var id: UUID
     @NSManaged public var isDefault: Bool
@@ -17,9 +29,8 @@ public class SectionMO : NSManagedObject {
     @NSManaged public var menuTitle: String
     @NSManaged public var keyEquivalent: String
     @NSManaged public var inline: Bool
-}
-
-extension SectionMO: Identifiable {
+    @NSManaged public var shared: Bool
+    @NSManaged public var lastUpdate : Date
     
     public var sequence: Int {
         get {

@@ -20,13 +20,15 @@ class SlideInMenu : ObservableObject {
     @Published public var shown: Bool = false
     
     public func show(title: String, options: [String], top: CGFloat? = nil, width: CGFloat? = nil, completion: ((String?)->())? = nil) {
-        SlideInMenu.shared.title = title
-        SlideInMenu.shared.options = options
-        SlideInMenu.shared.top = top ?? bannerHeight + 10
-        SlideInMenu.shared.width = width ?? 300
-        SlideInMenu.shared.completion = completion
-        Utility.mainThread {
-            SlideInMenu.shared.shown = true
+        withAnimation(.none) {
+            SlideInMenu.shared.title = title
+            SlideInMenu.shared.options = options
+            SlideInMenu.shared.top = top ?? bannerHeight + 10
+            SlideInMenu.shared.width = width ?? 300
+            SlideInMenu.shared.completion = completion
+            Utility.mainThread {
+                SlideInMenu.shared.shown = true
+            }
         }
     }
 }
@@ -75,10 +77,11 @@ struct SlideInMenuView : View {
                                                 Spacer()
                                                 HStack {
                                                     Spacer().frame(width: 20)
-                                                    Button(option) {
+                                                    Button(option, action: {
                                                         values.completion?(option)
                                                         values.shown = false
-                                                    }
+                                                    })
+                                                    .animation(.none)
                                                     .foregroundColor(Palette.alternate.text)
                                                     .font(.title2)
                                                     Spacer()
@@ -108,7 +111,7 @@ struct SlideInMenuView : View {
                                     Spacer()
                                 }
                                 .frame(height: 50).layoutPriority(.greatestFiniteMagnitude)
-                           }
+                            }
                             .frame(width: values.width)
                             .background(Palette.alternate.background)
                             .cornerRadius(20)

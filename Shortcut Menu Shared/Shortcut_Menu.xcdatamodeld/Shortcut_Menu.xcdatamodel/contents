@@ -1,51 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CloudSection" representedClassName=".CloudSectionMO" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="inline" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="menuTitle" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="sequence64" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CloudShortcut" representedClassName=".CloudShortcutMO" syncable="YES">
+        <attribute name="copyMessage" optional="YES" attributeType="String"/>
+        <attribute name="copyPrivate" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="copyText" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="nestedSectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sequence64" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="type16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="urlSecurityBookmark" optional="YES" attributeType="Binary"/>
+    </entity>
     <entity name="Section" representedClassName=".SectionMO" syncable="YES">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="inline" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="menuTitle" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="sequence64" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
+        <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <entity name="Shortcut" representedClassName=".ShortcutMO" syncable="YES">
-        <attribute name="copyMessage" attributeType="String"/>
-        <attribute name="copyPrivate" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="copyText" attributeType="String"/>
+        <attribute name="copyMessage" optional="YES" attributeType="String"/>
+        <attribute name="copyPrivate" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="copyText" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="keyEquivalent" optional="YES" attributeType="String"/>
-        <attribute name="name" attributeType="String"/>
+        <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="nestedSectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sequence64" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="type16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="url" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="urlSecurityBookmark" optional="YES" attributeType="Binary"/>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
     </entity>
-    <entity name="Test" representedClassName="Test" syncable="YES" codeGenerationType="class">
-        <attribute name="name" optional="YES" attributeType="String"/>
-    </entity>
-    <configuration name="Cloud">
-        <memberEntity name="Test"/>
+    <configuration name="Cloud" usedWithCloudKit="YES">
+        <memberEntity name="CloudSection"/>
+        <memberEntity name="CloudShortcut"/>
     </configuration>
     <configuration name="Local">
-        <memberEntity name="Section"/>
         <memberEntity name="Shortcut"/>
+        <memberEntity name="Section"/>
     </configuration>
     <elements>
-        <element name="Section" positionX="-54" positionY="-9" width="128" height="134"/>
-        <element name="Shortcut" positionX="-27" positionY="36" width="128" height="209"/>
-        <element name="Test" positionX="-36" positionY="108" width="128" height="44"/>
+        <element name="Section" positionX="-54" positionY="-9" width="128" height="164"/>
+        <element name="Shortcut" positionX="-27" positionY="36" width="128" height="239"/>
+        <element name="CloudSection" positionX="-36" positionY="117" width="128" height="164"/>
+        <element name="CloudShortcut" positionX="-27" positionY="135" width="128" height="239"/>
     </elements>
 </model>

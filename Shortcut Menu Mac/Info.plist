@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>LSUIElement</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -36,38 +40,38 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
-    <key>UTExportedTypeDeclarations</key>
-    <array>
-        <dict>
-            <key>UTTypeConformsTo</key>
-            <array>
-                <string>public.data</string>
-            </array>
-            <key>UTTypeDescription</key>
-            <string>Section</string>
-            <key>UTTypeIdentifier</key>
-            <string>com.sheareronline.shortcuts.section</string>
-        </dict>
-        <dict>
-            <key>UTTypeConformsTo</key>
-            <array>
-                <string>public.data</string>
-            </array>
-            <key>UTTypeDescription</key>
-            <string>Nested Section</string>
-            <key>UTTypeIdentifier</key>
-            <string>com.sheareronline.shortcuts.nestedsection</string>
-        </dict>
-        <dict>
-            <key>UTTypeConformsTo</key>
-            <array>
-                <string>public.data</string>
-            </array>
-            <key>UTTypeDescription</key>
-            <string>Shortcut</string>
-            <key>UTTypeIdentifier</key>
-            <string>com.sheareronline.shortcuts.shortcut</string>
-        </dict>
-    </array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Section</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.sheareronline.shortcuts.section</string>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Nested Section</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.sheareronline.shortcuts.nestedsection</string>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Shortcut</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.sheareronline.shortcuts.shortcut</string>
+		</dict>
+	</array>
 </dict>
 </plist>

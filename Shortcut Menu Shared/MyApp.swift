@@ -9,6 +9,7 @@
 import CloudKit
 import CoreData
 import SwiftUI
+import AudioToolbox
 
 enum UserDefault: String, CaseIterable {
     case currentSection
@@ -47,9 +48,7 @@ class MyApp {
     }
     
     static let shared = MyApp()
-    
-    public let context = PersistenceController.shared.container.viewContext
-    
+        
     #if os(macOS)
     public static let target: Target = .macOS
     #else
@@ -57,7 +56,15 @@ class MyApp {
     #endif
     
     public func start() {
-        MasterData.context = context
+        let container = PersistenceController.shared.container
+        MasterData.context = container.viewContext
+        MasterData.backgroundContext = container.newBackgroundContext()
+        
+        // Uncomment to backup / restore
+        // Backup.shared/*.backup()*/.restore(dateString: "2021-03-15-17-21-46-381") ; sound()
+        
+        MasterData.shared.load()
+        MasterData.purgeTransactionHistory()
         Themes.selectTheme(.standard)
         self.registerDefaults()
         
@@ -65,7 +72,6 @@ class MyApp {
         UITextView.appearance().backgroundColor = .clear
         UITextField.appearance().backgroundColor = .clear
         #endif
-
     }
     
     private func registerDefaults() {
@@ -74,6 +80,14 @@ class MyApp {
             initial[value.name] = value.defaultValue
         }
         UserDefaults.standard.register(defaults: initial)
+    }
+    
+    private func sound() {
+        #if canImport(AppKit)
+        NSSound(named: "Ping")!.play()
+        #else
+        AudioServicesPlayAlertSound(SystemSoundID(1304))
+        #endif
     }
 }
 

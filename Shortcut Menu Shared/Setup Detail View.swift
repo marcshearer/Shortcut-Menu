@@ -29,24 +29,24 @@ struct SetupDetailView: View {
                 
                 titleBar()
                 
-                Spacer()
-                    .frame(height: 10.0)
-                
-                HStack {
+                ScrollView {
                     Spacer()
-                        .frame(width: 10.0)
+                        .frame(height: 10.0)
                     
-                    if selection.editObject == .shortcut {
-                        shortcutForm()
-                    } else if selection.editObject ==  .section {
-                        sectionForm()
+                    HStack {
+                        Spacer()
+                            .frame(width: 10.0)
+                        
+                        if selection.editObject == .shortcut {
+                            shortcutForm()
+                        } else if selection.editObject ==  .section {
+                            sectionForm()
+                        }
                     }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
             }
-            .background(Color.white)
-            
         }
     }
     
@@ -84,12 +84,13 @@ struct SetupDetailView: View {
                 if self.canSave() {
                     ToolbarButton("checkmark.circle.fill") {
                         // Update
+                        selection.editAction = .none
                         if selection.editObject == .section {
                             selection.updateSection(section: selection.editSection)
                         } else if selection.editObject == . shortcut {
                             selection.updateShortcut(shortcut: selection.editShortcut)
                         }
-                        selection.editAction = .none
+                        selection.objectWillChange.send()
 #if canImport(AppKit)
                         isSettingShortcutKey = false
                         ShortcutKeyMonitor.shared.stopDefine()
@@ -153,6 +154,8 @@ struct SetupDetailView: View {
             if MyApp.target == .macOS {
                 self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
             }
+            
+            InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editSection.shared, isEnabled: isEnabled && selection.editSection.canShare)
 
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
             
@@ -168,7 +171,7 @@ struct SetupDetailView: View {
 
             OverlapButton( {
                 let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 100, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && selection.editShortcut.canEditUrl)
+                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && selection.editShortcut.canEditUrl)
             }, {
                 if finderVisible {
                     if selection.editShortcut.canEditUrl {
@@ -181,7 +184,7 @@ struct SetupDetailView: View {
             
             OverlapButton( {
                 let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 100, isEnabled: isEnabled,
+                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
                       onChange: { (value) in
                         if value == "" {
                             $selection.editShortcut.copyPrivate.wrappedValue = false
@@ -199,6 +202,8 @@ struct SetupDetailView: View {
                 self.shortcutKey(key: $selection.editShortcut.keyEquivalent, notify: shortcutKeyNotify, disabled: {false})
             }
             
+            InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
+
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
     }

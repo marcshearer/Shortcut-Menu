@@ -10,11 +10,13 @@ import SwiftUI
 struct BannerOption {
     let image: AnyView?
     let text: String?
+    let hidden: (()->(Bool))?
     let action: ()->()
     
-    init(image: AnyView? = nil, text: String? = nil, action: @escaping ()->()) {
+    init(image: AnyView? = nil, text: String? = nil, hidden: (()->(Bool))? = nil, action: @escaping ()->()) {
         self.image = image
         self.text = text
+        self.hidden = hidden
         self.action = action
     }
 }
@@ -119,20 +121,22 @@ struct Banner_Buttons : View {
     var options: [BannerOption]
 
     var body: some View {
-        HStack {
+        HStack(spacing: 40) {
             ForEach(0..<(options.count)) { (index) in
                 let option = options[index]
-                Button {
-                    option.action()
-                } label: {
-                    if option.image != nil {
-                        option.image
-                    }
-                    if option.image != nil && option.text != nil {
-                        Spacer().frame(width: 16)
-                    }
-                    if option.text != nil {
-                        Text(option.text ?? "")
+                if !(option.hidden?() ?? false) {
+                    Button {
+                        option.action()
+                    } label: {
+                        if option.image != nil {
+                            option.image
+                        }
+                        if option.image != nil && option.text != nil {
+                            Spacer().frame(width: 16)
+                        }
+                        if option.text != nil {
+                            Text(option.text ?? "")
+                        }
                     }
                 }
             }

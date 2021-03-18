@@ -42,7 +42,7 @@ struct SetupSectionListView: View {
                 .background(Palette.header.background)
                 .foregroundColor(Palette.header.text)
                 List {
-                    ForEach (self.selection.sections) { (section) in
+                    ForEach (self.selection.sections, id: \.self.name) { (section) in
                         if !master.isNested(section) {
                             if section.isDefault || self.selection.editAction != .none {
                                 self.sectionRow(section)
@@ -57,17 +57,17 @@ struct SetupSectionListView: View {
                         SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertSectionAction)
                         NestedSectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertNestedSectionAction)
                     }
-                    Spacer()
                 }
                 .listStyle(PlainListStyle())
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
                 .opacity((self.selection.editAction != .none ? 0.6 : 1.0))
+                Spacer()
             }
         }
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        Tile(text: section.displayName, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
+        Tile(dynamicText: { section.displayName }, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
             }

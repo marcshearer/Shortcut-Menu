@@ -24,6 +24,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     public var statusMenu: NSMenu
     public var statusMenuButton: NSButton
+    public var statusMenuRefreshMenuItem: NSMenuItem?
 
     private var menuItemList: [String: NSMenuItem] = [:]
     
@@ -34,6 +35,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private var defineWindowShowing = false
     
     private var additionalStatusItems: [UUID : NSStatusItem] = [:]
+    
+    public var displayedRemoteUpdates = 0
    
     // MARK: - Constructor - instantiate the status bar menu =========================================================== -
     
@@ -57,17 +60,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusItem.menu = self.statusMenu
         
         ShortcutKeyMonitor.shared.startMonitor(notify: shortcutKeyNotify)
-        updateShortcutKeys()
+        self.updateShortcutKeys()
     }
     
     // MARK: - Menu delegate handlers =========================================================== -
     
     internal func menuWillOpen(_ menu: NSMenu) {
+        self.statusMenuRefreshMenuItem?.isHidden = (self.displayedRemoteUpdates >= MasterData.shared.publishedRemoteUpdates)
         if defineWindowShowing {
             menu.cancelTrackingWithoutAnimation()
             self.defineWindowController?.window?.close()
         }
-        
     }
     
     internal func menuDidClose(_ menu: NSMenu) {
@@ -79,7 +82,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     internal func popoverDidClose(_ notification: Notification) {
+        // Reload any pending changes
+        if MasterData.shared.publishedRemoteUpdates > self.displayedRemoteUpdates {
+            self.displayedRemoteUpdates = MasterData.shared.load()
+        }
+        // Update menus
         self.update()
+        self.updateShortcutKeys()
+        // Re-enable updates and continue
+        MasterData.shared.suspendRemoteUpdates(false)
         self.changeImage(close: false)
         self.defineWindowShowing = false
     }
@@ -87,9 +98,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     // MARK: - Window delegate handlers =========================================================== -
 
     internal func windowWillClose(_ notification: Notification) {
-        self.update()
-        self.changeImage(close: false)
-        self.defineWindowShowing = false
+        self.popoverDidClose(notification)
     }
     
     
@@ -129,8 +138,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
         self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d")
         
-        self.addSeparator()
+        self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r")
         
+        self.addSeparator()
+                
         self.addItem("Quit Shortcuts", action: #selector(StatusMenu.quit(_:)), keyEquivalent: "q")
 
         self.setupAdditionalMenus()
@@ -344,6 +355,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         // Create the window and set the content view.
         if !self.defineWindowShowing {
             let selection = Selection()
+            
+            // Suspend any additional core data updates
+            MasterData.shared.suspendRemoteUpdates(true)
+            // Reload any pending changes
+            if MasterData.shared.publishedRemoteUpdates > self.displayedRemoteUpdates {
+                self.displayedRemoteUpdates = MasterData.shared.load()
+            }
+            
+            // Display view
             let contentView = SetupView(selection: selection).environment(\.managedObjectContext, MasterData.context)
             self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
             self.defineWindowController.contentViewController?.view.window?.becomeKey()
@@ -473,6 +493,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
     }
 
+    @objc private func refresh(_ sender: Any?) {
+        // Reload any pending changes
+        if MasterData.shared.publishedRemoteUpdates > self.displayedRemoteUpdates {
+            self.displayedRemoteUpdates = MasterData.shared.load()
+            self.statusMenuRefreshMenuItem?.isHidden = true
+        }
+        self.update()
+        self.updateShortcutKeys()
+    }
+    
     @objc private func quit(_ sender: Any?) {
         NSApp.terminate(sender)
     }    

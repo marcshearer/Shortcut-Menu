@@ -14,11 +14,13 @@ class MessageBox : ObservableObject {
     @Published public var text: String?
     public var closeButton = false
     public var completion: (()->())? = nil
-    
+    public var fontSize: CGFloat = 15.0
+
     public var isShown: Bool { MessageBox.shared.text != nil }
     
-    public func show(_ text: String, closeButton: Bool = true, hideAfter: TimeInterval? = nil, completion: (()->())? = nil) {
+    public func show(_ text: String, fontSize: CGFloat = 15.0, closeButton: Bool = true, hideAfter: TimeInterval? = nil, completion: (()->())? = nil) {
         MessageBox.shared.text = text
+        MessageBox.shared.fontSize = fontSize
         MessageBox.shared.closeButton = closeButton
         MessageBox.shared.completion = completion
         if let hideAfter = hideAfter {
@@ -71,7 +73,7 @@ struct MessageBoxView: View {
                     Text("Shortcuts").font(.largeTitle).minimumScaleFactor(0.75)
                     if let message = $values.text.wrappedValue {
                         Spacer().frame(height: 30)
-                        Text(message).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true).font(.callout).minimumScaleFactor(0.5)
+                        Text(message).multilineTextAlignment(.center).frame(maxHeight: 100).fixedSize(horizontal: false, vertical: true).font(Font.system(size: values.fontSize)).minimumScaleFactor(0.25)
                     }
                     Spacer().frame(height: 30)
                     if MessageBox.shared.closeButton {

@@ -11,6 +11,9 @@ import SwiftUI
 struct MainView : View {
     
     @ObservedObject private var displayState = DisplayStateViewModel()
+    @ObservedObject private var data = MasterData.shared
+    
+    @State public var selection = Selection()
     
     @State private var title = "Shortcuts"
     @State private var showSetup = false
@@ -21,36 +24,71 @@ struct MainView : View {
             GeometryReader { (geometry) in
                 ZStack {
                     VStack(spacing: 0) {
-                        Banner(title: $title, back: false, optionMode: .buttons, options: [
-                            BannerOption(image: AnyView(Image(systemName: "gearshape.fill").font(.largeTitle).foregroundColor(Palette.banner.text))) {
-                                showSetup = true
-                            },
-                            BannerOption(image: AnyView(Image(systemName: "filemenu.and.selection").font(.largeTitle).foregroundColor(Palette.banner.text))) {
-                                
-                                let exclude = (displayState.selectedSection == nil ? [] : [displayState.selectedSection!])
-                                
-                                let options = MasterData.shared.sectionsWithShortcuts(excludeSections: exclude, excludeDefault: false, excludeNested: true).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
-                                
-                                SlideInMenu.shared.show(title: "Select Section", options: options) { (section) in
-                                    let selectedSection = (section == defaultSectionMenuName ? "" : section)
-                                    displayState.selectedSection = selectedSection
-                                    if let selectedSection = selectedSection {
-                                        UserDefault.currentSection.set(selectedSection)
-                                    }
-                                }
-                            }
-                        ])
-                        HStack {
-                            ShortcutListView(displayState: displayState)
-                        }
+                        let updatesPending = (displayState.displayedRemoteUpdates < MasterData.shared.publishedRemoteUpdates)
+                        let refreshOption = BannerOption(
+                                image: bannerImage(name: "arrow.clockwise"),
+                                hidden: { !updatesPending },
+                                action: refresh)
+                        let setupOption = BannerOption(
+                                image: bannerImage(name: "gearshape.fill"),
+                                action: setup)
+                        let sectionOption = BannerOption(
+                            image: bannerImage(name: "filemenu.and.selection"),
+                                action: selectSection)
+                        
+                        Banner(title: $title, back: false, optionMode: .buttons, options: [refreshOption, setupOption, sectionOption])
+                        
+                        ShortcutListView(displayState: displayState)
                     }
                     if showSetup {
-                        let selection = Selection()
-                        SetupView(selection: selection) {
-                            showSetup = false
-                        }
+                        showSetupView()
                     }
                 }
+            }
+        }
+    }
+    
+    private func bannerImage(name: String) -> AnyView {
+        AnyView(Image(systemName: name)
+                        .font(.largeTitle)
+                        .foregroundColor(Palette.banner.text))
+    }
+    
+    private func refresh() {
+        // Refersh the list
+        displayState.displayedRemoteUpdates = MasterData.shared.load()
+        displayState.refreshList()
+    }
+    
+    private func setup() {
+        // Suspend any additional core data updates
+        MasterData.shared.suspendRemoteUpdates(true)
+        // Reload any pending changes
+        if MasterData.shared.publishedRemoteUpdates > displayState.displayedRemoteUpdates {
+            displayState.displayedRemoteUpdates = MasterData.shared.load()
+        }
+        selection = Selection()
+        showSetup = true
+    }
+    
+    private func showSetupView() -> some View {
+        SetupView(selection: selection) {
+            MasterData.shared.suspendRemoteUpdates(false)
+            displayState.refreshList()
+            showSetup = false
+        }
+    }
+    
+    private func selectSection() {
+        let exclude = (displayState.selectedSection == nil ? [] : [displayState.selectedSection!])
+        
+        let options = MasterData.shared.sectionsWithShortcuts(excludeSections: exclude, excludeDefault: false, excludeNested: true).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
+        
+        SlideInMenu.shared.show(title: "Change Section", options: options) { (section) in
+            let selectedSection = (section == defaultSectionMenuName ? "" : section)
+            displayState.selectedSection = selectedSection
+            if let selectedSection = selectedSection {
+                UserDefault.currentSection.set(selectedSection)
             }
         }
     }

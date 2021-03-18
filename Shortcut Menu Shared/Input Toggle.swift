@@ -35,6 +35,7 @@ struct InputToggle : View {
                     .disabled(!isEnabled || isReadOnly)
                     .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
                     Spacer()
+                    Spacer().frame(width: 16)
                 }
             }
         }

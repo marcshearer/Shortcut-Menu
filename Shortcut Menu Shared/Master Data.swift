@@ -17,66 +17,162 @@ public class MasterData : ObservableObject {
     public static let shared = MasterData()
     
     // Core data context - set up in AppDelegate
-     static var context: NSManagedObjectContext!
+    static var context: NSManagedObjectContext!
+    static var backgroundContext: NSManagedObjectContext!
 
-    // Core data
-    private var sectionMOs: [SectionMO] = []
-    private var shortcutMOs: [ShortcutMO] = []
-    
-    // View models
+    //Remote update counters
+    @Published private(set) var receivedRemoteUpdates = 0
+    @Published private(set) var publishedRemoteUpdates = 0
+    // Updated every 10 seconds (unless suspended)
+    @Published private(set) var loadedRemoteUpdates = 0
+    @Published private var remoteUpdatesSuspended = false
+    private var observer: NSObjectProtocol?
+    private var lastToken: NSPersistentHistoryToken?
+
+
+    // Auto-cleanup
+    private var cancellableSet: Set<AnyCancellable> = []
+    // Master data
     @Published var sections: [SectionViewModel] = []
     @Published var shortcuts: [ShortcutViewModel] = []
         
+    // Core data
+    private var sectionMOs: [SectionMO] = []
+    private var shortcutMOs: [ShortcutMO] = []
+    private var cloudSectionMOs: [CloudSectionMO] = []
+    private var cloudShortcutMOs: [CloudShortcutMO] = []
+
     init() {
-        
-        // Backup.shared.backup / restore("2021-03-15-10-31-22-391")
-        
-        // Fetch core data
-        self.sectionMOs = MasterData.fetch(from: "Section", sort: [(key: "sequence64", ascending: true)])
-        
-        self.shortcutMOs = MasterData.fetch(from: "Shortcut", sort: [(key: "sectionId", ascending: true),
-                                                               (key: "sequence64", ascending: true)])
- 
-        // Build section list
-        for sectionMO in self.sectionMOs {
-            sections.append(SectionViewModel(sectionMO: sectionMO, master: self))
-        }
-        
-        // Build shortcut list
-        for shortcutMO in self.shortcutMOs {
-            var section = sections.first(where: {$0.id == shortcutMO.sectionId})
-            if section == nil {
-                // Section not found in current list - add it
-                section = SectionViewModel(id: shortcutMO.sectionId!, master: MasterData.shared)
-                section?.sequence = self.nextSectionSequence()
-                section?.name = shortcutMO.sectionId?.uuidString ?? "Error"
-                sections.append(section!)
-                section?.save()
+        self.observer = NotificationCenter.default.addObserver(forName: Notification.Name.persistentStoreRemoteChangeNotification, object: nil, queue: nil, using: { (notification) in
+            Utility.mainThread {
+                if self.haveReceivedUpdates() {
+                    self.receivedRemoteUpdates += 1
+                    Utility.debugMessage("MasterData", "Received \(self.receivedRemoteUpdates)", force: true)
+                }
             }
-            let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.id == shortcutMO.nestedSectionId}) : nil)
-            shortcuts.append(ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, master: self))
+        })
+        self.setupMappings()
+    }
+    
+    public func suspendRemoteUpdates(_ suspend: Bool) {
+        if suspend != self.remoteUpdatesSuspended {
+            self.remoteUpdatesSuspended = suspend
         }
+    }
+    
+    private func setupMappings() {
+        Publishers.CombineLatest($receivedRemoteUpdates, $remoteUpdatesSuspended)
+            .receive(on: RunLoop.main)
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .map { (receivedRemoteUpdates, remoteUpdatesSuspended) in
+                return (remoteUpdatesSuspended ? self.publishedRemoteUpdates : receivedRemoteUpdates)
+            }
+            .sink(receiveValue: { (newValue) in
+                if self.publishedRemoteUpdates != newValue {
+                    self.publishedRemoteUpdates = newValue
+                }
+            })
+        .store(in: &cancellableSet)
+    }
+    
+    @discardableResult public func load() -> Int {
+        let startLoadreceivedRemoteUpdates = self.receivedRemoteUpdates
+        Utility.debugMessage("load", "Loading \(startLoadreceivedRemoteUpdates)", force: true)
         
+        self.sectionMOs = MasterData.fetch(from: SectionMO.tableName,
+                                           sort: [(key: "sequence64", ascending: true)])
+        self.cloudSectionMOs = MasterData.fetch(from: CloudSectionMO.tableName,
+                                                sort: [(key: "sequence64", ascending: true)])
+        
+        self.shortcutMOs = MasterData.fetch(from: ShortcutMO.tableName,
+                                            sort: [(key: "sectionId", ascending: true),
+                                                   (key: "sequence64", ascending: true)])
+        self.cloudShortcutMOs = MasterData.fetch(from: CloudShortcutMO.tableName,
+                                                 sort: [(key: "sectionId", ascending: true),
+                                                        (key: "sequence64", ascending: true)])
+                
+        // Build section list
+        sections = []
+        for sectionMO in self.sectionMOs {
+            sections.append(SectionViewModel(sectionMO: sectionMO, shared: false))
+        }
+        for sectionMO in self.cloudSectionMOs {
+            sections.append(SectionViewModel(sectionMO: sectionMO, shared: true))
+        }
+        sections.sort(by: {$0.sequence < $1.sequence})
+
+        // Build shortcut list
+        shortcuts = []
+        for shortcutMO in self.shortcutMOs {
+            let shortcut = self.setupShortcut(shortcutMO: shortcutMO, shared: false)
+            shortcuts.append(shortcut)
+        }
+        for shortcutMO in self.cloudShortcutMOs {
+            let shortcut = self.setupShortcut(shortcutMO: shortcutMO, shared: true)
+            shortcuts.append(shortcut)
+        }
+        shortcuts.sort(by: {Utility.lessThan([$0.section?.sequence ?? 0, $0.sequence], [ $1.section?.sequence ?? 0, $1.sequence])})
+
         // Make sure default section existst
         if self.sections.first(where: {$0.isDefault}) == nil {
             // Need to create a default section
-            let defaultSection = SectionViewModel(id: UUID(), isDefault: true, name: "", sequence: 1, master: self)
+            let defaultSection = SectionViewModel(id: UUID(), isDefault: true, name: "", sequence: 1)
             sections.insert(defaultSection, at: 0)
             defaultSection.save()
         }
-
+        if startLoadreceivedRemoteUpdates == self.receivedRemoteUpdates {
+            // No additional changes since start
+            self.loadedRemoteUpdates = self.receivedRemoteUpdates
+            return self.loadedRemoteUpdates
+        } else {
+            // Things have moved since load started - reload
+            return self.load()
+        }
+    }
+    
+    func setupShortcut(shortcutMO: ShortcutBaseMO, shared: Bool) -> ShortcutViewModel {
+        var section = sections.first(where: {$0.id == shortcutMO.sectionId})
+        if section == nil {
+            // Section not found in current list - add it
+            section = SectionViewModel(id: shortcutMO.sectionId!)
+            section?.sequence = self.nextSectionSequence()
+            section?.name = shortcutMO.sectionId?.uuidString ?? "Error"
+            sections.append(section!)
+            section?.save()
+        }
+        let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.id == shortcutMO.nestedSectionId}) : nil)
+        return ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, shared: shared)
     }
     
     public func sectionsWithShortcuts(excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
         return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
     }
     
-    public func isNested(_ section: SectionViewModel) -> Bool {
-        return self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id}) != nil
+    public func isNested(_ section: SectionViewModel?) -> Bool {
+        var result = false
+        if let section = section {
+            result = self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id}) != nil
+        }
+        return result
+    }
+    
+    public func nestedParent(_ section: SectionViewModel?) -> SectionViewModel? {
+        var result: SectionViewModel?
+        if let section = section {
+            result = self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id})?.section
+        }
+        if result?.name ?? "" != "" {
+            Utility.debugMessage("nestedParent", result?.name ?? "", force: true)
+        }
+        return result
     }
     
     public func section(named name: String) -> SectionViewModel? {
         return sections.first(where: {$0.name == name})
+    }
+    
+    public func section(withId id: UUID) -> SectionViewModel? {
+        return sections.first(where: {$0.id == id})
     }
     
     public var defaultSection: SectionViewModel? {
@@ -146,4 +242,37 @@ public class MasterData : ObservableObject {
         
         return results
     }
+    
+    private func haveReceivedUpdates() -> Bool {
+        var updates = false
+        let fetchHistoryRequest = NSPersistentHistoryChangeRequest.fetchHistory(
+            after: lastToken
+        )
+
+        if let historyResult = try? MasterData.backgroundContext.execute(fetchHistoryRequest)
+            as? NSPersistentHistoryResult,
+           let history = historyResult.result as? [NSPersistentHistoryTransaction] {
+            for transaction in history {
+                lastToken = transaction.token
+                updates = true
+            }
+        } else {
+            fatalError("Could not convert history result to transactions.")
+        }
+        return updates
+    }
+    
+    public static func purgeTransactionHistory() {
+        let yesterday = Date(timeIntervalSinceNow: TimeInterval(exactly: -24*60*60)!)
+        let purgeRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: yesterday)
+        try! MasterData.backgroundContext.execute(purgeRequest)
+    }
+}
+
+extension Notification.Name {
+    static let persistentStoreRemoteChangeNotification = Notification.Name(rawValue: "NSPersistentStoreRemoteChangeNotification")
+}
+
+protocol ManagedObject : NSManagedObject {
+    static var tableName: String {get}
 }

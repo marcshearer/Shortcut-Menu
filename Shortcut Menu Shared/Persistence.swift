@@ -11,7 +11,6 @@ import SwiftUI
 
 struct PersistenceController {
     static let shared = PersistenceController()
-    private(set) var remoteChange = false
     
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
@@ -39,6 +38,7 @@ struct PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
+            
             // Get core data directory
             let storeDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             
@@ -52,7 +52,15 @@ struct PersistenceController {
             let cloudStoreLocation = storeDirectory.appendingPathComponent("Shortcut_Cloud.sqlite")
             let cloudStoreDescription =
                 NSPersistentStoreDescription(url: cloudStoreLocation)
+            // Set the container ID on the cloud store
+            cloudStoreDescription.cloudKitContainerOptions =
+                NSPersistentCloudKitContainerOptions(
+                    containerIdentifier: "iCloud.ShearerOnline.Shortcuts")
             cloudStoreDescription.configuration = "Cloud"
+            // Flag remote changes
+            let remoteChangeKey = "NSPersistentStoreRemoteChangeNotificationOptionKey"
+            cloudStoreDescription.setOption(true as NSNumber, forKey: remoteChangeKey)
+            cloudStoreDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
             
             // Set the container options on the cloud store
             cloudStoreDescription.cloudKitContainerOptions =
@@ -83,7 +91,8 @@ struct PersistenceController {
         })
         
         if !inMemory {
-            
+            // Merge
+            container.viewContext.automaticallyMergesChangesFromParent = true
         }
     }
 }

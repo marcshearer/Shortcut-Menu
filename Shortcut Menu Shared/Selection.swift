@@ -22,7 +22,7 @@ public class Selection : ObservableObject, Identifiable {
     @Published public var editShortcut = ShortcutViewModel()
     @Published public var editAction: EditAction = .none
     @Published public var editObject: EditObject = .none
-    @Published internal var canExit: Bool = false
+    @Published public var canExit: Bool = false
     @Published public var id = UUID()
     
     // Auto-cleanup
@@ -50,12 +50,12 @@ public class Selection : ObservableObject, Identifiable {
         }
     }
     
-    func selectSection(section: SectionViewModel, updateShortcuts: Bool = true) {
+    func selectSection(section: SectionViewModel?, updateShortcuts: Bool = true) {
         
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
         
-        self.selectedSection = self.sections.first(where: {$0.id == section.id})
+        self.selectedSection = self.sections.first(where: {$0.id == section?.id})
         
         if self.selectedSection != nil {
             
@@ -95,18 +95,23 @@ public class Selection : ObservableObject, Identifiable {
             self.master.sections.append(section)
         }
         section.save()
-
+        
         self.sections = master.sections
         
-        // Need to update section names on shortcuts which nest this section
+        // Need to update sections on shortcuts in this section
+        for shortcut in section.shortcuts {
+            shortcut.section = section
+        }
+        
+        // Need to update section names and shared flags on shortcuts which nest this section
         for shortcut in self.master.shortcuts.filter({$0.type == .section && $0.nestedSection?.name == oldName}) {
             shortcut.nestedSection = section
             shortcut.name = section.name
-            if oldName != section.name {
+            if true || oldName != section.name || shortcut.shared != section.shared {
+                shortcut.shared = section.shared
                 self.updateShortcut(shortcut: shortcut)
             }
         }
-        
         self.selectSection(section: section)
     }
     
@@ -194,6 +199,11 @@ public class Selection : ObservableObject, Identifiable {
             new = true
         }
         shortcut.save()
+        
+        // Update selection
+        if let index = self.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
+            self.shortcuts[index] = shortcut
+        }
         
         if let section = shortcut.section {
             

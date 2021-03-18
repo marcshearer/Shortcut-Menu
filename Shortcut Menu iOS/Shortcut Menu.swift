@@ -1,6 +1,6 @@
 //
 //  Shortcut Menu.swift
-//  Wots4T
+//  Shortcut Menu
 //
 //  Created by Marc Shearer on 15/01/2021.
 //

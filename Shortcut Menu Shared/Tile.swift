@@ -9,13 +9,13 @@
 import SwiftUI
 
 struct Tile: View {
+    @State var imageName: String?
     @State var text: String?
     @State var dynamicText: (()->(String))?
     @State var color: PaletteColor = Palette.unselectedList
     @State var selectedColor: PaletteColor = Palette.selectedList
     @State var selected: (()->Bool)?
     @State var disabled: Bool = false
-    @State var nested: Bool = false
     @State var rounded: Bool = false
     @State var insets = EdgeInsets()
     @State var rightContent: (()->AnyView)?
@@ -23,20 +23,21 @@ struct Tile: View {
 
     var body: some View {
         let color = ((selected?() ?? false) ? self.selectedColor : self.color)
+        let textColor = (disabled ? color.faintText : color.text)
         VStack {
             Spacer()
             HStack {
-                if nested {
+                if let imageName = imageName {
                     Spacer().frame(width: 16)
-                    Image(systemName: "folder")
-                        .foregroundColor(color.faintText)
+                    Image(systemName: imageName)
+                        .foregroundColor(textColor)
                         .font(defaultFont)
                     Spacer().frame(width: 10)
                 }
                 Text(text ?? dynamicText?() ?? "")
                     .padding([.leading, .trailing], 16)
                     .font(defaultFont)
-                    .foregroundColor(nested || disabled ? color.faintText : color.text)
+                    .foregroundColor(textColor)
                 Spacer()
                 if let rightContent = rightContent {
                     rightContent()

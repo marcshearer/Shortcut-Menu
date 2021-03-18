@@ -25,13 +25,12 @@ public class SectionViewModel : ObservableObject, Identifiable {
     @Published public var menuTitle: String
     @Published public var keyEquivalent: String
     @Published public var inline: Bool
+    @Published public var shared: Bool
 
-    // Linked managed object
+    // Linked managed objects
     private var sectionMO: SectionMO?
-    
-    // Link to master data (required for checking duplicates)
-    private var master: MasterData?
-    
+    private var cloudSectionMO: CloudSectionMO?
+        
     // Other properties
     @Published public var nameError: String = ""
     @Published public var canSave: Bool = false
@@ -40,26 +39,30 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, sectionMO: SectionMO? = nil, master: MasterData?) {
+    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false) {
         self.id = id
         self.isDefault = isDefault
         self.name = name
         self.sequence = sequence
         self.keyEquivalent = keyEquivalent
         self.inline = inline
+        self.shared = shared
         self.menuTitle = menuTitle
-        self.sectionMO = sectionMO
-        self.master = master
         
         self.setupMappings()
     }
 
     convenience init(master: MasterData? = nil) {
-        self.init(id: UUID(), name: "", sequence: 0, master: master)
+        self.init(id: UUID(), name: "", sequence: 0)
     }
     
-    convenience init(sectionMO: SectionMO, master: MasterData) {
-        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, inline: sectionMO.inline, sectionMO: sectionMO, master: master)
+    convenience init(sectionMO: SectionBaseMO, shared: Bool) {
+        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, inline: sectionMO.inline, shared: sectionMO.shared)
+        if shared {
+            self.cloudSectionMO = sectionMO as? CloudSectionMO
+        } else {
+            self.sectionMO = sectionMO as? SectionMO
+        }
     }
     
     private func setupMappings() {
@@ -69,44 +72,61 @@ public class SectionViewModel : ObservableObject, Identifiable {
             .map { (name, isDefault) in
                 return (name.isEmpty && !isDefault ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
             }
-        .assign(to: \.nameError, on: self)
-        .store(in: &cancellableSet)
+            .assign(to: \.nameError, on: self)
+            .store(in: &cancellableSet)
         
         $nameError
             .receive(on: RunLoop.main)
             .map { (nameError) in
                 return nameError == ""
             }
-        .assign(to: \.canSave, on: self)
-        .store(in: &cancellableSet)
+            .assign(to: \.canSave, on: self)
+            .store(in: &cancellableSet)
         
         $menuTitle
             .receive(on: RunLoop.main)
             .map { (menuTitle) in
                 return (menuTitle == "" ? "" : self.keyEquivalent)
             }
-        .assign(to: \.keyEquivalent, on: self)
-        .store(in: &cancellableSet)
+            .assign(to: \.keyEquivalent, on: self)
+            .store(in: &cancellableSet)
         
         $menuTitle
             .receive(on: RunLoop.main)
             .map { (menuTitle) in
                 return (menuTitle != "")
             }
-        .assign(to: \.canEditKeyEquivalent, on: self)
-        .store(in: &cancellableSet)
+            .assign(to: \.canEditKeyEquivalent, on: self)
+            .store(in: &cancellableSet)
+        
+        $shared
+            .receive(on: RunLoop.main)
+            .map { (shared) in
+                return (shared)
+            }
+            .sink { (shared) in
+                if !shared {
+                    // Propagate to children
+                    self.cascadeNotShared()
+                }
+            }
+            .store(in: &cancellableSet)
+        
     }
     
     private func exists(name: String) -> Bool {
-        return self.master?.sections.contains(where: {$0.name == name && $0.id != self.id}) ?? false
+        return MasterData.shared.sections.contains(where: {$0.name == name && $0.id != self.id})
     }
     
     public var shortcuts: [ShortcutViewModel] {
-        return self.master?.shortcuts.filter({ $0.section?.id == self.id }) ?? []
+        return MasterData.shared.shortcuts.filter({ $0.section?.id == self.id })
     }
     
     public func copy() -> SectionViewModel {
-        return SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, sectionMO: self.sectionMO, master: self.master)
+        let copy = SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, shared: shared)
+        copy.sectionMO = self.sectionMO
+        copy.cloudSectionMO = self.cloudSectionMO
+        return copy
     }
     
     public var displayName: String {
@@ -137,8 +157,61 @@ public class SectionViewModel : ObservableObject, Identifiable {
         return NSItemProvider(object: SectionItemProvider(id: self.id))
     }
     
+    public var canShare: Bool {
+        var canShare = true
+        for parentShortcut in MasterData.shared.shortcuts.filter({$0.type == .section && $0.nestedSection?.id == self.id}) {
+            // Should only be one parent, but belts and braces
+            canShare = canShare && (parentShortcut.section?.isShared ?? false)
+        }
+        return canShare
+    }
+    
+    public var isShared: Bool {
+        return self.canShare && self.shared
+    }
+    
+    public func cascadeNotShared() {
+        for shortcut in self.shortcuts {
+            shortcut.shared = false
+            shortcut.save()
+            if shortcut.type == .section {
+                if let nested = shortcut.nestedSection {
+                    if nested.shared {
+                        nested.shared = false
+                        nested.save()
+                    }
+                }
+            }
+        }
+    }
+    
     public func save() {
-        self.toManagedObject()
+        if self.isShared {
+            if self.sectionMO != nil {
+                // Need to delete local record
+                context.delete(self.sectionMO!)
+                self.sectionMO = nil
+            }
+            if self.cloudSectionMO == nil {
+                // Need to create cloud record
+                self.cloudSectionMO = CloudSectionMO(context: context)
+            }
+            self.shared = true
+            self.toManagedObject(sectionMO: self.cloudSectionMO!)
+        } else {
+            if self.cloudSectionMO != nil {
+                // Need to delete cloud record
+                context.delete(self.cloudSectionMO!)
+                self.cloudSectionMO = nil
+            }
+            if self.sectionMO == nil {
+                // Need to create local record
+                self.sectionMO = SectionMO(context: context)
+            }
+            self.shared = false
+            self.toManagedObject(sectionMO: self.sectionMO!)
+        }
+        
         do {
             try context.save()
         } catch {
@@ -146,25 +219,34 @@ public class SectionViewModel : ObservableObject, Identifiable {
         }
     }
     
-    public func remove() {
-        self.toManagedObject()
-        context.delete(self.sectionMO!)
-        self.save()
-        self.sectionMO = nil
+    private func toManagedObject(sectionMO: SectionBaseMO) {
+        sectionMO.id = self.id
+        sectionMO.isDefault = self.isDefault
+        sectionMO.name = self.name
+        sectionMO.sequence = self.sequence
+        sectionMO.keyEquivalent = self.keyEquivalent
+        sectionMO.inline = self.inline
+        sectionMO.shared = shared
+        sectionMO.menuTitle = self.menuTitle
+        sectionMO.lastUpdate = Date()
     }
     
-    private func toManagedObject() {
-        if self.sectionMO == nil {
-            // No managed object - create one
-            self.sectionMO = SectionMO(context: context)
+    public func remove() {
+        if self.sectionMO != nil {
+            context.delete(self.sectionMO!)
         }
-        self.sectionMO!.id = self.id
-        self.sectionMO!.isDefault = self.isDefault
-        self.sectionMO!.name = self.name
-        self.sectionMO!.sequence = self.sequence
-        self.sectionMO!.keyEquivalent = self.keyEquivalent
-        self.sectionMO!.inline = self.inline
-        self.sectionMO!.menuTitle = self.menuTitle
+        self.sectionMO = nil
+        
+        if self.cloudSectionMO != nil {
+            context.delete(self.cloudSectionMO!)
+        }
+        self.cloudSectionMO = nil
+        
+        do {
+            try context.save()
+        } catch {
+            fatalError("Error removing section")
+        }
     }
 }
 
