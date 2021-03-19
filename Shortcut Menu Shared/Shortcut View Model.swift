@@ -82,7 +82,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
 
     }
     
-    convenience init(master: MasterData? = nil) {
+    convenience init() {
         self.init(id: UUID(), name: "", url: "")
     }
      
@@ -129,10 +129,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
             .receive(on: RunLoop.main)
             .map { (url, copyText, urlSecurityBookmark) in
                 let bothEmpty = (url.isEmpty && copyText.isEmpty)
-                return
+                let result =
                     (url.trim().left(5) == "file:" && urlSecurityBookmark == nil ? "Local files must be entered using the folder button" :
                     (bothEmpty ? "URL or text to copy must be non-blank" :
                     (!self.validUrl(value: url) ? "Invalid URL" : "")))
+                return result
             }
         .assign(to: \.urlError, on: self)
         .store(in: &cancellableSet)

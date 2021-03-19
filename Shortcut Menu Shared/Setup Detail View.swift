@@ -171,10 +171,10 @@ struct SetupDetailView: View {
 
             OverlapButton( {
                 let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && selection.editShortcut.canEditUrl)
+                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && $selection.editShortcut.canEditUrl.wrappedValue)
             }, {
                 if finderVisible {
-                    if selection.editShortcut.canEditUrl {
+                    if $selection.editShortcut.canEditUrl.wrappedValue {
                         self.finderButton()
                     } else {
                         self.clearButton()
@@ -266,7 +266,8 @@ struct SetupDetailView: View {
         return Button(action: {
             selection.editShortcut.url = ""
             selection.editShortcut.urlSecurityBookmark = nil
-        }, label: {
+            selection.objectWillChange.send()
+       }, label: {
                 Image("xmark.circle.fill.gray")
                     .resizable()
                     .frame(width: 20, height: 20)
@@ -281,11 +282,12 @@ struct SetupDetailView: View {
             SetupDetailView.findFile { (url, data) in
                 selection.editShortcut.url = url.absoluteString
                 selection.editShortcut.urlSecurityBookmark = data
+                selection.objectWillChange.send()
             }
         },label: {
             Image(systemName: "folder.fill")
                 .frame(width: 24, height: 24)
-                .foregroundColor(Color.blue)
+                .foregroundColor(Palette.background.themeText)
         })
         .buttonStyle(PlainButtonStyle())
         .disabled(!isEnabled)

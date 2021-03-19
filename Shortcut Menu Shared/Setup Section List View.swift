@@ -67,7 +67,7 @@ struct SetupSectionListView: View {
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        Tile(dynamicText: { section.displayName }, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
+        Tile(dynamicText: { section.displayName }, trailingImageName: { section.shared ? "icloud.and.arrow.up" : nil }, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
             }

@@ -42,7 +42,7 @@ struct SetupShortcutListView: View {
                 Tile(text: "No shortcuts defined", disabled: true)
             } else {
                 if MasterData.shared.isNested(selection.selectedSection) {
-                    Tile(imageName: "arrow.turn.up.left",
+                    Tile(leadingImageName: { "arrow.turn.up.left" },
                          dynamicText: {
                             MasterData.shared.nestedParent(selection.selectedSection)?.name ?? "Parent Section"
                          },
@@ -78,7 +78,7 @@ struct SetupShortcutListView: View {
     
     fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
         let nested = (shortcut.nestedSection != nil)
-        return Tile(imageName: (nested ? "folder" : nil), dynamicText: { shortcut.name }, selected: { shortcut.id == selection.selectedShortcut?.id }, disabled: nested, tapAction: {
+        return Tile(leadingImageName: { (nested ? "folder" : nil) }, dynamicText: { shortcut.name }, trailingImageName: { shortcut.shared ? "icloud.and.arrow.up" : nil }, selected: { shortcut.id == selection.selectedShortcut?.id }, disabled: nested, tapAction: {
                 if selection.editAction == .none {
                     if shortcut.type == .shortcut {
                         selection.selectShortcut(shortcut: shortcut)

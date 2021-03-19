@@ -9,16 +9,17 @@
 import SwiftUI
 
 struct Tile: View {
-    @State var imageName: String?
+    @State var leadingImageName: (()->(String?))?
     @State var text: String?
     @State var dynamicText: (()->(String))?
+    @State var trailingImageName: (()->(String?))?
     @State var color: PaletteColor = Palette.unselectedList
     @State var selectedColor: PaletteColor = Palette.selectedList
     @State var selected: (()->Bool)?
     @State var disabled: Bool = false
     @State var rounded: Bool = false
     @State var insets = EdgeInsets()
-    @State var rightContent: (()->AnyView)?
+    @State var trailingContent: (()->AnyView)?
     @State var tapAction: (()->())?
 
     var body: some View {
@@ -27,9 +28,9 @@ struct Tile: View {
         VStack {
             Spacer()
             HStack {
-                if let imageName = imageName {
+                if let leadingImageName = leadingImageName?() {
                     Spacer().frame(width: 16)
-                    Image(systemName: imageName)
+                    Image(systemName: leadingImageName)
                         .foregroundColor(textColor)
                         .font(defaultFont)
                     Spacer().frame(width: 10)
@@ -37,9 +38,17 @@ struct Tile: View {
                 Text(text ?? dynamicText?() ?? "")
                     .padding([.leading, .trailing], 16)
                     .font(defaultFont)
+                    .minimumScaleFactor(0.75)
                     .foregroundColor(textColor)
                 Spacer()
-                if let rightContent = rightContent {
+                if let trailingImageName = trailingImageName?() {
+                    Spacer().frame(width: 2)
+                    Image(systemName: trailingImageName)
+                        .foregroundColor(textColor)
+                        .font(defaultFont)
+                    Spacer().frame(width: 10)
+                }
+                if let rightContent = trailingContent {
                     rightContent()
                     Spacer().frame(width: 32)
                 }
