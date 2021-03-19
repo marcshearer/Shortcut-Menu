@@ -27,7 +27,7 @@ struct ShortcutListView: View {
                                                     leading: (10 + 22 * CGFloat(entry.depth)),
                                                     bottom: 2,
                                                     trailing: 10),
-                                 rightContent: {expandButtons(entry: entry)},
+                                 trailingContent: {expandButtons(entry: entry)},
                                  tapAction: {
                                     displayState.set(expanded: !entry.expanded, on: entry)
                                  }

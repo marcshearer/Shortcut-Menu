@@ -12,8 +12,8 @@ import SwiftUI
 import CoreData
 import UniformTypeIdentifiers
 
-public class SectionViewModel : ObservableObject, Identifiable {
-
+public class SectionViewModel : ObservableObject, Identifiable, Hashable {
+    
     // Managed object context
     let context: NSManagedObjectContext! = MasterData.context
 
@@ -39,8 +39,8 @@ public class SectionViewModel : ObservableObject, Identifiable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
-    init(id: UUID = UUID(), isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false) {
-        self.id = id
+    init(id: UUID? = nil, isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false) {
+        self.id = id ?? (isDefault ? defaultUUID : UUID())
         self.isDefault = isDefault
         self.name = name
         self.sequence = sequence
@@ -52,7 +52,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
         self.setupMappings()
     }
 
-    convenience init(master: MasterData? = nil) {
+    convenience init() {
         self.init(id: UUID(), name: "", sequence: 0)
     }
     
@@ -113,6 +113,21 @@ public class SectionViewModel : ObservableObject, Identifiable {
             .store(in: &cancellableSet)
         
     }
+    
+    public static func == (lhs: SectionViewModel, rhs: SectionViewModel) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.sequence == rhs.sequence && lhs.menuTitle == rhs.menuTitle && lhs.keyEquivalent == rhs.keyEquivalent && lhs.inline == rhs.inline && lhs.shared == rhs.shared
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+        hasher.combine(sequence)
+        hasher.combine(menuTitle)
+        hasher.combine(keyEquivalent)
+        hasher.combine(inline)
+        hasher.combine(shared)
+    }
+
     
     private func exists(name: String) -> Bool {
         return MasterData.shared.sections.contains(where: {$0.name == name && $0.id != self.id})
@@ -186,9 +201,12 @@ public class SectionViewModel : ObservableObject, Identifiable {
     }
     
     public func save() {
+        // Note the default section is stored in both the local and cloud database if it is shared
+        // Other sections are stored in the cloud if shared, local otherwise
+        
         if self.isShared {
-            if self.sectionMO != nil {
-                // Need to delete local record
+            if self.sectionMO != nil && !self.isDefault {
+                // Need to delete local record (unless this is default section)
                 context.delete(self.sectionMO!)
                 self.sectionMO = nil
             }
@@ -198,6 +216,16 @@ public class SectionViewModel : ObservableObject, Identifiable {
             }
             self.shared = true
             self.toManagedObject(sectionMO: self.cloudSectionMO!)
+            
+            // Keep local default section in line (in case cloud record is deleted)
+            if self.isDefault {
+                if self.sectionMO == nil {
+                    // Need to create local record
+                    self.sectionMO = SectionMO(context: context)
+                }
+                self.toManagedObject(sectionMO: self.sectionMO!)
+                self.sectionMO?.shared = false
+            }
         } else {
             if self.cloudSectionMO != nil {
                 // Need to delete cloud record
@@ -226,7 +254,7 @@ public class SectionViewModel : ObservableObject, Identifiable {
         sectionMO.sequence = self.sequence
         sectionMO.keyEquivalent = self.keyEquivalent
         sectionMO.inline = self.inline
-        sectionMO.shared = shared
+        sectionMO.shared = self.shared
         sectionMO.menuTitle = self.menuTitle
         sectionMO.lastUpdate = Date()
     }

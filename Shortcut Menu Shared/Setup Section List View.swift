@@ -42,7 +42,7 @@ struct SetupSectionListView: View {
                 .background(Palette.header.background)
                 .foregroundColor(Palette.header.text)
                 List {
-                    ForEach (self.selection.sections, id: \.self.name) { (section) in
+                    ForEach (self.selection.sections, id: \.self) { (section) in
                         if !master.isNested(section) {
                             if section.isDefault || self.selection.editAction != .none {
                                 self.sectionRow(section)

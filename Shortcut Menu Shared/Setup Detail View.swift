@@ -13,6 +13,7 @@ struct SetupDetailView: View {
     @State private var lockImage: String = ""
     @State private var lockColor: Color = .red
     @State private var isSettingShortcutKey: Bool = false
+    @State private var refresh = true
     private var isEnabled: Bool {
         selection.editAction != .none && !isSettingShortcutKey
     }
@@ -27,7 +28,11 @@ struct SetupDetailView: View {
             
             VStack(spacing: 0) {
                 
+                // Just to trigger view refresh
+                if refresh { EmptyView() }
+
                 titleBar()
+                
                 
                 ScrollView {
                     Spacer()
@@ -46,6 +51,9 @@ struct SetupDetailView: View {
                     
                     Spacer()
                 }
+            }
+            .onAppear() {
+                self.formatLockButton()
             }
         }
     }
@@ -148,10 +156,11 @@ struct SetupDetailView: View {
             if MasterData.shared.isNested(selection.editSection) {
                 InputToggle(title: "Show Inline", text: "Show contents of section inline", field: $selection.editSection.inline, isEnabled: isEnabled)
             }
-            
-            Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
-            
+ 
             if MyApp.target == .macOS {
+ 
+                Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
+            
                 self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
             }
             
@@ -187,7 +196,8 @@ struct SetupDetailView: View {
                 Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
                       onChange: { (value) in
                         if value == "" {
-                            $selection.editShortcut.copyPrivate.wrappedValue = false
+                            selection.editShortcut.copyPrivate = false
+                            refresh.toggle()
                         }
                       })
             }, {
@@ -239,7 +249,7 @@ struct SetupDetailView: View {
     
     private func lockButton() -> some View {
         return Button(action: {
-            if $selection.editShortcut.copyPrivate.wrappedValue {
+            if selection.editShortcut.copyPrivate {
                 LocalAuthentication.authenticate(reason: "\(MyApp.target == .iOS ? "Passcode must be entered to " : "") make private data visible",completion: {
                     selection.editShortcut.copyPrivate.toggle()
                     self.formatLockButton()
@@ -264,9 +274,11 @@ struct SetupDetailView: View {
     private func clearButton() -> some View {
         
         return Button(action: {
-            selection.editShortcut.url = ""
-            selection.editShortcut.urlSecurityBookmark = nil
-            selection.objectWillChange.send()
+            Utility.mainThread {
+                refresh.toggle()
+                selection.editShortcut.url = ""
+                selection.editShortcut.urlSecurityBookmark = nil
+            }
        }, label: {
                 Image("xmark.circle.fill.gray")
                     .resizable()
@@ -280,9 +292,11 @@ struct SetupDetailView: View {
         return Button(action: {
             StatusMenu.shared.defineAlways(onTop: false)
             SetupDetailView.findFile { (url, data) in
-                selection.editShortcut.url = url.absoluteString
-                selection.editShortcut.urlSecurityBookmark = data
-                selection.objectWillChange.send()
+                Utility.mainThread {
+                    refresh.toggle()
+                    selection.editShortcut.urlSecurityBookmark = data
+                    selection.editShortcut.url = url.absoluteString
+                }
             }
         },label: {
             Image(systemName: "folder.fill")

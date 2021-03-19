@@ -93,8 +93,11 @@ public class MasterData : ObservableObject {
                 
         // Build section list
         sections = []
+        let cloudDefaultSectionExists = cloudSectionMOs.first(where: {$0.isDefault}) != nil
         for sectionMO in self.sectionMOs {
-            sections.append(SectionViewModel(sectionMO: sectionMO, shared: false))
+            if !sectionMO.isDefault || !cloudDefaultSectionExists {
+                sections.append(SectionViewModel(sectionMO: sectionMO, shared: false))
+            }
         }
         for sectionMO in self.cloudSectionMOs {
             sections.append(SectionViewModel(sectionMO: sectionMO, shared: true))
@@ -116,7 +119,7 @@ public class MasterData : ObservableObject {
         // Make sure default section existst
         if self.sections.first(where: {$0.isDefault}) == nil {
             // Need to create a default section
-            let defaultSection = SectionViewModel(id: UUID(), isDefault: true, name: "", sequence: 1)
+            let defaultSection = SectionViewModel(id: defaultUUID, isDefault: true, name: "", sequence: 1)
             sections.insert(defaultSection, at: 0)
             defaultSection.save()
         }

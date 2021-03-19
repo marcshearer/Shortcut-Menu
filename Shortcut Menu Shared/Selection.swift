@@ -133,7 +133,7 @@ public class Selection : ObservableObject, Identifiable {
     
     func newSection() {
         self.deselectSection()
-        self.editSection = SectionViewModel(master: self.master)
+        self.editSection = SectionViewModel()
         self.editSection.sequence = master.nextSectionSequence()
         self.editAction = .create
         self.editObject = .section
@@ -320,7 +320,7 @@ public class Selection : ObservableObject, Identifiable {
                                             if let urlString = urlString {
                                                 
                                                 // Use provided section or if none use selected section or default
-                                                let section = section ?? self.selectedSection ?? MasterData.shared.defaultSection!
+                                                let section = section ?? self.selectedSection ?? self.master.defaultSection!
                                                 
                                                 // Switch to this section
                                                 self.selectSection(section: section)

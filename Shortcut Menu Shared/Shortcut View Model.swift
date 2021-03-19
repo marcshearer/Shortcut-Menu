@@ -131,7 +131,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
                 let bothEmpty = (url.isEmpty && copyText.isEmpty)
                 let result =
                     (url.trim().left(5) == "file:" && urlSecurityBookmark == nil ? "Local files must be entered using the folder button" :
-                    (bothEmpty ? "URL or text to copy must be non-blank" :
+                    (bothEmpty ? "URL or text must be non-blank" :
                     (!self.validUrl(value: url) ? "Invalid URL" : "")))
                 return result
             }
@@ -143,7 +143,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
             .receive(on: RunLoop.main)
             .map { (url, copyText) in
                 let bothEmpty = (url.isEmpty && copyText.isEmpty)
-                return (bothEmpty ? "URL or text to copy must be non-blank" :  "")
+                return (bothEmpty ? "URL or text must be non-blank" :  "")
             }
         .assign(to: \.copyTextError, on: self)
         .store(in: &cancellableSet)
