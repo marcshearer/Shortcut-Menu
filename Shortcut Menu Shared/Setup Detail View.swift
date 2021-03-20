@@ -14,6 +14,7 @@ struct SetupDetailView: View {
     @State private var lockColor: Color = .red
     @State private var isSettingShortcutKey: Bool = false
     @State private var refresh = true
+    
     private var isEnabled: Bool {
         selection.editAction != .none && !isSettingShortcutKey
     }
@@ -30,9 +31,8 @@ struct SetupDetailView: View {
                 
                 // Just to trigger view refresh
                 if refresh { EmptyView() }
-
-                titleBar()
                 
+                titleBar()
                 
                 ScrollView {
                     Spacer()
@@ -60,7 +60,7 @@ struct SetupDetailView: View {
     
     fileprivate func titleBar() -> some View {
         
-        HStack(spacing: 0.0) {
+        HStack {
             Spacer()
                 .frame(width: 10.0)
             

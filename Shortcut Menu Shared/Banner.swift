@@ -57,7 +57,7 @@ struct Banner: View {
                     case .buttons:
                         Banner_Buttons(options: options!)
                     default:
-                        EmptyView()
+                        Spacer()
                     }
                 }
                 Spacer().frame(height: 20)
@@ -80,6 +80,7 @@ struct Banner: View {
                     .foregroundColor(Palette.bannerBackButton.opacity(enabled ? 1.0 : 0.5))
             }
         })
+        .buttonStyle(PlainButtonStyle())
         .disabled(!(enabled))
     }
 }

@@ -20,7 +20,7 @@ struct SetupShortcutListView: View {
             ZStack {
                 Tile(dynamicText: { selection.shortcutsTitle }, color: Palette.header)
                 
-                HStack(spacing: 0.0) {
+                HStack {
                     Spacer()
                     if selection.editAction == .none {
                         if selection.selectedShortcut != nil {

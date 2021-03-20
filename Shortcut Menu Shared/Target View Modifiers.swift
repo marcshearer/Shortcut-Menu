@@ -30,8 +30,8 @@ extension View {
 
 struct RightSpacer : ViewModifier {
         
-    func body(content: Content) -> some View { content
-        .frame(width: (MyApp.target == .iOS ? 16 : 32))
+    func body(content: Content) -> some View {
+        content.frame(width: (MyApp.target == .iOS ? 16 : 32))
     }
 }
 
@@ -43,8 +43,8 @@ extension View {
 
 struct BottomSpacer : ViewModifier {
         
-    func body(content: Content) -> some View { content
-        .frame(height: (MyApp.target == .iOS ? 0 : 16))
+    func body(content: Content) -> some View {
+        content.frame(height: (MyApp.target == .iOS ? 0 : 16))
     }
 }
 
@@ -59,6 +59,38 @@ typealias IosStackNavigationViewStyle = StackNavigationViewStyle
 #else
 typealias IosStackNavigationViewStyle = DefaultNavigationViewStyle
 #endif
+
+struct MySheetViewModifier<SheetContent : View> : ViewModifier {
+    let isPresented: Binding<Bool>
+    let onDismiss: (()->())?
+    let sheetContent: ()->(SheetContent)
+    
+    init(isPresented: Binding<Bool>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping ()->(SheetContent)) {
+        self.isPresented = isPresented
+        self.onDismiss = onDismiss
+        self.sheetContent = content
+    }
+    
+    #if canImport(UIKit)
+    func body(content: Content) -> some View {
+        content.fullScreenCover(isPresented: isPresented, onDismiss: onDismiss) {
+            sheetContent()
+        }
+    }
+    #else
+    func body(content: Content) -> some View { content
+        .sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            sheetContent()
+        }
+    }
+    #endif
+}
+
+extension View {
+    func mySheet<SheetContent>(isPresented: Binding<Bool>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping ()->(SheetContent)) -> some View where SheetContent: View {
+        self.modifier(MySheetViewModifier(isPresented: isPresented, onDismiss: onDismiss, content: content))
+    }
+}
 
 struct MyKeyboardTypeViewModifier : ViewModifier {
     @State var keyboardType: KeyboardType

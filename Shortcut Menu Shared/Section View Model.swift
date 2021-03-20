@@ -138,7 +138,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     public func copy() -> SectionViewModel {
-        let copy = SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, shared: shared)
+        let copy = SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, inline: self.inline, shared: shared)
         copy.sectionMO = self.sectionMO
         copy.cloudSectionMO = self.cloudSectionMO
         return copy

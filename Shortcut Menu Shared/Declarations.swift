@@ -23,6 +23,9 @@ public enum EditObject: Int {
     case shortcut = 2
 }
 
+// UUID for default section
+let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+
 // Sizes
 let defaultRowHeight:CGFloat = (MyApp.target == .macOS ? 50.0 : 60.0)
 let defaultSectionWidth: CGFloat = 200.0
@@ -45,7 +48,10 @@ let defaultSectionDisplayName = "Default Section"
 let defaultSectionTitleName = "Default"
 let defaultSectionMenuName = "Defaults only"
 
+// Cloud database
+let iCloudIdentifier = "iCloud.ShearerOnline.Shortcuts"
+
+// Backups
 let backupDirectoryDateFormat = "yyyy-MM-dd-HH-mm-ss-SSS"
 let backupDateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
 
-let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
