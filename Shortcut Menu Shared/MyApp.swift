@@ -47,6 +47,12 @@ class MyApp {
         case macOS
     }
     
+    enum Format {
+        case computer
+        case tablet
+        case phone
+    }
+    
     static let shared = MyApp()
         
     #if os(macOS)
@@ -55,6 +61,8 @@ class MyApp {
     public static let target: Target = .iOS
     #endif
     
+    public static var format: Format = .computer
+        
     public func start() {
         let container = PersistenceController.shared.container
         MasterData.context = container.viewContext

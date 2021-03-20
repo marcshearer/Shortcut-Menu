@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SetupDetailView: View {
     @ObservedObject public var selection: Selection
+    @Binding public var panel: SetupPanel
     @State private var lockImage: String = ""
     @State private var lockColor: Color = .red
     @State private var isSettingShortcutKey: Bool = false
@@ -17,10 +18,6 @@ struct SetupDetailView: View {
     
     private var isEnabled: Bool {
         selection.editAction != .none && !isSettingShortcutKey
-    }
-
-    init(selection: Selection) {
-        self.selection = selection
     }
     
     var body: some View {
@@ -63,6 +60,14 @@ struct SetupDetailView: View {
         HStack {
             Spacer()
                 .frame(width: 10.0)
+            
+            if panel == .detail && selection.editAction == .none {
+                Image(systemName: "arrow.turn.up.left")
+                    .font(.title)
+                    .onTapGesture {
+                        panel = .shortcuts
+                    }
+            }
             
             Text(self.detailTitle() )
                 .font(defaultFont)
@@ -110,6 +115,13 @@ struct SetupDetailView: View {
                 ToolbarButton("xmark.circle.fill") {
                     // Revert
                     if selection.editAction == .create {
+                        if panel != .all {
+                            if selection.editObject == .shortcut {
+                                panel = .shortcuts
+                            } else {
+                                panel = .sections
+                            }
+                        }
                         selection.editObject = .none
                     } else {
                         if selection.editObject == .section {

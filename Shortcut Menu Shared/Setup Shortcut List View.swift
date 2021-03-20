@@ -11,37 +11,55 @@ import UniformTypeIdentifiers
 
 struct SetupShortcutListView: View {
     @ObservedObject public var selection: Selection
-
+    @Binding public var panel: SetupPanel
     @State var width: CGFloat
     
     var body: some View {
                 
         VStack(spacing: 0.0) {
-            ZStack {
-                Tile(dynamicText: { selection.shortcutsTitle }, color: Palette.header)
-                
-                HStack {
-                    Spacer()
-                    if selection.editAction == .none {
-                        if selection.selectedShortcut != nil {
-                            ToolbarButton("minus.circle.fill") {
-                                selection.removeShortcut(shortcut: selection.selectedShortcut!)
+            HStack {
+                Spacer().frame(width: 10)
+                if panel == .shortcuts {
+                    Image(systemName: "arrow.turn.up.left")
+                        .font(.title)
+                        .onTapGesture {
+                            if MasterData.shared.isNested(selection.selectedSection) {
+                                selection.selectSection(section: MasterData.shared.nestedParent(selection.selectedSection))
+                            } else {
+                                panel = .sections
                             }
                         }
-                        
-                        if selection.selectedSection != nil {
-                            ToolbarButton("plus.circle.fill") {
-                                selection.newShortcut(section: selection.selectedSection!)
-                            }
+                }
+                
+                Text(selection.shortcutsTitle)
+                    .font(.largeTitle)
+                    .minimumScaleFactor(0.75)
+                Spacer()
+                
+                if selection.editAction == .none {
+                    if selection.selectedShortcut != nil {
+                        ToolbarButton("minus.circle.fill") {
+                            selection.removeShortcut(shortcut: selection.selectedShortcut!)
                         }
                     }
-                    Spacer().frame(width: 5.0)
+                    
+                    if selection.selectedSection != nil {
+                        ToolbarButton("plus.circle.fill") {
+                            selection.newShortcut(section: selection.selectedSection!)
+                            panel = .detail
+                        }
+                    }
                 }
+                Spacer().frame(width: 5.0)
             }
+            .frame(height: defaultRowHeight)
+            .background(Palette.header.background)
+            .foregroundColor(Palette.header.text)
+            
             if selection.shortcuts.isEmpty {
                 Tile(text: "No shortcuts defined", disabled: true)
             } else {
-                if MasterData.shared.isNested(selection.selectedSection) {
+                if MasterData.shared.isNested(selection.selectedSection) && panel == .all {
                     Tile(leadingImageName: { "arrow.turn.up.left" },
                          dynamicText: {
                             MasterData.shared.nestedParent(selection.selectedSection)?.name ?? "Parent Section"
@@ -78,10 +96,11 @@ struct SetupShortcutListView: View {
     
     fileprivate func shortcutRow(_ shortcut: ShortcutViewModel) -> some View {
         let nested = (shortcut.nestedSection != nil)
-        return Tile(leadingImageName: { (nested ? "folder" : nil) }, dynamicText: { shortcut.name }, trailingImageName: { shortcut.shared ? "icloud.and.arrow.up" : nil }, selected: { shortcut.id == selection.selectedShortcut?.id }, disabled: nested, tapAction: {
+        return Tile(leadingImageName: { (nested ? "folder" : nil) }, dynamicText: { shortcut.name }, trailingImageName: { shortcut.shared ? "icloud.and.arrow.up" : nil }, selected: { shortcut.id == selection.selectedShortcut?.id && panel == .all }, disabled: nested, tapAction: {
                 if selection.editAction == .none {
                     if shortcut.type == .shortcut {
                         selection.selectShortcut(shortcut: shortcut)
+                        panel = .detail
                     } else {
                         selection.selectSection(section: shortcut.nestedSection!)
                     }

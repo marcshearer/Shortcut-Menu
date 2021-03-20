@@ -8,6 +8,13 @@
 
 import SwiftUI
 
+enum SetupPanel {
+    case sections
+    case shortcuts
+    case detail
+    case all
+}
+
 struct SetupView: View {
     
     @ObservedObject var selection: Selection
@@ -16,7 +23,8 @@ struct SetupView: View {
     @State var backEnabled = true
     @State private var showShared = false
     @State private var sharedList: [(highlight: Bool, name: String)] = []
-
+    @State private var panel: SetupPanel = (MyApp.format == .phone ? .sections : .all)
+    
     var body: some View {
         StandardView() {
             GeometryReader { (formGeometry) in
@@ -35,26 +43,37 @@ struct SetupView: View {
                         
                         GeometryReader { geometry in
                             let formHeight: CGFloat = geometry.size.height
-                            let sectionWidth: CGFloat = geometry.size.width * 0.25
-                            let shortcutWidth: CGFloat = geometry.size.width * 0.35
-                            let detailWidth: CGFloat = geometry.size.width * 0.4
+                            let sectionWidth: CGFloat = geometry.size.width * (panel == .all ? 0.25 : 1.0)
+                            let shortcutWidth: CGFloat = geometry.size.width * (panel == .all ? 0.35 : 1.0)
+                            let detailWidth: CGFloat = geometry.size.width * (panel == .all ? 0.40 : 1.0)
                             
                             HStack(spacing: 0) {
-                                SetupSectionListView(selection: selection, width: sectionWidth)
-                                    .frame(width: sectionWidth, height: formHeight, alignment: .leading)
                                 
-                                Divider()
-                                    .background(Color.white)
-                                    .frame(width: 2.0)
+                                if panel == .sections || panel == .all {
+                                    SetupSectionListView(selection: selection, panel: $panel, width: sectionWidth)
+                                        .frame(width: sectionWidth, height: formHeight, alignment: .leading)
+                                }
+                                 
+                                if panel == .all {
+                                    Divider()
+                                        .background(Palette.divider.background)
+                                        .frame(width: 2.0)
+                                }
                                 
-                                SetupShortcutListView(selection: selection, width: shortcutWidth)
-                                    .frame(width: shortcutWidth, height: formHeight, alignment: .leading)
+                                if panel == .shortcuts || panel == .all {
+                                    SetupShortcutListView(selection: selection, panel: $panel, width: shortcutWidth)
+                                        .frame(width: shortcutWidth, height: formHeight, alignment: .leading)
+                                }
                                 
-                                Divider()
-                                    .background(Color.white)
+                                if panel == .all {
+                                    Divider()
+                                        .background(Palette.divider.background)
+                                }
                                 
-                                SetupDetailView(selection: selection)
-                                    .frame(width: detailWidth, height: formHeight, alignment: .leading)
+                                if panel == .detail || panel == .all {
+                                    SetupDetailView(selection: selection, panel: $panel)
+                                        .frame(width: detailWidth, height: formHeight, alignment: .leading)
+                                }
                             }
                             .background(Palette.background.background)
                         }

@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 
 struct SetupSectionListView: View {
     @ObservedObject public var selection: Selection
-     
+    @Binding public var panel: SetupPanel
     @State var width: CGFloat
     
     var body: some View {
@@ -33,6 +33,7 @@ struct SetupSectionListView: View {
                             
                             ToolbarButton("plus.circle.fill") {
                                 self.selection.newSection()
+                                panel = .detail
                             }
                         }
                         Spacer().frame(width: 5.0)
@@ -67,10 +68,11 @@ struct SetupSectionListView: View {
     }
     
     fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
-        Tile(dynamicText: { section.displayName }, trailingImageName: { section.shared ? "icloud.and.arrow.up" : nil }, selected: { (section.id == self.selection.selectedSection?.id) }, disabled: section.isDefault, tapAction: {
+        Tile(dynamicText: { section.displayName }, trailingImageName: { section.shared ? "icloud.and.arrow.up" : nil }, selected: { (section.id == self.selection.selectedSection?.id) && panel == .all }, disabled: section.isDefault, tapAction: {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
             }
+            panel = .shortcuts
         })
         .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: SectionListDropDelegate(self, id: section.id))
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))

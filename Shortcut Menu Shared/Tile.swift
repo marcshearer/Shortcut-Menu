@@ -10,6 +10,7 @@ import SwiftUI
 
 struct Tile: View {
     @State var leadingImageName: (()->(String?))?
+    @State var leadingAction: (()->())? = nil
     @State var text: String?
     @State var dynamicText: (()->(String))?
     @State var trailingImageName: (()->(String?))?
@@ -29,11 +30,16 @@ struct Tile: View {
             Spacer()
             HStack {
                 if let leadingImageName = leadingImageName?() {
-                    Spacer().frame(width: 16)
-                    Image(systemName: leadingImageName)
-                        .foregroundColor(textColor)
-                        .font(defaultFont)
-                    Spacer().frame(width: 10)
+                    HStack {
+                        Spacer().frame(width: 16)
+                        Image(systemName: leadingImageName)
+                            .foregroundColor(textColor)
+                            .font(defaultFont)
+                        Spacer().frame(width: 10)
+                    }
+                    .onTapGesture {
+                        leadingAction?()
+                    }
                 }
                 Text(text ?? dynamicText?() ?? "")
                     .padding([.leading, .trailing], 16)

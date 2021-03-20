@@ -64,7 +64,7 @@ public class Selection : ObservableObject, Identifiable {
 
             if updateShortcuts {
                 self.shortcuts = self.master.shortcuts.filter( { $0.section?.id == self.selectedSection?.id} ).sorted(by: {$0.sequence < $1.sequence })
-                self.shortcutsTitle = "\(self.selectedSection!.titleName) Shortcuts"
+                self.shortcutsTitle = "\(self.selectedSection!.titleName)\(MyApp.format == .phone ? "" : " Shortcuts")"
             }
             
         } else {

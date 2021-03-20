@@ -17,7 +17,7 @@ struct ShortcutMenu: App {
     }
     
     var body: some Scene {
-        MyScene()
+            MyScene()
     }
 }
 
@@ -25,7 +25,12 @@ struct MyScene: Scene {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            GeometryReader { (geometry) in
+                MainView()
+                    .onAppear() {
+                        MyApp.format = (min(geometry.size.width, geometry.size.height) < 600 ? .phone : .tablet)
+                    }
+            }
         }
     }
 }

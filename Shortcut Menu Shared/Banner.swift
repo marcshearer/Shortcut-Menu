@@ -122,7 +122,7 @@ struct Banner_Buttons : View {
     var options: [BannerOption]
 
     var body: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 10) {
             ForEach(0..<(options.count)) { (index) in
                 let option = options[index]
                 if !(option.hidden?() ?? false) {
