@@ -37,6 +37,13 @@ struct SetupShortcutListView: View {
                 Spacer()
                 
                 if selection.editAction == .none {
+                    if panel != .all {
+                        ToolbarButton("pencil.circle.fill") {
+                            selection.selectSection(section: selection.selectedSection)
+                            selection.editAction = .amend
+                            panel = .detail
+                        }
+                    }
                     if selection.selectedShortcut != nil {
                         ToolbarButton("minus.circle.fill") {
                             selection.removeShortcut(shortcut: selection.selectedShortcut!)
@@ -46,7 +53,9 @@ struct SetupShortcutListView: View {
                     if selection.selectedSection != nil {
                         ToolbarButton("plus.circle.fill") {
                             selection.newShortcut(section: selection.selectedSection!)
-                            panel = .detail
+                            if panel != .all {
+                                panel = .detail
+                            }
                         }
                     }
                 }
@@ -100,7 +109,9 @@ struct SetupShortcutListView: View {
                 if selection.editAction == .none {
                     if shortcut.type == .shortcut {
                         selection.selectShortcut(shortcut: shortcut)
-                        panel = .detail
+                        if panel != .all {
+                            panel = .detail
+                        }
                     } else {
                         selection.selectSection(section: shortcut.nestedSection!)
                     }

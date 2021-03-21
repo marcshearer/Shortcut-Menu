@@ -33,7 +33,9 @@ struct SetupSectionListView: View {
                             
                             ToolbarButton("plus.circle.fill") {
                                 self.selection.newSection()
-                                panel = .detail
+                                if panel != .all {
+                                    panel = .detail
+                                }
                             }
                         }
                         Spacer().frame(width: 5.0)
@@ -72,7 +74,9 @@ struct SetupSectionListView: View {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
             }
-            panel = .shortcuts
+            if panel != .all {
+                panel = .shortcuts
+            }
         })
         .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: SectionListDropDelegate(self, id: section.id))
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
