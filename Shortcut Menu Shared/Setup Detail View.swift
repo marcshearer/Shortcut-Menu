@@ -237,7 +237,7 @@ struct SetupDetailView: View {
     
     private func changeSection() {
         
-        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
+        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}.sorted(by: {$0 < $1})
         
         SlideInMenu.shared.show(title: "Move To Section", options: options) { (section) in
             let selectedSection = selection.getSection(name: ((section == defaultSectionMenuName ? "" : section)!))!

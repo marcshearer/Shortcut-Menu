@@ -157,7 +157,7 @@ struct SetupShortcutListView: View {
     }
     
     func nestSection() {
-        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
+        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}.sorted(by: {$0 < $1})
         
         SlideInMenu.shared.show(title: "Nest in Section", options: options) { (section) in
             if let targetSection = selection.getSection(name: ((section == defaultSectionMenuName ? "" : section)!)) {

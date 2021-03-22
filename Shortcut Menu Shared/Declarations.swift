@@ -27,7 +27,7 @@ public enum EditObject: Int {
 let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
 
 // Sizes
-let defaultRowHeight:CGFloat = (MyApp.format == .tablet ? 50.0 : (MyApp.format == .phone ? 40 : 60.0))
+let defaultRowHeight:CGFloat = (MyApp.format == .tablet ? 60.0 : (MyApp.format == .phone ? 40 : 50.0))
 let defaultSectionWidth: CGFloat = 200.0
 let defaultShortcutWidth: CGFloat = 300.0
 let defaultDetailWidth: CGFloat = 400.0

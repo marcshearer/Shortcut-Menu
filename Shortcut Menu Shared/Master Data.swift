@@ -147,8 +147,29 @@ public class MasterData : ObservableObject {
         return ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, shared: shared)
     }
     
-    public func getSections(withShortcuts: Bool = false, excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
-        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
+    public func getSections(withShortcuts: Bool = false, excludeSections: [String] = [], excludeDescendents: Bool = true, excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
+        
+        var descendents: [String] = []
+        if excludeDescendents {
+            for excludeSection in excludeSections {
+                if let excludeSection = self.section(named: excludeSection) {
+                    descendents.append(contentsOf: self.descendents(section:  excludeSection))
+                }
+            }
+        }
+        
+        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!descendents.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
+    }
+    
+    public func descendents(section: SectionViewModel) -> [String] {
+        var result: [String] = []
+        for shortcut in section.shortcuts {
+            if shortcut.type == .section, let nestedSection = shortcut.nestedSection {
+                result.append(nestedSection.name)
+                result.append(contentsOf: descendents(section: nestedSection))
+            }
+        }
+        return result
     }
     
     public func isNested(_ section: SectionViewModel?) -> Bool {
