@@ -39,7 +39,7 @@ struct SlideInMenuView : View {
     @State private var animate = false
         
     var body: some View {
-        
+        let rowHeight: CGFloat = (MyApp.target == .iOS ? 50 : 35)
         GeometryReader { (fullGeometry) in
             GeometryReader { (geometry) in
                 ZStack {
@@ -67,57 +67,63 @@ struct SlideInMenuView : View {
                                         Spacer()
                                     }
                                     .background(Palette.header.background)
-                                    .frame(height: 50)
+                                    .frame(height: rowHeight * 1.2)
                                 }
                                 let options = $values.options.wrappedValue
-                                List {
-                                    ForEach(options, id: \.self) { (option) in
-                                        VStack(spacing: 0) {
-                                            VStack {
+                                ScrollView {
+                                    VStack {
+                                        ForEach(options, id: \.self) { (option) in
+                                            VStack(spacing: 0) {
                                                 Spacer()
                                                 HStack {
                                                     Spacer().frame(width: 20)
-                                                    Button(option, action: {
-                                                        values.completion?(option)
-                                                        values.shown = false
-                                                    })
-                                                    .animation(.none)
-                                                    .foregroundColor(Palette.alternate.text)
-                                                    .font(.title2)
+                                                    Text(option)
+                                                        .animation(.none)
+                                                        .foregroundColor(Palette.background.text)
+                                                        .font(.title2)
                                                     Spacer()
                                                 }
                                                 Spacer()
                                             }
+                                            .background(Palette.background.background)
+                                            .onTapGesture {
+                                                values.completion?(option)
+                                                values.shown = false
+                                            }
+                                            .background(Palette.background.background)
+                                            .frame(height: rowHeight)
                                         }
-                                        .frame(height: 50)
+                                        .listRowInsets(EdgeInsets())
+                                        .listStyle(PlainListStyle())
                                     }
-                                    .background(Palette.alternate.background)
-                                    .listRowInsets(EdgeInsets())
-                                    .listStyle(PlainListStyle())
                                 }
-                                .environment(\.defaultMinListRowHeight, 50)
-                                .frame(height: max(0, min(CGFloat(values.options.count * 50), fullGeometry.size.height - values.top - 100.0)))
+                                .background(Palette.background.background)
+                                .environment(\.defaultMinListRowHeight, rowHeight)
+                                .frame(height: max(0, min(CGFloat(values.options.count) * rowHeight, fullGeometry.size.height - values.top - (3.0 * rowHeight))))
                                 VStack(spacing: 0) {
                                     Spacer()
                                     HStack {
                                         Spacer().frame(width: 20)
-                                        Button("Cancel") {
-                                            values.shown = false
-                                        }
-                                        .foregroundColor(Palette.alternate.text)
+                                        Text("Cancel")
+                                        .foregroundColor(Palette.background.text)
                                         .font(Font.title2.bold())
                                         Spacer()
                                     }
                                     Spacer()
                                 }
-                                .frame(height: 50).layoutPriority(.greatestFiniteMagnitude)
+                                .background(Palette.background.background)
+                                .onTapGesture {
+                                    values.shown = false
+                                }
+                                .frame(height: rowHeight).layoutPriority(.greatestFiniteMagnitude)
                             }
+                            .background(Palette.background.background)
                             .frame(width: values.width)
-                            .background(Palette.alternate.background)
                             .cornerRadius(20)
                             Spacer().frame(width: 20)
                         }
                         Spacer()
+
                     }
                     .offset(x: values.shown ? 0 : values.width + 20)
                 }

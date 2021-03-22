@@ -58,8 +58,7 @@ struct SetupDetailView: View {
     fileprivate func titleBar() -> some View {
         
         HStack {
-            Spacer()
-                .frame(width: 10.0)
+            Spacer().frame(width: 16.0)
             
             if panel == .detail && selection.editAction == .none {
                 Image(systemName: "arrow.turn.up.left")
@@ -73,19 +72,13 @@ struct SetupDetailView: View {
                 .font(defaultFont)
             
             Spacer()
-                        
-            if selection.editObject == .section && !isEnabled {
-                if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
-                    // Nested section - add button to un-nest it
-                    ToolbarButton("remove nest") {
-                        selection.removeShortcut(shortcut: shortcut)
-                        selection.selectSection(section: selection.editSection)
-                    }
-                }
-                Spacer().frame(width: 10)
-            }
             
             if selection.editObject != .none && !isEnabled && !isSettingShortcutKey {
+                if panel != .all && selection.editObject == .shortcut {
+                    ToolbarButton("folder.circle.fill") {
+                        self.changeSection()
+                    }
+                }
                 ToolbarButton("pencil.circle.fill") {
                     selection.editAction = .amend
                     self.formatLockButton()
@@ -138,8 +131,7 @@ struct SetupDetailView: View {
                 }
             }
             
-            Spacer()
-                .frame(width: 5.0)
+            Spacer().frame(width: 10.0)
         }
         .frame(height: defaultRowHeight)
         .background(Palette.header.background)
@@ -239,6 +231,22 @@ struct SetupDetailView: View {
             return "Shortcut Details"
         case .none:
             return "Nothing Selected"
+        }
+    }
+    
+    
+    private func changeSection() {
+        
+        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
+        
+        SlideInMenu.shared.show(title: "Move To Section", options: options) { (section) in
+            let selectedSection = selection.getSection(name: ((section == defaultSectionMenuName ? "" : section)!))!
+            selection.selectedShortcut?.section = selectedSection
+            selection.selectedShortcut?.sequence = MasterData.shared.nextShortcutSequence(section: selectedSection)
+            selection.selectedShortcut?.save()
+            selection.deselectShortcut()
+            selection.selectSection(section: selectedSection)
+            selection.updateShortcutSequence()
         }
     }
     

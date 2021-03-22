@@ -69,7 +69,7 @@ struct SetupSectionListView: View {
         }
     }
     
-    fileprivate func sectionRow(_ section: SectionViewModel) -> some View {
+    private func sectionRow(_ section: SectionViewModel) -> some View {
         Tile(dynamicText: { section.displayName }, trailingImageName: { section.shared ? "icloud.and.arrow.up" : nil }, selected: { (section.id == self.selection.selectedSection?.id) && panel == .all }, disabled: section.isDefault, tapAction: {
             if self.selection.editAction == .none {
                 self.selection.selectSection(section: section)
@@ -82,7 +82,7 @@ struct SetupSectionListView: View {
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
-    func onInsertSectionAction(to: Int, from: Int) {
+    private func onInsertSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             if to > 0 {
                 self.selection.sections.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
@@ -91,7 +91,7 @@ struct SetupSectionListView: View {
         }
     }
         
-    func onInsertNestedSectionAction(to: Int, from: Int) {
+    private func onInsertNestedSectionAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             let shortcut = self.selection.shortcuts[from]
             if shortcut.type == .section {
@@ -107,7 +107,7 @@ struct SetupSectionListView: View {
         }
     }
 
-    func onDropShortcutAction(to: Int, from: Int) {
+    public func onDropShortcutAction(to: Int, from: Int) {
         DispatchQueue.main.async {
             self.selection.shortcuts[from].section = self.selection.sections[to]
             self.selection.shortcuts[from].sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[to])

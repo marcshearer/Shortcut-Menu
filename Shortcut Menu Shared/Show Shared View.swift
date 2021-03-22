@@ -93,5 +93,4 @@ struct ShowSharedView : View {
             }
         }
     }
-    
 }

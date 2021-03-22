@@ -127,7 +127,6 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         hasher.combine(inline)
         hasher.combine(shared)
     }
-
     
     private func exists(name: String) -> Bool {
         return MasterData.shared.sections.contains(where: {$0.name == name && $0.id != self.id})

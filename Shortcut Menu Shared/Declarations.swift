@@ -27,21 +27,23 @@ public enum EditObject: Int {
 let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
 
 // Sizes
-let defaultRowHeight:CGFloat = (MyApp.target == .macOS ? 50.0 : 60.0)
+let defaultRowHeight:CGFloat = (MyApp.format == .tablet ? 50.0 : (MyApp.format == .phone ? 40 : 60.0))
 let defaultSectionWidth: CGFloat = 200.0
 let defaultShortcutWidth: CGFloat = 300.0
 let defaultDetailWidth: CGFloat = 400.0
 let defaultFormHeight: CGFloat = 600.0
-let inputTopHeight: CGFloat = (MyApp.target == .macOS ? 10.0 : 30.0)
+let inputTopHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 10.0)
 let inputDefaultHeight: CGFloat = 30.0
-let inputToggleDefaultHeight: CGFloat = (MyApp.target == .macOS ? 16.0 : 30.0)
-let bannerHeight: CGFloat = (MyApp.target == .macOS ? 60.0 : 70.0)
+let inputToggleDefaultHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 16.0)
+let bannerHeight: CGFloat = (MyApp.format == .tablet ? 70.0 : 50.0)
+let bannerBottom: CGFloat = (MyApp.format == .tablet ? 20.0 : 10.0)
 
 // Fonts
-var defaultFont = Font.system(size: (MyApp.target == .macOS ? 20.0 : 28.0))
-var captionFont = Font.system(size: (MyApp.target == .macOS ? 16.0 : 20.0))
-var inputFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
-var messageFont = Font.system(size: (MyApp.target == .macOS ? 12.0 : 16.0))
+var defaultFont = Font.system(size: (MyApp.format == .tablet ? 28.0 : 20.0))
+var toolbarFont = Font.system(size: (MyApp.format == .tablet ? 16.0 : 12.0))
+var captionFont = Font.system(size: (MyApp.format == .tablet ? 20.0 : 16.0))
+var inputFont = Font.system(size: (MyApp.format == .tablet ? 16.0 : 12.0))
+var messageFont = Font.system(size: (MyApp.format == .tablet ? 16.0 : 12.0))
 
 // Text for default section
 let defaultSectionDisplayName = "Default Section"

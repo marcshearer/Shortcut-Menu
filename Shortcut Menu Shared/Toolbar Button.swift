@@ -19,12 +19,13 @@ struct ToolbarButton: View {
     }
     
     var body: some View {
+        let size: CGFloat = (MyApp.target == .iOS ? 30.0 : 25.0)
         Button(action: action, label: {
-            Image(imageName)
+            Image(systemName: imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 30.0, height: 30.0, alignment: .center)
-                .foregroundColor(.white)
+                .frame(width: size, height: size, alignment: .center)
+                .foregroundColor(Palette.header.text)
         })
         .background(Color.clear)
         .foregroundColor(Color.clear)

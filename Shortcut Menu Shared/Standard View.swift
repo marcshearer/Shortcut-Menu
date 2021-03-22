@@ -42,9 +42,7 @@ struct StandardView <Content> : View where Content : View {
                 Spacer().frame(height: geometry.safeAreaInsets.top)
                 self.content
             }
-            if MyApp.target == .iOS {
-                SlideInMenuView()
-            }
+            SlideInMenuView()
             if messageBox.isShown {
                 Palette.maskBackground
                 VStack() {

@@ -18,7 +18,7 @@ struct SetupShortcutListView: View {
                 
         VStack(spacing: 0.0) {
             HStack {
-                Spacer().frame(width: 10)
+                Spacer().frame(width: 16.00)
                 if panel == .shortcuts {
                     Image(systemName: "arrow.turn.up.left")
                         .font(.title)
@@ -32,11 +32,26 @@ struct SetupShortcutListView: View {
                 }
                 
                 Text(selection.shortcutsTitle)
-                    .font(.largeTitle)
+                    .font(defaultFont)
                     .minimumScaleFactor(0.75)
                 Spacer()
                 
                 if selection.editAction == .none {
+                    if selection.editObject != .none {
+                        if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
+                            // Nested section - add button to un-nest it
+                            ToolbarButton("folder.fill.badge.minus") {
+                                selection.removeShortcut(shortcut: shortcut)
+                                selection.selectSection(section: selection.editSection)
+                            }
+                        } else {
+                            // Not nested add button to nest it
+                            ToolbarButton("folder.fill.badge.plus") {
+                                self.nestSection()
+                            }
+                        }
+                    }
+                    
                     if panel != .all {
                         ToolbarButton("pencil.circle.fill") {
                             selection.selectSection(section: selection.selectedSection)
@@ -44,6 +59,7 @@ struct SetupShortcutListView: View {
                             panel = .detail
                         }
                     }
+                    
                     if selection.selectedShortcut != nil {
                         ToolbarButton("minus.circle.fill") {
                             selection.removeShortcut(shortcut: selection.selectedShortcut!)
@@ -65,21 +81,21 @@ struct SetupShortcutListView: View {
             .background(Palette.header.background)
             .foregroundColor(Palette.header.text)
             
+            if MasterData.shared.isNested(selection.selectedSection) && panel == .all {
+                Tile(leadingImageName: { "arrow.turn.up.left" },
+                     dynamicText: {
+                        MasterData.shared.nestedParent(selection.selectedSection)?.name ?? "Parent Section"
+                     },
+                     disabled: true,
+                     tapAction: {
+                            selection.selectSection(section: MasterData.shared.nestedParent(selection.selectedSection))
+                     })
+            }
             if selection.shortcuts.isEmpty {
                 Tile(text: "No shortcuts defined", disabled: true)
             } else {
-                if MasterData.shared.isNested(selection.selectedSection) && panel == .all {
-                    Tile(leadingImageName: { "arrow.turn.up.left" },
-                         dynamicText: {
-                            MasterData.shared.nestedParent(selection.selectedSection)?.name ?? "Parent Section"
-                         },
-                         disabled: true,
-                         tapAction: {
-                                selection.selectSection(section: MasterData.shared.nestedParent(selection.selectedSection))
-                         })
-                }
                 List {
-                    ForEach (selection.shortcuts, id: \.self.name) { (shortcut) in
+                    ForEach (selection.shortcuts, id: \.self) { (shortcut) in
                         if selection.editAction != .none {
                             self.shortcutRow(shortcut)
                         } else {
@@ -134,6 +150,20 @@ struct SetupShortcutListView: View {
                 let nestedSection = selection.sections[from]
                 if currentSection.id != nestedSection.id {
                     selection.newNestedSectionShortcut(in: currentSection, to: nestedSection, at: to)
+                    selection.selectSection(section: nestedSection, updateShortcuts: false)
+                }
+            }
+        }
+    }
+    
+    func nestSection() {
+        let options = MasterData.shared.getSections(excludeSections: [selection.selectedSection!.name], excludeDefault: false, excludeNested: false).map{($0.isDefault ? defaultSectionMenuName : $0.name)}
+        
+        SlideInMenu.shared.show(title: "Nest in Section", options: options) { (section) in
+            if let targetSection = selection.getSection(name: ((section == defaultSectionMenuName ? "" : section)!)) {
+                if let currentSection = selection.selectedSection {
+                    selection.newNestedSectionShortcut(in: targetSection, to: currentSection)
+                    selection.selectSection(section: targetSection)
                 }
             }
         }

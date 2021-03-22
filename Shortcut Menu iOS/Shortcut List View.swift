@@ -20,19 +20,28 @@ struct ShortcutListView: View {
                     if entry.visible {
                         if entry.type == .section {
                             // Section
-                            Tile(dynamicText: {entry.text == "" ? "Default Shortcuts" : entry.text},
-                                 color: entry.color,
-                                 rounded: true,
-                                 insets: EdgeInsets(top: entry.depth == 0 ? 10 : 2,
-                                                    leading: (10 + 22 * CGFloat(entry.depth)),
-                                                    bottom: 2,
-                                                    trailing: 10),
-                                 trailingContent: {expandButtons(entry: entry)},
-                                 tapAction: {
-                                    displayState.set(expanded: !entry.expanded, on: entry)
-                                 }
-                            )
-                            
+                            if entry.inline {
+                                HStack {
+                                    Spacer().frame(width: 18 + 22 * CGFloat(entry.depth))
+                                    Text(entry.text.uppercased())
+                                        .foregroundColor(Palette.background.faintText)
+                                        .font(.subheadline)
+                                    Spacer()
+                                }
+                            } else {
+                                Tile(dynamicText: {entry.text == "" ? "Default Shortcuts" : entry.text},
+                                     color: entry.color,
+                                     rounded: true,
+                                     insets: EdgeInsets(top: entry.depth == 0 ? 10 : 2,
+                                                        leading: (10 + 22 * CGFloat(entry.depth)),
+                                                        bottom: 2,
+                                                        trailing: 10),
+                                     trailingContent: entry.inline ? nil : {expandButtons(entry: entry)},
+                                     tapAction: {
+                                        displayState.set(expanded: !entry.expanded, on: entry)
+                                     }
+                                )
+                            }
                         } else {
                             // Shortcut
                             Tile(dynamicText: {entry.text},
@@ -88,6 +97,7 @@ class DisplayStateViewModel: ObservableObject {
         @Published var text: String
         @Published var depth: Int
         @Published var expanded: Bool
+        @Published var inline: Bool
         @Published var visible: Bool
         @Published var parent: Entry?
         
@@ -95,12 +105,13 @@ class DisplayStateViewModel: ObservableObject {
                                          (depth == 0        ? Palette.header :
                                                               Palette.subHeader)) }
         
-        init(type: ShortcutType, linkId: UUID?, text: String, depth: Int, expanded: Bool = true, visible: Bool = true, parent: Entry? = nil) {
+        init(type: ShortcutType, linkId: UUID?, text: String, depth: Int, expanded: Bool = true, inline: Bool = false, visible: Bool = true, parent: Entry? = nil) {
             self.linkId = linkId
             self.type = type
             self.text = text
             self.depth = depth
-            self.expanded = expanded
+            self.expanded = expanded || inline
+            self.inline = inline
             self.visible = visible
             self.parent = parent
         }
@@ -130,7 +141,7 @@ class DisplayStateViewModel: ObservableObject {
             } else {
                 var newValue: Bool
                 if let parent = listEntry.parent {
-                    newValue = (parent.expanded && parent.visible)
+                    newValue = ((parent.expanded || parent.inline) && parent.visible)
                 } else {
                     newValue =  true
                 }
@@ -212,7 +223,7 @@ class DisplayStateViewModel: ObservableObject {
         }
         
         let parent = add(list: &list, type: .section, id: nil, text: "Other Shortcuts", depth: 0)
-        for section in MasterData.shared.sectionsWithShortcuts(excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
+        for section in MasterData.shared.getSections(withShortcuts: true, excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
             add(list: &list, section: section, depth: 1, expanded: false, parent: parent)
         }
         return list
@@ -226,8 +237,8 @@ class DisplayStateViewModel: ObservableObject {
         
         if shortcuts.count > 0 {
             
-            if header && shortcuts.count > 1 {
-                parent = add(list: &list, type: .section, id: section.id, text: section.name, depth: depth, expanded: expanded, visible: depth <= 1 || section.shortcuts.count == 1, parent: parent)
+            if header {
+                parent = add(list: &list, type: .section, id: section.id, text: section.name, depth: depth, expanded: expanded, inline: section.inline, visible: depth <= 1, parent: parent)
                 depth += 1
             } else {
                 expanded = true
@@ -245,8 +256,8 @@ class DisplayStateViewModel: ObservableObject {
         }
     }
     
-    @discardableResult private func add(list: inout [Entry], type: ShortcutType, id: UUID?, text: String, depth: Int, expanded: Bool =  true, visible: Bool = true, parent: Entry? = nil) -> Entry {
-        let entry = Entry(type: type, linkId: id, text: text, depth: depth, expanded: expanded, visible: visible, parent: parent)
+    @discardableResult private func add(list: inout [Entry], type: ShortcutType, id: UUID?, text: String, depth: Int, expanded: Bool =  true, inline: Bool = false, visible: Bool = true, parent: Entry? = nil) -> Entry {
+        let entry = Entry(type: type, linkId: id, text: text, depth: depth, expanded: expanded, inline: inline, visible: visible || ((parent?.visible ?? false) && (parent?.inline ?? false)), parent: parent)
         list.append(entry)
         return entry
     }

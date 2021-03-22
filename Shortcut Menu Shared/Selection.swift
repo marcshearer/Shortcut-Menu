@@ -241,24 +241,27 @@ public class Selection : ObservableObject, Identifiable {
         self.editObject = .shortcut
     }
     
-    func newNestedSectionShortcut(in section: SectionViewModel, to nestedSection: SectionViewModel, at index: Int) {
+    func newNestedSectionShortcut(in section: SectionViewModel, to nestedSection: SectionViewModel, at index: Int? = nil) {
         self.deselectShortcut()
+        self.selectSection(section: section)
         let shortcut = ShortcutViewModel()
         shortcut.name = nestedSection.name
         shortcut.section = section
         shortcut.type = .section
         shortcut.nestedSection = nestedSection
-        shortcut.sequence = self.master.nextShortcutSequence(section: section)
         if !section.shared {
             nestedSection.shared = false
             nestedSection.save()
             shortcut.shared = false
         }
         self.editAction = .none
-        self.shortcuts.insert(shortcut, at: index)
+        if let index = index {
+            self.shortcuts.insert(shortcut, at: index)
+        } else {
+            self.shortcuts.append(shortcut)
+        }
         self.updateShortcutSequence()
         self.updateShortcut(shortcut: shortcut)
-        self.selectSection(section: nestedSection, updateShortcuts: false)
     }
     
     func getSection(id: UUID) -> SectionViewModel? {

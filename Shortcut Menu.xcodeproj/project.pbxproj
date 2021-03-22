@@ -270,7 +270,6 @@
 			children = (
 				B2B82CE325F20F590005B07C /* Base.lproj */,
 				B2B82CA825F20D490005B07C /* AppDelegate.swift */,
-				B2DF651D25FCA78900C92386 /* New Group */,
 				B2B82CAB25F20D490005B07C /* Main.storyboard */,
 				B2B82CA525F20D490005B07C /* Info.plist */,
 				B2B82CA425F20D490005B07C /* Shortcut_Menu_Mac.entitlements */,
@@ -451,13 +450,6 @@
 				B2B82C9625F20A5D0005B07C /* Status Menu.swift */,
 			);
 			name = "Stub classes";
-			sourceTree = "<group>";
-		};
-		B2DF651D25FCA78900C92386 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

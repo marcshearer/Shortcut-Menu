@@ -147,7 +147,7 @@ public class MasterData : ObservableObject {
         return ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, shared: shared)
     }
     
-    public func sectionsWithShortcuts(excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
+    public func getSections(withShortcuts: Bool = false, excludeSections: [String] = [], excludeDefault: Bool = true, excludeNested: Bool = true) -> [SectionViewModel] {
         return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
     }
     

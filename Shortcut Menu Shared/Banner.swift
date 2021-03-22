@@ -60,10 +60,10 @@ struct Banner: View {
                         Spacer()
                     }
                 }
-                Spacer().frame(height: 20)
+                Spacer().frame(height: bannerBottom)
             }
         }
-        .frame(height: bannerHeight)
+        .frame(height: bannerHeight + bannerBottom)
     }
     
     var backButton: some View {

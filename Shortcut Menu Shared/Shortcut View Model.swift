@@ -17,7 +17,7 @@ public enum ShortcutType: Int {
     case section = 1
 }
 
-public class ShortcutViewModel: ObservableObject, Identifiable {
+public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
     
     // Managed object context
     let context: NSManagedObjectContext! = MasterData.context
@@ -87,6 +87,19 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
     }
      
     private func setupMappings() {
+        
+        // Stop sharing if section becomes an unshared section
+        $section
+            .receive(on: RunLoop.main)
+            .map { (section) in
+                return section?.shared ?? false
+            }
+            .sink(receiveValue: { (shared) in
+                if !shared {
+                    self.shared = false
+                }
+            })
+        .store(in: &cancellableSet)
         
         // Prevent edit of URL if bookmark data is present
         $urlSecurityBookmark
@@ -178,6 +191,26 @@ public class ShortcutViewModel: ObservableObject, Identifiable {
                 self.canShare = canShare
             })
         .store(in: &cancellableSet)
+    }
+    
+    public static func == (lhs: ShortcutViewModel, rhs: ShortcutViewModel) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.url == rhs.url && lhs.urlSecurityBookmark == rhs.urlSecurityBookmark && lhs.copyText == rhs.copyText && lhs.copyMessage == rhs.copyMessage && lhs.copyPrivate == rhs.copyPrivate && lhs.section?.id == rhs.section?.id && lhs.nestedSection?.id == rhs.nestedSection?.id && lhs.sequence == rhs.sequence && lhs.type == rhs.type && lhs.keyEquivalent == rhs.keyEquivalent && lhs.shared == rhs.shared
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+        hasher.combine(url)
+        hasher.combine(urlSecurityBookmark)
+        hasher.combine(copyText)
+        hasher.combine(copyMessage)
+        hasher.combine(copyPrivate)
+        hasher.combine(section?.id)
+        hasher.combine(nestedSection?.id)
+        hasher.combine(sequence)
+        hasher.combine(type)
+        hasher.combine(keyEquivalent)
+        hasher.combine(shared)
     }
     
     private func exists(name: String) -> Bool {
