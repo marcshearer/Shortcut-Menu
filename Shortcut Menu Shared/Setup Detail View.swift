@@ -88,6 +88,22 @@ struct SetupDetailView: View {
             if selection.editObject != .none && (isEnabled || isSettingShortcutKey) {
                 
                 if self.canSave() {
+                    if panel != .all && selection.editAction != .create{
+                        // Need a delete option since not available in lists
+                        ToolbarButton("trash.circle.fill") {
+                            selection.editAction = .none
+                            if selection.editObject == .section {
+                                selection.removeSection(section: selection.editSection)
+                                selection.deselectSection()
+                                panel = .sections
+                            } else if selection.editObject == .shortcut {
+                                selection.removeShortcut(shortcut: selection.editShortcut)
+                                selection.deselectShortcut()
+                                panel = .shortcuts
+                            }
+                        }
+                    }
+                    
                     ToolbarButton("checkmark.circle.fill") {
                         // Update
                         selection.editAction = .none
@@ -300,8 +316,9 @@ struct SetupDetailView: View {
                 selection.editShortcut.urlSecurityBookmark = nil
             }
        }, label: {
-                Image("xmark.circle.fill.gray")
+        Image(systemName: "xmark.circle.fill")
                     .resizable()
+                    .foregroundColor(Palette.background.faintText)
                     .frame(width: 20, height: 20)
         })
         .buttonStyle(PlainButtonStyle())

@@ -60,7 +60,7 @@ struct SetupShortcutListView: View {
                         }
                     }
                     
-                    if selection.selectedShortcut != nil {
+                    if panel == .all && selection.selectedShortcut != nil {
                         ToolbarButton("minus.circle.fill") {
                             selection.removeShortcut(shortcut: selection.selectedShortcut!)
                         }

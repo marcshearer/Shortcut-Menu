@@ -25,9 +25,9 @@ struct SetupSectionListView: View {
                     HStack{
                         Spacer()
                         if self.selection.editAction == .none {
-                            if self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
+                            if panel == .all && self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
                                 ToolbarButton("minus.circle.fill") {
-                                    self.selection.removeSection(section: self.selection.selectedSection!)
+                                    selection.removeSection(section: self.selection.selectedSection!)
                                 }
                             }
                             
