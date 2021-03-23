@@ -179,7 +179,9 @@ struct SetupDetailView: View {
  
             if MyApp.target == .macOS {
  
-                Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
+                let isDefault = selection.editSection.isDefault
+                
+                Input(title: (isDefault ? "Menu bar title" : "Stand-alone menu bar title"), field: $selection.editSection.menuTitle, placeHolder: (isDefault ? "􀉑" : ""), width: 100, isEnabled: isEnabled)
             
                 self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
             }
