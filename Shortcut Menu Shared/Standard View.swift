@@ -45,13 +45,15 @@ struct StandardView <Content> : View where Content : View {
             SlideInMenuView()
             if messageBox.isShown {
                 Palette.maskBackground
+                    .ignoresSafeArea(edges: .all)
                 VStack() {
                     Spacer()
                     HStack {
                         Spacer()
                         let width = min(geometry.size.width - 40, 400)
                         let height = min(geometry.size.height - 40, 250)
-                        MessageBoxView(showIcon: width >= 400).frame(width: width, height: height)
+                        MessageBoxView(showIcon: width >= 400)
+                            .frame(width: width, height: height)
                             .cornerRadius(20)
                         Spacer()
                     }

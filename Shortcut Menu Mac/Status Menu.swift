@@ -31,6 +31,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private var currentSection: String = ""
     private var defineWindowController: MenubarWindowController!
     private var whisperPopover: NSPopover!
+    private var aboutPopover: NSPopover!
     
     private var defineWindowShowing = false
     
@@ -139,6 +140,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d")
         
         self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r")
+
+        self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "")
         
         self.addSeparator()
                 
@@ -238,16 +241,23 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
     }
     
-    private func showPopover(popover: inout NSPopover?, view: AnyView) {
+    @objc private func about(_ sender: Any) {
+        self.showPopover(popover: &self.aboutPopover,
+                         view: AnyView(MessageBoxView().frame(width: 400, height: 250)), size: NSSize(width: 400, height: 250))
+        MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true, completion: {self.aboutPopover.close()})
+    }
+    
+    private func showPopover(popover: inout NSPopover?, view: AnyView, size: NSSize? = nil) {
         if popover == nil {
             let newPopover = NSPopover()
             newPopover.behavior = .transient
-            newPopover.contentSize = NSSize(width: 400, height: 500)
+            newPopover.contentSize = size ?? NSSize(width: 400, height: 500)
             newPopover.delegate = self
             popover = newPopover
         }
         popover?.contentViewController = NSHostingController(rootView: view)
         popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
+        popover?.contentViewController?.view.window?.makeKeyAndOrderFront(self)
     }
     
      private func showMenubarWindow(menubarWindowController: inout MenubarWindowController?, view: AnyView)  {
@@ -381,6 +391,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
             UserDefault.currentSection.set(self.currentSection)
             self.update()
+            statusItem.button?.performClick(self)
         }
     }
     
