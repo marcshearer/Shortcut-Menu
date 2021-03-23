@@ -45,6 +45,9 @@ struct MainView : View {
                     }
                 }
             }
+            .onAppear {
+                Version.current.check(upgrade: true)
+            }
         }
     }
     

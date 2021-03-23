@@ -11,6 +11,16 @@ import CloudKit
 
 class ICloud {
     
+    public static let shared = ICloud()
+    
+    public var publicDatabase: CKDatabase {
+        CKContainer(identifier: iCloudIdentifier).publicCloudDatabase
+    }
+
+    public var privateDatabase: CKDatabase {
+        CKContainer(identifier: iCloudIdentifier).privateCloudDatabase
+    }
+
     private var cancelRequest = false
     
     public func cancel() {
@@ -37,7 +47,7 @@ class ICloud {
         
         // Fetch player records from cloud
         let cloudContainer = CKContainer(identifier: iCloudIdentifier)
-        let database = database ?? cloudContainer.privateCloudDatabase
+        let database = database ?? self.publicDatabase
         if cursor == nil {
             // First time in - set up the query
             let query = CKQuery(recordType: recordType, predicate: predicate)
@@ -94,5 +104,38 @@ class ICloud {
         
         // Execute the query - disable
         database.add(queryOperation)
+    }
+    
+    public func getDatabaseIdentifier(completion: @escaping (Bool, String?, String?, String?, String?, String?)->()) {
+        var database: String?
+        var minVersion: String?
+        var minMessage: String?
+        var infoMessage: String?
+        
+        self.download(recordType: "Version",
+                          downloadAction: { (record) in
+                                database = Utility.objectString(cloudObject: record, forKey: "database")
+                                minVersion = Utility.objectString(cloudObject: record, forKey: "minVersion")
+                                minMessage = Utility.objectString(cloudObject: record, forKey: "minMessage")
+                                infoMessage = Utility.objectString(cloudObject: record, forKey: "infoMessage")
+                          },
+                          completeAction: {
+                                completion(true, nil, database, minVersion, minMessage, infoMessage)
+                          },
+                          failureAction: { (error) in
+                                completion(false, "Error downloading version \(self.errorMessage(error))", nil, nil, nil, nil)
+                          })
+    }
+    
+    public func errorMessage(_ error: Error?) -> String {
+        if error == nil {
+            return "Success"
+        } else {
+            if let ckError = error as? CKError {
+                return "Error updating (\(ckError.localizedDescription))"
+            } else {
+                return "Error updating (\(error!.localizedDescription))"
+            }
+        }
     }
 }

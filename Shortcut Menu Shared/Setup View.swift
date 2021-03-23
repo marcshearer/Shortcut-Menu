@@ -107,6 +107,9 @@ struct SetupView: View {
                         ShowSharedView(sharedList: $sharedList, width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
                     })
                 }
+                .onAppear {
+                    Version.current.check()
+                }
             }
         }
     }

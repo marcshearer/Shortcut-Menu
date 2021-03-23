@@ -51,20 +51,27 @@ struct ShowSharedView : View {
     }
     
     private func downloadShared() {
-        let iCloud = ICloud()
         sections = []
         shortcuts = []
         let predicate = NSPredicate(format: "CD_shared = true")
-        iCloud.download(
-            recordType: "CD_\(CloudSectionMO.tableName)", keys: ["CD_id", "CD_name"], sortKey: ["CD_name"], predicate: predicate,
+        ICloud.shared.download(
+            recordType: "CD_\(CloudSectionMO.tableName)",
+            database: ICloud.shared.privateDatabase,
+            keys: ["CD_id", "CD_name"],
+            sortKey: ["CD_name"],
+            predicate: predicate,
             downloadAction: { (record) in
                                 let name = record.value(forKey: "CD_name") as! String
                 sections.append((record.value(forKey: "CD_id") as! String, (name == "" ? defaultSectionDisplayName : name)))
                             },
             completeAction: {
                                 let predicate = NSPredicate(format: "CD_type16 = %d and CD_shared = true", ShortcutType.shortcut.rawValue)
-                                iCloud.download(
-                                    recordType: "CD_\(CloudShortcutMO.tableName)", keys: ["CD_sectionId", "CD_name"], sortKey: ["CD_sequence64"], predicate: predicate,
+                ICloud.shared.download(
+                                    recordType: "CD_\(CloudShortcutMO.tableName)",
+                                    database: ICloud.shared.privateDatabase,
+                                    keys: ["CD_sectionId", "CD_name"],
+                                    sortKey: ["CD_sequence64"],
+                                    predicate: predicate,
                                     downloadAction: { (record) in
                                                         shortcuts.append((record.value(forKey: "CD_sectionId") as! String, record.value(forKey: "CD_name") as! String))
                                                     },

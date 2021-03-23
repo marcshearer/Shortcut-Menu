@@ -22,6 +22,8 @@
 		B2860A8B2605FC52001E6E7D /* ICloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A8A2605FC52001E6E7D /* ICloud.swift */; };
 		B2860A8E2605FC5B001E6E7D /* ICloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A8A2605FC52001E6E7D /* ICloud.swift */; };
 		B2860A912605FC61001E6E7D /* Show Shared View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A862605FC25001E6E7D /* Show Shared View.swift */; };
+		B2860A9B2609C59C001E6E7D /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A9A2609C59C001E6E7D /* Version.swift */; };
+		B2860A9C2609C59C001E6E7D /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A9A2609C59C001E6E7D /* Version.swift */; };
 		B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */; };
 		B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D41FF2443562C00C2577E /* Section Managed Object.swift */; };
 		B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D420124435DF300C2577E /* Shortcut Managed Object.swift */; };
@@ -113,6 +115,7 @@
 		B2860A642601CF0A001E6E7D /* Utility Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Utility Extension.swift"; sourceTree = "<group>"; };
 		B2860A862605FC25001E6E7D /* Show Shared View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Show Shared View.swift"; sourceTree = "<group>"; };
 		B2860A8A2605FC52001E6E7D /* ICloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloud.swift; sourceTree = "<group>"; };
+		B2860A9A2609C59C001E6E7D /* Version.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -261,6 +264,7 @@
 				B2D84BE025F779B500966421 /* Debug Utilities.swift */,
 				B2DF652025FD11D300C92386 /* Shortcut Key.swift */,
 				B2860A8A2605FC52001E6E7D /* ICloud.swift */,
+				B2860A9A2609C59C001E6E7D /* Version.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -556,6 +560,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2860A9B2609C59C001E6E7D /* Version.swift in Sources */,
 				B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */,
 				B28D428924475BB000C2577E /* Selection.swift in Sources */,
 				B2860A912605FC61001E6E7D /* Show Shared View.swift in Sources */,
@@ -615,6 +620,7 @@
 				B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */,
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
 				B22DED5E25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
+				B2860A9C2609C59C001E6E7D /* Version.swift in Sources */,
 				B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */,
 				B2DF651825FB5EC200C92386 /* My Image.swift in Sources */,
 				B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */,
