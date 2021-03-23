@@ -31,16 +31,18 @@ struct Banner: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     @Binding var title: String
+    var color: PaletteColor = Palette.banner
     var back: Bool = true
     var backEnabled: Binding<Bool>?
     var backAction: (()->())?
+    var minimumBanner: Bool = false
     var optionMode: BannerOptionMode = .none
     var menuImage: AnyView? = nil
     var options: [BannerOption]? = nil
        
     var body: some View {
         ZStack {
-            Palette.banner.background
+            color.background
                 .ignoresSafeArea()
             VStack {
                 Spacer()
@@ -49,11 +51,11 @@ struct Banner: View {
                     if back {
                         backButton
                     }
-                    Text(title).font(.largeTitle).bold().foregroundColor(Palette.banner.text)
+                    Text(title).font(minimumBanner ? Font.headline : Font.largeTitle).bold().foregroundColor(color.text)
                     Spacer()
                     switch optionMode {
                     case .menu:
-                        Banner_Menu(image: menuImage, options: options!)
+                        Banner_Menu(image: menuImage, minimumBanner: minimumBanner, options: options!)
                     case .buttons:
                         Banner_Buttons(options: options!)
                     default:
@@ -63,7 +65,7 @@ struct Banner: View {
                 Spacer().frame(height: bannerBottom)
             }
         }
-        .frame(height: bannerHeight + bannerBottom)
+        .frame(height: (minimumBanner ? minimumBannerHeight :  bannerHeight + bannerBottom))
     }
     
     var backButton: some View {
@@ -75,9 +77,15 @@ struct Banner: View {
             }
         }, label: {
             HStack {
-                Image(systemName: "chevron.left")
-                    .font(.largeTitle)
-                    .foregroundColor(Palette.bannerBackButton.opacity(enabled ? 1.0 : 0.5))
+                if minimumBanner {
+                    Image(systemName: "xmark.circle")
+                        .font(.headline)
+                        .foregroundColor(color.text.opacity(enabled ? 1.0 : 0.5))
+                } else {
+                    Image(systemName: "chevron.left")
+                        .font(.largeTitle)
+                        .foregroundColor(Palette.bannerBackButton.opacity(enabled ? 1.0 : 0.5))
+                }
             }
         })
         .buttonStyle(PlainButtonStyle())
@@ -87,11 +95,12 @@ struct Banner: View {
 
 struct Banner_Menu : View {
     var image: AnyView?
+    var minimumBanner: Bool
     var options: [BannerOption]
     let menuStyle = DefaultMenuStyle()
 
     var body: some View {
-        let menuLabel = image ?? AnyView(Image(systemName: "line.horizontal.3").foregroundColor(Palette.banner.text).font(.largeTitle))
+        let menuLabel = image ?? AnyView(Image(systemName: "line.horizontal.3").foregroundColor(Palette.banner.text).font(minimumBanner ? Font.headline : Font.largeTitle))
         Menu {
             ForEach(0..<(options.count)) { (index) in
                 let option = options[index]

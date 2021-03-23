@@ -32,6 +32,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private var defineWindowController: MenubarWindowController!
     private var whisperPopover: NSPopover!
     private var aboutPopover: NSPopover!
+    private var showSharedPopover: NSPopover!
     
     private var defineWindowShowing = false
     
@@ -94,6 +95,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         MasterData.shared.suspendRemoteUpdates(false)
         self.changeImage(close: false)
         self.defineWindowShowing = false
+        MessageBox.shared.hide()
     }
     
     // MARK: - Window delegate handlers =========================================================== -
@@ -137,11 +139,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             let sectionMenu = self.addSubmenu("Choose section")
             _ = self.addSections(to: sectionMenu)
         }
-        self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d")
         
-        self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r")
+        let adminMenu = self.addSubmenu("Configuration")
+        self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d", to: adminMenu)
+        
+        self.addItem("Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
+        
+        self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
 
-        self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "")
+        self.addItem("About", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
         
         self.addSeparator()
                 
@@ -244,7 +250,18 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     @objc private func about(_ sender: Any) {
         self.showPopover(popover: &self.aboutPopover,
                          view: AnyView(MessageBoxView().frame(width: 400, height: 250)), size: NSSize(width: 400, height: 250))
-        MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true, completion: {self.aboutPopover.close()})
+        MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true, completion: {
+                self.aboutPopover.close()
+        })
+    }
+    
+    @objc private func showShared(_ sender: Any) {
+        
+        self.showPopover(popover: &self.showSharedPopover,
+                         view: AnyView(ShowSharedView(minimumBanner: true,
+                                                      completion: {
+                                                            self.showSharedPopover.close()
+                                                      })))
     }
     
     private func showPopover(popover: inout NSPopover?, view: AnyView, size: NSSize? = nil) {
@@ -257,6 +274,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
         popover?.contentViewController = NSHostingController(rootView: view)
         popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
+        if let frameView = popover?.contentViewController?.view.superview {
+            // Make the triangle callout background color
+            let backgroundView = NSView(frame: frameView.bounds)
+            backgroundView.wantsLayer = true
+            backgroundView.layer?.backgroundColor = Palette.background.background.cgColor
+            backgroundView.autoresizingMask = [.width, .height]
+            frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
+        }
         popover?.contentViewController?.view.window?.makeKeyAndOrderFront(self)
     }
     

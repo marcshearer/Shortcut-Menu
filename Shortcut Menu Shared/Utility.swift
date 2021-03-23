@@ -65,8 +65,7 @@ class Utility {
     }
    
     public static var isDevelopment: Bool {
-        //get { MyApp.database == "development" }
-        return false
+        get { MyApp.database == "development" }
     }
     
     // MARK: - String manipulation ============================================================================ -

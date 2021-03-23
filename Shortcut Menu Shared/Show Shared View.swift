@@ -11,36 +11,53 @@ import SwiftUI
 struct ShowSharedView : View {
     
     @State var title = "Shared Shortcuts"
-    @Binding var sharedList: [(highlight: Bool, name: String)]
+    @State var sharedList: [(highlight: Bool, name: String)] = [(true, "Downloading shared shortcuts...")]
+
     @State var width: CGFloat = 400
     @State var height: CGFloat = 300
     @State var sections: [(id: String, name: String)] = []
     @State var shortcuts: [(sectionId: String, name: String)] = []
+    @State var minimumBanner: Bool = false
+    @State var completion: (()->())?
        
     var body: some View {
         
         VStack(spacing: 0) {
-            Banner(title: $title)
-            ScrollView {
-            VStack {
-                ForEach(sharedList, id: \.self.name) { (entry) in
-                    HStack {
-                        Spacer().frame(width: 32)
-                        if entry.highlight {
-                            Text(entry.name)
-                                .foregroundColor(Palette.background.contrastText)
-                                .font(.headline)
-                                .bold()
-                        } else {
-                            Spacer().frame(width: 32)
-                            Text(entry.name)
-                                .foregroundColor(Palette.background.text)
-                        }
-                        Spacer()
-                    }
+            Banner(title: $title, color: (minimumBanner ? Palette.background : Palette.banner), backAction: completion, minimumBanner: minimumBanner)
+            if minimumBanner {
+                VStack {
+                    Rectangle()
+                        .frame(height: 1)
+                        .background(Palette.background.text)
+                        .ignoresSafeArea()
                 }
             }
-            Spacer()
+            ScrollView {
+                VStack {
+                    if minimumBanner {
+                        VStack {
+                            Spacer().frame(height: 8)
+                        }
+                    }
+                    
+                    ForEach(sharedList, id: \.self.name) { (entry) in
+                        HStack {
+                            Spacer().frame(width: 32)
+                            if entry.highlight {
+                                Text(entry.name)
+                                    .foregroundColor(Palette.background.contrastText)
+                                    .font(.headline)
+                                    .bold()
+                            } else {
+                                Spacer().frame(width: 32)
+                                Text(entry.name)
+                                    .foregroundColor(Palette.background.text)
+                            }
+                            Spacer()
+                        }
+                    }
+                }
+                Spacer()
             }
         }
         .onAppear() {

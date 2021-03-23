@@ -22,7 +22,6 @@ struct SetupView: View {
     @State var completion: (()->())?
     @State var backEnabled = true
     @State private var showShared = false
-    @State private var sharedList: [(highlight: Bool, name: String)] = []
     @State private var panel: SetupPanel = (MyApp.format == .phone ? .sections : .all)
     
     var body: some View {
@@ -79,33 +78,34 @@ struct SetupView: View {
                         }
                     }
                     
-                    VStack {
-                        Spacer()
-                        HStack {
+                    if MyApp.target == .iOS {
+                        VStack {
                             Spacer()
-                            Button{
-                                sharedList = [(false, "Downloading shared shortcuts...")]
-                                showShared = true
-                            } label: {
-                                Image(systemName: "icloud.and.arrow.up")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .padding(.all, 5)
-                                    .frame(width: 40.0, height: 40.0, alignment: .center)
-                                    .foregroundColor(Palette.bannerButton.text)
+                            HStack {
+                                Spacer()
+                                Button{
+                                    showShared = true
+                                } label: {
+                                    Image(systemName: "icloud.and.arrow.up")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .padding(.all, 5)
+                                        .frame(width: 40.0, height: 40.0, alignment: .center)
+                                        .foregroundColor(Palette.bannerButton.text)
+                                }
+                                .background(Palette.bannerButton.background)
+                                .clipShape(Circle())
+                                .buttonStyle(PlainButtonStyle())
+                                .shadow(radius: 2, x: 5, y: 5)
+                                Spacer().frame(width: 10)
                             }
-                            .background(Palette.bannerButton.background)
-                            .clipShape(Circle())
-                            .buttonStyle(PlainButtonStyle())
-                            .shadow(radius: 2, x: 5, y: 5)
-                            Spacer().frame(width: 10)
+                            Spacer().frame(height: 10)
                         }
-                        Spacer().frame(height: 10)
+                        .mySheet(isPresented: $showShared, content: {
+                            let padding: CGFloat = (MyApp.target == .iOS ? 0.0 : 60.0)
+                            ShowSharedView(width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
+                        })
                     }
-                    .mySheet(isPresented: $showShared, content: {
-                        let padding: CGFloat = (MyApp.target == .iOS ? 0.0 : 60.0)
-                        ShowSharedView(sharedList: $sharedList, width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
-                    })
                 }
                 .onAppear {
                     Version.current.check()

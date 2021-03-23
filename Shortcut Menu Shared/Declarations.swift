@@ -36,6 +36,7 @@ let inputTopHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 10.0)
 let inputDefaultHeight: CGFloat = 30.0
 let inputToggleDefaultHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 16.0)
 let bannerHeight: CGFloat = (MyApp.format == .tablet ? 70.0 : 50.0)
+let minimumBannerHeight: CGFloat = 40.0
 let bannerBottom: CGFloat = (MyApp.format == .tablet ? 20.0 : 10.0)
 
 // Fonts
