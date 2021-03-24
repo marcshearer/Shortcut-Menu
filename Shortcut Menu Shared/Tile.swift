@@ -38,7 +38,11 @@ struct Tile: View {
                         Spacer().frame(width: 10)
                     }
                     .onTapGesture {
-                        leadingAction?()
+                        if leadingAction != nil {
+                            leadingAction?()
+                        } else {
+                            tapAction?()
+                        }
                     }
                 }
                 Text(text ?? dynamicText?() ?? "")

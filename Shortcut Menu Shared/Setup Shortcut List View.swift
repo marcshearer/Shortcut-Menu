@@ -41,8 +41,15 @@ struct SetupShortcutListView: View {
                         if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
                             // Nested section - add button to un-nest it
                             ToolbarButton("folder.fill.badge.minus") {
-                                selection.removeShortcut(shortcut: shortcut)
-                                selection.selectSection(section: selection.editSection)
+                                if let section = selection.selectedSection {
+                                    selection.removeShortcut(shortcut: shortcut)
+                                    if section.inline {
+                                        // Can't be inline if not nested
+                                        section.inline = false
+                                        section.save()
+                                    }
+                                    selection.selectSection(section: section)
+                                }
                             }
                         } else {
                             // Not nested add button to nest it
@@ -92,7 +99,17 @@ struct SetupShortcutListView: View {
                      })
             }
             if selection.shortcuts.isEmpty {
-                Tile(text: "No shortcuts defined", disabled: true)
+                List {
+                    ForEach(0..<1) { (index) in
+                        Tile(text: "No shortcuts defined", disabled: true)
+                    }
+                    .onInsert(of: [SectionItemProvider.type.identifier, UTType.url.identifier])
+                    { (index, items) in
+                        // Allow insert in empty list
+                        SectionItemProvider.dropAction(at: 0, items, selection: selection, action: self.onInsertSectionAction)
+                        selection.dropUrl(afterIndex: 0, items: items)
+                    }
+                }
             } else {
                 List {
                     ForEach (selection.shortcuts, id: \.self) { (shortcut) in

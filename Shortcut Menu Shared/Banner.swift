@@ -78,9 +78,9 @@ struct Banner: View {
         }, label: {
             HStack {
                 if minimumBanner {
-                    Image(systemName: "xmark.circle")
+                    Image(systemName: "xmark.circle.fill")
                         .font(.headline)
-                        .foregroundColor(color.text.opacity(enabled ? 1.0 : 0.5))
+                        .foregroundColor(color.strongText.opacity(enabled ? 1.0 : 0.5))
                 } else {
                     Image(systemName: "chevron.left")
                         .font(.largeTitle)

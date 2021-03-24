@@ -100,7 +100,9 @@ public class Selection : ObservableObject, Identifiable {
         
         // Need to update sections on shortcuts in this section
         for shortcut in section.shortcuts {
-            shortcut.section = section
+            if shortcut.section?.id != section.id {
+                shortcut.section = section
+            }
         }
         
         // Need to update section names and shared flags on shortcuts which nest this section
@@ -253,6 +255,8 @@ public class Selection : ObservableObject, Identifiable {
             nestedSection.shared = false
             nestedSection.save()
             shortcut.shared = false
+        } else {
+            shortcut.shared = nestedSection.shared
         }
         self.editAction = .none
         if let index = index {
