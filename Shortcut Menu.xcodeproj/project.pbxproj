@@ -117,14 +117,14 @@
 		B2860A8A2605FC52001E6E7D /* ICloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloud.swift; sourceTree = "<group>"; };
 		B2860A9A2609C59C001E6E7D /* Version.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		B2860A9F260C736B001E6E7D /* Shortcut Menu iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Shortcut Menu iOS.entitlements"; sourceTree = "<group>"; };
-		B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D41E52443538B00C2577E /* Shortcuts iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcuts iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B28D41FF2443562C00C2577E /* Section Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420124435DF300C2577E /* Shortcut Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420324435F8500C2577E /* Section View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section View Model.swift"; sourceTree = "<group>"; };
 		B28D420524437C3B00C2577E /* Shortcut View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut View Model.swift"; sourceTree = "<group>"; };
-		B28D42652447515100C2577E /* Shortcut Menu Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D42652447515100C2577E /* Shortcuts Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcuts Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D42812447542C00C2577E /* Declarations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Declarations.swift; sourceTree = "<group>"; };
 		B28D428824475BB000C2577E /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
@@ -323,8 +323,8 @@
 		B28D41E62443538B00C2577E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */,
-				B28D42652447515100C2577E /* Shortcut Menu Mac.app */,
+				B28D41E52443538B00C2577E /* Shortcuts iOS.app */,
+				B28D42652447515100C2577E /* Shortcuts Mac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -459,9 +459,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B28D41E42443538B00C2577E /* Shortcut Menu iOS */ = {
+		B28D41E42443538B00C2577E /* Shortcuts iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */;
+			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcuts iOS" */;
 			buildPhases = (
 				B28D41E12443538B00C2577E /* Sources */,
 				B28D41E22443538B00C2577E /* Frameworks */,
@@ -471,14 +471,14 @@
 			);
 			dependencies = (
 			);
-			name = "Shortcut Menu iOS";
+			name = "Shortcuts iOS";
 			productName = "Shortcut Menu";
-			productReference = B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */;
+			productReference = B28D41E52443538B00C2577E /* Shortcuts iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B28D42642447515100C2577E /* Shortcut Menu Mac */ = {
+		B28D42642447515100C2577E /* Shortcuts Mac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu Mac" */;
+			buildConfigurationList = B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcuts Mac" */;
 			buildPhases = (
 				B28D42612447515100C2577E /* Sources */,
 				B28D42622447515100C2577E /* Frameworks */,
@@ -488,9 +488,9 @@
 			);
 			dependencies = (
 			);
-			name = "Shortcut Menu Mac";
+			name = "Shortcuts Mac";
 			productName = "Shortcut Menu Mac";
-			productReference = B28D42652447515100C2577E /* Shortcut Menu Mac.app */;
+			productReference = B28D42652447515100C2577E /* Shortcuts Mac.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -524,8 +524,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B28D41E42443538B00C2577E /* Shortcut Menu iOS */,
-				B28D42642447515100C2577E /* Shortcut Menu Mac */,
+				B28D41E42443538B00C2577E /* Shortcuts iOS */,
+				B28D42642447515100C2577E /* Shortcuts Mac */,
 			);
 		};
 /* End PBXProject section */
@@ -901,7 +901,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */ = {
+		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcuts iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B28D41FD2443538D00C2577E /* Debug */,
@@ -910,7 +910,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu Mac" */ = {
+		B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcuts Mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B28D42782447515300C2577E /* Debug */,

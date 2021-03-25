@@ -18,7 +18,7 @@ class Backup {
     public func backup() {
         let fileManager = FileManager()
         let (backupsUrl, assetsBackupUrl) = self.getDirectories()
-        let databaseBackupsUrl = backupsUrl.appendingPathComponent(MyApp.database)
+        let databaseBackupsUrl = backupsUrl.appendingPathComponent(UserDefault.database.string)
         let dateString = Utility.dateString(Date(), format: backupDirectoryDateFormat, localized: false)
         let thisBackupUrl = databaseBackupsUrl.appendingPathComponent(dateString)
         _ = (try! fileManager.createDirectory(at: thisBackupUrl, withIntermediateDirectories: true))
@@ -30,7 +30,7 @@ class Backup {
     
     public func restore(dateString: String) {
         let (backupsUrl, assetsBackupUrl) = self.getDirectories()
-        let databaseBackupsUrl = backupsUrl.appendingPathComponent(MyApp.database)
+        let databaseBackupsUrl = backupsUrl.appendingPathComponent(UserDefault.database.string)
         let thisBackupUrl = databaseBackupsUrl.appendingPathComponent(dateString)
         
         Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: SectionMO.entity(), groupName: "data", elementName: "Sections")
