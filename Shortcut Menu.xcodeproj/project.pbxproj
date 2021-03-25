@@ -116,7 +116,8 @@
 		B2860A862605FC25001E6E7D /* Show Shared View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Show Shared View.swift"; sourceTree = "<group>"; };
 		B2860A8A2605FC52001E6E7D /* ICloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloud.swift; sourceTree = "<group>"; };
 		B2860A9A2609C59C001E6E7D /* Version.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
-		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2860A9F260C736B001E6E7D /* Shortcut Menu iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Shortcut Menu iOS.entitlements"; sourceTree = "<group>"; };
+		B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B28D41FF2443562C00C2577E /* Section Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section Managed Object.swift"; sourceTree = "<group>"; };
@@ -160,7 +161,6 @@
 		B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 		B2C2642425F7EDDA0054D2ED /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		B2C2643425F8BB9B0054D2ED /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
-		B2C9F95D25FE95D50004E4E4 /* Shortcut Menu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Shortcut Menu.entitlements"; sourceTree = "<group>"; };
 		B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B2C9F96125FE95F60004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
 		B2D84BE025F779B500966421 /* Debug Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Debug Utilities.swift"; sourceTree = "<group>"; };
@@ -311,7 +311,6 @@
 		B28D41DC2443538B00C2577E = {
 			isa = PBXGroup;
 			children = (
-				B2C9F95D25FE95D50004E4E4 /* Shortcut Menu.entitlements */,
 				B2DF650D25FB4AC600C92386 /* Notes.txt */,
 				B28D42862447573900C2577E /* Shortcut Menu Shared */,
 				B28D41E72443538B00C2577E /* Shortcut Menu iOS */,
@@ -324,7 +323,7 @@
 		B28D41E62443538B00C2577E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B28D41E52443538B00C2577E /* Shortcut Menu.app */,
+				B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */,
 				B28D42652447515100C2577E /* Shortcut Menu Mac.app */,
 			);
 			name = Products;
@@ -333,6 +332,7 @@
 		B28D41E72443538B00C2577E /* Shortcut Menu iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B2860A9F260C736B001E6E7D /* Shortcut Menu iOS.entitlements */,
 				B2C2641825F7E3BE0054D2ED /* Views */,
 				B2B82C6F25F14CD20005B07C /* Preview Assets.xcassets */,
 				B2C2642325F7EDB00054D2ED /* Actions */,
@@ -459,9 +459,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B28D41E42443538B00C2577E /* Shortcut Menu */ = {
+		B28D41E42443538B00C2577E /* Shortcut Menu iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu" */;
+			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */;
 			buildPhases = (
 				B28D41E12443538B00C2577E /* Sources */,
 				B28D41E22443538B00C2577E /* Frameworks */,
@@ -471,9 +471,9 @@
 			);
 			dependencies = (
 			);
-			name = "Shortcut Menu";
+			name = "Shortcut Menu iOS";
 			productName = "Shortcut Menu";
-			productReference = B28D41E52443538B00C2577E /* Shortcut Menu.app */;
+			productReference = B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B28D42642447515100C2577E /* Shortcut Menu Mac */ = {
@@ -524,7 +524,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B28D41E42443538B00C2577E /* Shortcut Menu */,
+				B28D41E42443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42642447515100C2577E /* Shortcut Menu Mac */,
 			);
 		};
@@ -801,7 +801,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu iOS/Shortcut Menu iOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
@@ -822,7 +822,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu iOS/Shortcut Menu iOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
@@ -901,7 +901,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu" */ = {
+		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B28D41FD2443538D00C2577E /* Debug */,
