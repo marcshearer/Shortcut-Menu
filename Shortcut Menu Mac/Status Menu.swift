@@ -29,12 +29,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private var menuItemList: [String: NSMenuItem] = [:]
     
     private var currentSection: String = ""
-    private var defineWindowController: MenubarWindowController!
     private var whisperPopover: NSPopover!
     private var aboutPopover: NSPopover!
     private var showSharedPopover: NSPopover!
     
-    private var defineWindowShowing = false
+    private var defineWindowController: MenubarWindowController!
+    private var settingsWindowController: MenubarWindowController!
+    private var windowShowing = false
     
     private var additionalStatusItems: [UUID : NSStatusItem] = [:]
     
@@ -69,9 +70,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     internal func menuWillOpen(_ menu: NSMenu) {
         self.statusMenuRefreshMenuItem?.isHidden = (self.displayedRemoteUpdates >= MasterData.shared.publishedRemoteUpdates)
-        if defineWindowShowing {
+        if windowShowing {
             menu.cancelTrackingWithoutAnimation()
             self.defineWindowController?.window?.close()
+            self.settingsWindowController?.window?.close()
         }
     }
     
@@ -94,7 +96,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         // Re-enable updates and continue
         MasterData.shared.suspendRemoteUpdates(false)
         self.changeImage(close: false)
-        self.defineWindowShowing = false
+        self.windowShowing = false
         MessageBox.shared.hide()
     }
     
@@ -143,11 +145,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         let adminMenu = self.addSubmenu("Configuration")
         self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d", to: adminMenu)
         
-        self.addItem("Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
+        if Settings.shared.shareShortcuts.value {
+            self.addItem("Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
+        }
         
+        self.addItem("Preferences",  action: #selector(StatusMenu.settings(_:)), keyEquivalent: "p", to: adminMenu)
         self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
-
-        self.addItem("About", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
+        self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
         
         self.addSeparator()
                 
@@ -285,30 +289,33 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         popover?.contentViewController?.view.window?.makeKeyAndOrderFront(self)
     }
     
-     private func showMenubarWindow(menubarWindowController: inout MenubarWindowController?, view: AnyView)  {
+    private func showMenubarWindow(menubarWindowController: inout MenubarWindowController?, view: AnyView, title: String, saveName: String, size: CGSize)  {
         var window: NSWindow?
         if menubarWindowController == nil {
             menubarWindowController = MenubarWindowController()
             window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: defaultSectionWidth + defaultShortcutWidth + defaultDetailWidth, height: defaultFormHeight),
+                contentRect: NSRect(origin: .zero, size: size),
                 styleMask: [.titled, .closable],
                 backing: .buffered, defer: false)
-            window?.title = "Define Shortcuts"
+            window?.title = title
             window?.delegate = self
             menubarWindowController?.window = window
         } else {
             window = menubarWindowController?.window
         }
         window?.center()
-        window?.setFrameAutosaveName("Shortcuts Define Window")
+        window?.setFrameAutosaveName(saveName)
         window?.contentView = NSHostingView(rootView: view)
-        window?.level = .floating
         window?.makeKeyAndOrderFront(self)
         NSApp.activate(ignoringOtherApps: true)
     }
     
     public func defineAlways(onTop: Bool) {
         self.defineWindowController?.window?.level = (onTop ? .floating : .normal)
+    }
+    
+    public func settingsAlways(onTop: Bool) {
+        self.settingsWindowController?.window?.level = (onTop ? .floating : .normal)
     }
     
     public func bringToFront() {
@@ -319,7 +326,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         if close {
             self.statusMenuButton.title = "􀁠"
         } else {
-            let override = master.defaultSection?.menuTitle ?? ""
+            let override = Settings.shared.menuTitle.value
             self.statusMenuButton.title = override != "" ? override : "􀉑"
         }
     }
@@ -388,7 +395,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc public func define(_ sender: Any?) {
         // Create the window and set the content view.
-        if !self.defineWindowShowing {
+        if !self.windowShowing {
             let selection = Selection()
             
             // Suspend any additional core data updates
@@ -399,11 +406,26 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
             
             // Display view
-            let contentView = SetupView(selection: selection).environment(\.managedObjectContext, MasterData.context)
-            self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView))
+            let contentView = SetupView(selection: selection)
+            self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView), title: "Define Shortcuts", saveName: "Shortcuts Define Window", size: CGSize(width: defaultSectionWidth + defaultShortcutWidth + defaultDetailWidth, height: defaultFormHeight))
             self.defineWindowController.contentViewController?.view.window?.becomeKey()
+            self.defineAlways(onTop: true)
             self.changeImage(close: true)
-            self.defineWindowShowing = true
+            self.windowShowing = true
+        }
+    }
+    
+    @objc public func settings(_ sender: Any?) {
+        // Create the window and set the content view.
+        if !self.windowShowing {
+
+            // Display view
+            let contentView = SettingsView()
+            self.showMenubarWindow(menubarWindowController: &self.settingsWindowController, view: AnyView(contentView), title: "Preferences", saveName: "Shortcuts Settings Window", size: CGSize(width: 400, height: 300))
+            self.settingsWindowController.contentViewController?.view.window?.becomeKey()
+            self.settingsAlways(onTop: true)
+            self.changeImage(close: true)
+            self.windowShowing = true
         }
     }
     
@@ -494,13 +516,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var keys: [(String, (ShortcutType?, UUID))] = []
         
         // Main menu
-        if let defaultSection = master.defaultSection {
-            let key = defaultSection.keyEquivalent
-            if key != "" {
-                keys.append((key, (nil, defaultSection.id)))
-            }
+        let key = Settings.shared.shortcutKey.value
+        if key != "" {
+            keys.append((key, (nil, defaultUUID)))
         }
-        
+    
         // Add additional sections
         let sectionKeys = master.sections.filter{$0.keyEquivalent != "" && !$0.isDefault}.map{($0.keyEquivalent, (ShortcutType.section, $0.id))}
         keys.append(contentsOf: sectionKeys)

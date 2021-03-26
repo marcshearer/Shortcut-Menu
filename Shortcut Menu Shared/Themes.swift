@@ -87,9 +87,9 @@ enum ThemeBackgroundColorName: CaseIterable {
     case imagePlaceholder
     case disabledButton
     case enabledButton
+    case shortcutKeyButton
     case highlightButton
     case input
-    case filter
     case whisper
 }
 
@@ -357,9 +357,9 @@ class Themes {
                 .imagePlaceholder            : ThemeColor(#colorLiteral(red: 0.9215686275, green: 0.9215686275, blue: 0.9215686275, alpha: 1), #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1), .midBackground),
                 .disabledButton              : ThemeColor(#colorLiteral(red: 0.6666069031, green: 0.6667050123, blue: 0.6665856242, alpha: 1), nil, .midBackground),
                 .enabledButton               : ThemeColor(#colorLiteral(red: 0.5560679436, green: 0.5578243136, blue: 0.5773752928, alpha: 1), nil, .midBackground),
+                .shortcutKeyButton           : ThemeColor(#colorLiteral(red: 0.862745098, green: 0.862745098, blue: 0.862745098, alpha: 1), nil, .lightBackground),
                 .highlightButton             : ThemeColor(#colorLiteral(red: 0.0166248735, green: 0.4766505957, blue: 0.9990670085, alpha: 1), nil, .darkBackground),
                 .input                       : ThemeColor(#colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1), #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1), .lightBackground, .darkBackground),
-                .filter                      : ThemeColor(#colorLiteral(red: 0.862745098, green: 0.862745098, blue: 0.862745098, alpha: 1), #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1), .lightBackground, .darkBackground),
                 .whisper                     : ThemeColor(#colorLiteral(red: 0.7254901961, green: 0.7882352941, blue: 0.9764705882, alpha: 1), nil, .darkBackground)
                 ],
 

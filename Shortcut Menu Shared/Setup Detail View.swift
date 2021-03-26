@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SetupDetailView: View {
-    @ObservedObject public var selection: Selection
+    @ObservedObject var selection: Selection
     @Binding public var panel: SetupPanel
     @State private var lockImage: String = ""
     @State private var lockColor: Color = .red
@@ -171,22 +171,23 @@ struct SetupDetailView: View {
             
             if !selection.editSection.isDefault {
                 Input(title: "Section name", field: $selection.editSection.name, message: $selection.editSection.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
-            }
-            
-            if MasterData.shared.isNested(selection.editSection) {
-                InputToggle(title: "Show Inline", text: "Show contents of section inline", field: $selection.editSection.inline, isEnabled: isEnabled)
-            }
- 
-            if MyApp.target == .macOS {
- 
-                let isDefault = selection.editSection.isDefault
                 
-                Input(title: (isDefault ? "Menu bar title" : "Stand-alone menu bar title"), field: $selection.editSection.menuTitle, placeHolder: (isDefault ? "􀉑" : ""), width: 100, isEnabled: isEnabled)
-            
-                self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
+                if MasterData.shared.isNested(selection.editSection) {
+                    InputToggle(title: "Show Inline", text: "Show contents of section inline", field: $selection.editSection.inline, isEnabled: isEnabled)
+                }
+                
+                if MyApp.target == .macOS {
+                    
+                    Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
+                    
+                    self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
+                }
             }
             
-            InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editSection.shared, isEnabled: isEnabled && selection.editSection.canShare)
+            if Settings.shared.shareShortcuts.value {
+                
+                InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editSection.shared, isEnabled: isEnabled && selection.editSection.canShare)
+            }
 
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
             
@@ -234,7 +235,11 @@ struct SetupDetailView: View {
                 self.shortcutKey(key: $selection.editShortcut.keyEquivalent, notify: shortcutKeyNotify, disabled: {false})
             }
             
-            InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
+            if Settings.shared.shareShortcuts.value {
+                
+                InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
+                
+            }
 
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
@@ -374,78 +379,16 @@ struct SetupDetailView: View {
 #endif
     }
     
-    private func shortcutKey(key: Binding<String>, notify: @escaping (String)->(), disabled: ()->(Bool)) -> some View {
-        VStack {
-            let enable = (isEnabled || isSettingShortcutKey) && !disabled()
-            Spacer().frame(height: inputTopHeight)
-            InputTitle(title: "Shortcut key", isEnabled: enable)
-            Spacer().frame(height: 8)
-            HStack {
-                Spacer().frame(width: 32)
-                HStack {
-                    Spacer().frame(width: 10)
-                    Text(key.wrappedValue)
-                        
-                        .font(inputFont)
-                        .foregroundColor(enable ? Palette.input.text : Palette.input.faintText)
-                        .font(defaultFont)
-                    Spacer()
-                }
-                .frame(width: 100, height: inputDefaultHeight)
-                .background(Palette.input.background)
-                .cornerRadius(10)
-                if enable {
-                    Spacer().frame(width: 16)
-                    Button(action: {
-                        isSettingShortcutKey.toggle()
-#if canImport(AppKit)
-                        if isSettingShortcutKey {
-                            ShortcutKeyMonitor.shared.startDefine(notify: notify)
-                        } else {
-                            ShortcutKeyMonitor.shared.stopDefine()
-                        }
-#endif
-                    }) {
-                        Text(isSettingShortcutKey ? "Cancel" : (key.wrappedValue == "" ? "Add" : "Change"))
-                            .frame(width: 80, height: inputDefaultHeight)
-                            .background(Palette.enabledButton.background)
-                            .foregroundColor(Palette.enabledButton.text)
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .disabled(!enable)
-                }
-                Spacer()
-            }
-                Spacer().frame(height: 8)
-                HStack {
-                    Spacer().frame(width: 32)
-                    Text(isSettingShortcutKey ? "Press key to set or Backspace to clear" : "")
-                        .font(messageFont)
-                        .foregroundColor(Palette.background.themeText)
-                        .frame(height: 10)
-                    Spacer()
-            }
-            Spacer()
-        }
-        .frame(height: inputDefaultHeight + inputTopHeight + 40)
+    private func shortcutKey(key: Binding<String>, notify: @escaping (String)->(), disabled: @escaping ()->(Bool)) -> some View {
+        
+        return ShortcutKeyView(key: key, isSettingShortcutKey: $isSettingShortcutKey, isEnabled: { isEnabled && !disabled() }, notify: notify)
     }
     
     private func shortcutKeyNotify(_ key: String) {
-        selection.editShortcut.keyEquivalent = key
-#if canImport(AppKit)
-        ShortcutKeyMonitor.shared.stopDefine()
-#endif
-        isSettingShortcutKey = false
         selection.objectWillChange.send()
     }
     
     private func sectionKeyNotify(_ key: String) {
-        selection.editSection.keyEquivalent = key
-#if canImport(AppKit)
-        ShortcutKeyMonitor.shared.stopDefine()
-#endif
-        isSettingShortcutKey = false
         selection.objectWillChange.send()
     }
 }

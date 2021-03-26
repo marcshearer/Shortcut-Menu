@@ -46,7 +46,6 @@ class ICloud {
         self.cancelRequest = false
         
         // Fetch player records from cloud
-        let cloudContainer = CKContainer(identifier: iCloudIdentifier)
         let database = database ?? self.publicDatabase
         if cursor == nil {
             // First time in - set up the query

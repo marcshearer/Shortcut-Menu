@@ -24,6 +24,14 @@
 		B2860A912605FC61001E6E7D /* Show Shared View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A862605FC25001E6E7D /* Show Shared View.swift */; };
 		B2860A9B2609C59C001E6E7D /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A9A2609C59C001E6E7D /* Version.swift */; };
 		B2860A9C2609C59C001E6E7D /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860A9A2609C59C001E6E7D /* Version.swift */; };
+		B2860AAD260C7D75001E6E7D /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AAC260C7D75001E6E7D /* UserDefault.swift */; };
+		B2860AAE260C7D75001E6E7D /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AAC260C7D75001E6E7D /* UserDefault.swift */; };
+		B2860AB4260CD18D001E6E7D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AB3260CD18D001E6E7D /* Settings.swift */; };
+		B2860AB5260CD18D001E6E7D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AB3260CD18D001E6E7D /* Settings.swift */; };
+		B2860AB9260CEC05001E6E7D /* Settings View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AB8260CEC05001E6E7D /* Settings View.swift */; };
+		B2860ABA260CEC05001E6E7D /* Settings View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860AB8260CEC05001E6E7D /* Settings View.swift */; };
+		B2860ABE260CF433001E6E7D /* Shortcut Key View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */; };
+		B2860ABF260CF433001E6E7D /* Shortcut Key View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */; };
 		B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B28D41EC2443538B00C2577E /* Shortcut_Menu.xcdatamodeld */; };
 		B28D42002443562C00C2577E /* Section Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D41FF2443562C00C2577E /* Section Managed Object.swift */; };
 		B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28D420124435DF300C2577E /* Shortcut Managed Object.swift */; };
@@ -117,6 +125,10 @@
 		B2860A8A2605FC52001E6E7D /* ICloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloud.swift; sourceTree = "<group>"; };
 		B2860A9A2609C59C001E6E7D /* Version.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		B2860A9F260C736B001E6E7D /* Shortcut Menu iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Shortcut Menu iOS.entitlements"; sourceTree = "<group>"; };
+		B2860AAC260C7D75001E6E7D /* UserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefault.swift; sourceTree = "<group>"; };
+		B2860AB3260CD18D001E6E7D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		B2860AB8260CEC05001E6E7D /* Settings View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings View.swift"; sourceTree = "<group>"; };
+		B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Key View.swift"; sourceTree = "<group>"; };
 		B28D41E52443538B00C2577E /* Shortcuts iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcuts iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -217,6 +229,7 @@
 				B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */,
 				B2C2643425F8BB9B0054D2ED /* Tile.swift */,
 				B2B82D1D25F27DD50005B07C /* Target View Modifiers.swift */,
+				B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */,
 			);
 			name = "Reusable Views";
 			sourceTree = "<group>";
@@ -227,6 +240,8 @@
 				B29D46C9244D718F0001F984 /* Master Data.swift */,
 				B28D42812447542C00C2577E /* Declarations.swift */,
 				B28D428824475BB000C2577E /* Selection.swift */,
+				B2860AAC260C7D75001E6E7D /* UserDefault.swift */,
+				B2860AB3260CD18D001E6E7D /* Settings.swift */,
 			);
 			name = "Data Structures";
 			sourceTree = "<group>";
@@ -418,6 +433,7 @@
 				B2C2640F25F7E35F0054D2ED /* Setup Shortcut List View.swift */,
 				B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */,
 				B2860A862605FC25001E6E7D /* Show Shared View.swift */,
+				B2860AB8260CEC05001E6E7D /* Settings View.swift */,
 			);
 			name = "Shared Views";
 			sourceTree = "<group>";
@@ -584,13 +600,16 @@
 				B2B82D1E25F27DD50005B07C /* Target View Modifiers.swift in Sources */,
 				B2C2643525F8BB9B0054D2ED /* Tile.swift in Sources */,
 				B2C2641325F7E35F0054D2ED /* Setup Shortcut List View.swift in Sources */,
+				B2860AB4260CD18D001E6E7D /* Settings.swift in Sources */,
 				B2B82C5125F1477C0005B07C /* Master Data.swift in Sources */,
 				B2C2641025F7E35F0054D2ED /* Setup View.swift in Sources */,
 				B28D41EE2443538B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
 				B2C2641225F7E35F0054D2ED /* Setup Detail View.swift in Sources */,
 				B2C2641125F7E35F0054D2ED /* Setup Section List View.swift in Sources */,
 				B2860A652601CF0A001E6E7D /* Utility Extension.swift in Sources */,
+				B2860ABE260CF433001E6E7D /* Shortcut Key View.swift in Sources */,
 				B2DF651225FB5E0900C92386 /* Link Presentation.swift in Sources */,
+				B2860AB9260CEC05001E6E7D /* Settings View.swift in Sources */,
 				B2B82D1025F25DFE0005B07C /* Input.swift in Sources */,
 				B2B82C9725F20A5D0005B07C /* Status Menu.swift in Sources */,
 				B2B82D1925F27DBE0005B07C /* Message Box.swift in Sources */,
@@ -602,6 +621,7 @@
 				B2E0709925F4D8DA00316112 /* Slide In Menu.swift in Sources */,
 				B28D420424435F8500C2577E /* Section View Model.swift in Sources */,
 				B2D84BE125F779B500966421 /* Debug Utilities.swift in Sources */,
+				B2860AAD260C7D75001E6E7D /* UserDefault.swift in Sources */,
 				B26F4428244B3837004D794E /* Toolbar Button.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +631,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2860A872605FC25001E6E7D /* Show Shared View.swift in Sources */,
+				B2860ABA260CEC05001E6E7D /* Settings View.swift in Sources */,
+				B2860ABF260CF433001E6E7D /* Shortcut Key View.swift in Sources */,
 				B2860A8B2605FC52001E6E7D /* ICloud.swift in Sources */,
 				B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */,
 				B28D4280244753FF00C2577E /* Shortcut Managed Object.swift in Sources */,
@@ -618,6 +640,7 @@
 				B2B82D1A25F27DBE0005B07C /* Message Box.swift in Sources */,
 				B2B82D2525F27F450005B07C /* Themes.swift in Sources */,
 				B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */,
+				B2860AB5260CD18D001E6E7D /* Settings.swift in Sources */,
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
 				B22DED5E25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
 				B2860A9C2609C59C001E6E7D /* Version.swift in Sources */,
@@ -634,6 +657,7 @@
 				B2B82D0725F25DD20005B07C /* Input.swift in Sources */,
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
 				B2FD28CD25F6CA9D00F2B450 /* Utility.swift in Sources */,
+				B2860AAE260C7D75001E6E7D /* UserDefault.swift in Sources */,
 				B28D42852447566B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
 				B2C2643625F8BB9B0054D2ED /* Tile.swift in Sources */,
 				B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */,

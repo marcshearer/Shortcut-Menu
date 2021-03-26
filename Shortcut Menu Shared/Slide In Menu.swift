@@ -39,7 +39,6 @@ struct SlideInMenuView : View {
     @State private var animate = false
         
     var body: some View {
-        let rowHeight: CGFloat = (MyApp.target == .iOS ? 50 : 35)
         GeometryReader { (fullGeometry) in
             GeometryReader { (geometry) in
                 ZStack {
@@ -67,7 +66,7 @@ struct SlideInMenuView : View {
                                         Spacer()
                                     }
                                     .background(Palette.header.background)
-                                    .frame(height: rowHeight * 1.2)
+                                    .frame(height: SlideInMenuRowHeight * 1.2)
                                 }
                                 let options = $values.options.wrappedValue
                                 ScrollView {
@@ -91,15 +90,15 @@ struct SlideInMenuView : View {
                                                 values.shown = false
                                             }
                                             .background(Palette.background.background)
-                                            .frame(height: rowHeight)
+                                            .frame(height: SlideInMenuRowHeight)
                                         }
                                         .listRowInsets(EdgeInsets())
                                         .listStyle(PlainListStyle())
                                     }
                                 }
                                 .background(Palette.background.background)
-                                .environment(\.defaultMinListRowHeight, rowHeight)
-                                .frame(height: max(0, min(CGFloat(values.options.count) * rowHeight, fullGeometry.size.height - values.top - (3.0 * rowHeight))))
+                                .environment(\.defaultMinListRowHeight, SlideInMenuRowHeight)
+                                .frame(height: max(0, min(CGFloat(values.options.count) * SlideInMenuRowHeight, fullGeometry.size.height - values.top - (3.0 * SlideInMenuRowHeight))))
                                 VStack(spacing: 0) {
                                     Spacer()
                                     HStack {
@@ -115,7 +114,7 @@ struct SlideInMenuView : View {
                                 .onTapGesture {
                                     values.shown = false
                                 }
-                                .frame(height: rowHeight).layoutPriority(.greatestFiniteMagnitude)
+                                .frame(height: SlideInMenuRowHeight).layoutPriority(.greatestFiniteMagnitude)
                             }
                             .background(Palette.background.background)
                             .frame(width: values.width)

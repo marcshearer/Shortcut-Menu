@@ -97,7 +97,6 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
             .sink(receiveValue: { (section) in
                 if !(section?.shared ?? true) {
                     self.shared = false
-                    print("setting shared to false on \(self.name) \(self.section?.name ?? "NONAME") \(self.section?.shared ?? false)")
                 }
             })
         .store(in: &cancellableSet)

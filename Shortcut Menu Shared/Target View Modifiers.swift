@@ -60,35 +60,35 @@ typealias IosStackNavigationViewStyle = StackNavigationViewStyle
 typealias IosStackNavigationViewStyle = DefaultNavigationViewStyle
 #endif
 
-struct MySheetViewModifier<SheetContent : View> : ViewModifier {
-    let isPresented: Binding<Bool>
+struct MySheetViewModifier<Item, SheetContent : View> : ViewModifier where Item : Identifiable {
+    let item: Binding<Item?>
     let onDismiss: (()->())?
-    let sheetContent: ()->(SheetContent)
+    let sheetContent: (Item)->(SheetContent)
     
-    init(isPresented: Binding<Bool>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping ()->(SheetContent)) {
-        self.isPresented = isPresented
+    init(item: Binding<Item?>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping (Item)->(SheetContent)) {
+        self.item = item
         self.onDismiss = onDismiss
         self.sheetContent = content
     }
     
     #if canImport(UIKit)
     func body(content: Content) -> some View {
-        content.fullScreenCover(isPresented: isPresented, onDismiss: onDismiss) {
-            sheetContent()
+        content.fullScreenCover(item: item, onDismiss: onDismiss) { (item) in
+            sheetContent(item)
         }
     }
     #else
-    func body(content: Content) -> some View { content
-        .sheet(isPresented: isPresented, onDismiss: onDismiss) {
-            sheetContent()
+    func body(content: Content) -> some View {
+        content.sheet(item: item, onDismiss: onDismiss) { (item) in
+            sheetContent(item)
         }
     }
     #endif
 }
 
 extension View {
-    func mySheet<SheetContent>(isPresented: Binding<Bool>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping ()->(SheetContent)) -> some View where SheetContent: View {
-        self.modifier(MySheetViewModifier(isPresented: isPresented, onDismiss: onDismiss, content: content))
+    func mySheet<Item, SheetContent>(item: Binding<Item?>, onDismiss: (()->())? = nil, @ViewBuilder content: @escaping (Item)->(SheetContent)) -> some View where Item : Identifiable, SheetContent: View {
+        self.modifier(MySheetViewModifier(item: item, onDismiss: onDismiss, content: content))
     }
 }
 

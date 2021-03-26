@@ -16,16 +16,25 @@ enum SetupPanel {
 }
 
 struct SetupView: View {
-    
+        
+    enum SetupSheet : Identifiable {
+        case settings
+        case showShared
+        
+        var id: Int {
+            hashValue
+        }
+    }
+
     @ObservedObject var selection: Selection
     @State var title = "Define Shortcuts"
     @State var completion: (()->())?
     @State var backEnabled = true
-    @State private var showShared = false
+    @State private var showSheet: SetupSheet?
     @State private var panel: SetupPanel = (MyApp.format == .phone ? .sections : .all)
     
     var body: some View {
-        StandardView() {
+        StandardView {
             GeometryReader { (formGeometry) in
                 ZStack {
                     VStack(spacing: 0) {
@@ -84,13 +93,13 @@ struct SetupView: View {
                             HStack {
                                 Spacer()
                                 Button{
-                                    showShared = true
+                                    SlideInMenu.shared.show(title: "Options", options: ["Show shared shortcuts", "Shortcuts preferences", "About Shortcuts"], top: formGeometry.size.height - (SlideInMenuRowHeight * 6), completion: optionSelected)
                                 } label: {
-                                    Image(systemName: "icloud.and.arrow.up")
+                                    Image(systemName: "line.horizontal.3")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                        .padding(.all, 5)
-                                        .frame(width: 40.0, height: 40.0, alignment: .center)
+                                        .padding(.all, 10)
+                                        .frame(width: 50.0, height: 50.0, alignment: .center)
                                         .foregroundColor(Palette.bannerButton.text)
                                 }
                                 .background(Palette.bannerButton.background)
@@ -101,15 +110,35 @@ struct SetupView: View {
                             }
                             Spacer().frame(height: 10)
                         }
-                        .mySheet(isPresented: $showShared, content: {
-                            let padding: CGFloat = (MyApp.target == .iOS ? 0.0 : 60.0)
-                            ShowSharedView(width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
-                        })
+                        .mySheet(item: $showSheet) { (item) in
+                            switch item {
+                            case .settings:
+                                SettingsView()
+                            case .showShared:
+                                let padding: CGFloat = (MyApp.target == .iOS ? 0.0 : 60.0)
+                                ShowSharedView(width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
+                            }
+                        }
                     }
                 }
                 .onAppear {
                     Version.current.check()
                 }
+            }
+        }
+    }
+    
+    private func optionSelected(_ selected: String?) {
+        if let selected = selected {
+            switch selected {
+            case "Shortcuts preferences":
+                showSheet = .settings
+            case "Show shared shortcuts":
+                showSheet = .showShared
+            case "About Shortcuts":
+                MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true)
+            default:
+                break
             }
         }
     }
