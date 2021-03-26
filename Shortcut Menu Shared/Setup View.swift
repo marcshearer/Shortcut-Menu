@@ -136,7 +136,7 @@ struct SetupView: View {
             case "Show shared shortcuts":
                 showSheet = .showShared
             case "About Shortcuts":
-                MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true)
+                MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", showVersion: true)
             default:
                 break
             }

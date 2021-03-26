@@ -9,21 +9,30 @@ import SwiftUI
 
 class MessageBox : ObservableObject {
     
+    enum Buttons {
+        case close
+        case confirmCancel
+        case none
+    }
+    
     public static let shared = MessageBox()
     
     @Published public var text: String?
-    public var closeButton = false
+    public var buttons: Buttons = .close
+    public var confirmButton = false
+    public var showIcon = true
     public var showVersion = false
-    public var completion: (()->())? = nil
+    public var completion: ((Bool)->())? = nil
     public var fontSize: CGFloat = 15.0
 
     public var isShown: Bool { MessageBox.shared.text != nil }
     
-    public func show(_ text: String, fontSize: CGFloat = 15.0, closeButton: Bool = true, showVersion: Bool = false, hideAfter: TimeInterval? = nil, completion: (()->())? = nil) {
+    public func show(_ text: String, fontSize: CGFloat = 15.0, buttons: Buttons = .close, showVersion: Bool = false, showIcon: Bool = true, hideAfter: TimeInterval? = nil, completion: ((Bool)->())? = nil) {
         MessageBox.shared.text = text
         MessageBox.shared.fontSize = fontSize
-        MessageBox.shared.closeButton = closeButton
+        MessageBox.shared.buttons = buttons
         MessageBox.shared.showVersion = showVersion
+        MessageBox.shared.showIcon = showIcon
         MessageBox.shared.completion = completion
         if let hideAfter = hideAfter {
             Utility.executeAfter(delay: hideAfter) {
@@ -33,7 +42,7 @@ class MessageBox : ObservableObject {
     }
     
     public func show(closeButton: Bool = true) {
-        MessageBox.shared.closeButton = closeButton
+        MessageBox.shared.buttons = (closeButton ? .close : .none)
     }
     
     public func hide() {
@@ -52,7 +61,7 @@ struct MessageBoxView: View {
             Palette.background.background
                 .ignoresSafeArea()
             HStack(spacing: 0) {
-                if showIcon {
+                if showIcon && values.showIcon {
                     Spacer().frame(width: 30)
                         VStack {
                         Spacer()
@@ -87,16 +96,32 @@ struct MessageBoxView: View {
                             .foregroundColor(Palette.background.text)
                     }
                     Spacer().frame(height: 30)
-                    if MessageBox.shared.closeButton {
-                        Text("Close")
-                            .foregroundColor(Palette.highlightButton.text)
-                            .font(.callout).minimumScaleFactor(0.5)
-                            .frame(width: 100, height: 30)
-                            .background(Palette.highlightButton.background)
-                            .cornerRadius(15)
-                            .onTapGesture {
-                                values.completion?()
-                                $values.text.wrappedValue = nil
+                    let buttons = MessageBox.shared.buttons
+                    if buttons != .none {
+                        HStack {
+                            let closeColor = (buttons == .confirmCancel ? Palette.enabledButton : Palette.highlightButton)
+                            Text(buttons == .close ? "Close" : "Cancel")
+                                .foregroundColor(closeColor.text)
+                                .font(.callout).minimumScaleFactor(0.5)
+                                .frame(width: 100, height: 30)
+                                .background(closeColor.background)
+                                .cornerRadius(15)
+                                .onTapGesture {
+                                    values.completion?(false)
+                                    $values.text.wrappedValue = nil
+                                }
+                            if buttons == .confirmCancel {
+                                Text("Confirm")
+                                    .foregroundColor(Palette.highlightButton.text)
+                                    .font(.callout).minimumScaleFactor(0.5)
+                                    .frame(width: 100, height: 30)
+                                    .background(Palette.highlightButton.background)
+                                    .cornerRadius(15)
+                                    .onTapGesture {
+                                        values.completion?(true)
+                                        $values.text.wrappedValue = nil
+                                    }
+                            }
                         }
                     } else {
                         Text("").frame(width: 100, height: 30)

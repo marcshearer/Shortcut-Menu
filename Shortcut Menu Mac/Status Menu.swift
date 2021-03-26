@@ -254,7 +254,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     @objc private func about(_ sender: Any) {
         self.showPopover(popover: &self.aboutPopover,
                          view: AnyView(MessageBoxView().frame(width: 400, height: 250)), size: NSSize(width: 400, height: 250))
-        MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", closeButton: true, showVersion: true, completion: {
+        MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", showVersion: true, completion: { (_) in
                 self.aboutPopover.close()
         })
     }
@@ -421,7 +421,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
 
             // Display view
             let contentView = SettingsView()
-            self.showMenubarWindow(menubarWindowController: &self.settingsWindowController, view: AnyView(contentView), title: "Preferences", saveName: "Shortcuts Settings Window", size: CGSize(width: 400, height: 300))
+            self.showMenubarWindow(menubarWindowController: &self.settingsWindowController, view: AnyView(contentView), title: "Preferences", saveName: "Shortcuts Settings Window", size: CGSize(width: 600, height: 300))
             self.settingsWindowController.contentViewController?.view.window?.becomeKey()
             self.settingsAlways(onTop: true)
             self.changeImage(close: true)

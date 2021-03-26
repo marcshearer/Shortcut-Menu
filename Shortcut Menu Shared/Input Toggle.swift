@@ -19,6 +19,7 @@ struct InputToggle : View {
     var height: CGFloat = inputToggleDefaultHeight
     var isEnabled: Bool
     var isReadOnly: Bool = false
+    var onChange: ((Bool)->())?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -31,6 +32,9 @@ struct InputToggle : View {
                     Spacer().frame(width: 32)
                     Toggle(isOn: $field) {
                         Text(text ?? "")
+                    }
+                    .onChange(of: field) { (value) in
+                         onChange?(value)
                     }
                     .disabled(!isEnabled || isReadOnly)
                     .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)

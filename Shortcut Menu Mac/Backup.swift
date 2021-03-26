@@ -26,6 +26,8 @@ class Backup {
 
         Backup.shared.backup(entity: SectionMO.entity(), groupName: "data", elementName: "Sections", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
         Backup.shared.backup(entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
+        Backup.shared.backup(entity: CloudSectionMO.entity(), groupName: "data", elementName: "CloudSections", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
+        Backup.shared.backup(entity: CloudShortcutMO.entity(), groupName: "data", elementName: "CloudShortcuts", directory: thisBackupUrl, assetsDirectory: assetsBackupUrl)
     }
     
     public func restore(dateString: String) {
@@ -35,6 +37,8 @@ class Backup {
         
         Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: SectionMO.entity(), groupName: "data", elementName: "Sections")
         Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: ShortcutMO.entity(), groupName: "data", elementName: "Shortcuts")
+        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: CloudSectionMO.entity(), groupName: "data", elementName: "CloudSections")
+        Backup.shared.restore(directory: thisBackupUrl, assetsDirectory: assetsBackupUrl, entity: CloudShortcutMO.entity(), groupName: "data", elementName: "CloudShortcuts")
     }
     
     private func getDirectories() -> (URL, URL) {

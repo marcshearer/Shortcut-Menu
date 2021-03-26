@@ -71,7 +71,7 @@ class MyApp {
                     // Store database identifier
                     let cloudDatabase = database ?? "unknown"
                     if MyApp.database != "unknown" && MyApp.database != cloudDatabase {
-                        MessageBox.shared.show("This device was connected to the \(MyApp.database) database and is now trying to connect to the \(cloudDatabase) database") {
+                        MessageBox.shared.show("This device was connected to the \(MyApp.database) database and is now trying to connect to the \(cloudDatabase) database") { (_) in
                             exit(1)
                         }
                     }

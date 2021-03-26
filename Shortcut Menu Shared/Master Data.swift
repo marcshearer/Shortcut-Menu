@@ -219,6 +219,27 @@ public class MasterData : ObservableObject {
         return self.shortcuts.filter {$0.section?.id == section.id}.map { $0.sequence }.reduce(0) {max($0, $1)} + 1
     }
     
+    public var sharedData: Bool {
+        var shared = false
+        if !sections.filter({$0.shared}).isEmpty {
+            shared = true
+        } else if !shortcuts.filter({$0.shared}).isEmpty {
+            shared = true
+        }
+        return shared
+    }
+    
+    public func removeSharing() {
+        for shortcut in shortcuts.filter({$0.shared}) {
+            shortcut.shared = false
+            shortcut.save()
+        }
+        for section in sections.filter({$0.shared}) {
+            section.shared = false
+            section.save()
+        }
+    }
+    
     public static func fetch<MO: NSManagedObject>(from entityName: String,
                                             sort: [(key: String, ascending: Bool)] = []) -> [MO] {
         // Fetch an array of managed objects from core data

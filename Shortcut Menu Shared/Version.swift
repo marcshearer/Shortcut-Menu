@@ -44,10 +44,10 @@ class Version {
                 // New install - just use current version
             } else if compare(self.lastVersion, self.version) == .lessThan {
                 // Version has increased - check for upgrade
-                MessageBox.shared.show("Upgrading to latest version...", closeButton: false, showVersion: true)
+                MessageBox.shared.show("Upgrading to latest version...", buttons: .none, showVersion: true)
                 Utility.executeAfter(delay: 5) {
                     self.upgradeToVersion()
-                    MessageBox.shared.show("Upgrade complete", closeButton: true, showVersion: true)
+                    MessageBox.shared.show("Upgrade complete", showVersion: true)
                 }
             }
             
@@ -57,7 +57,7 @@ class Version {
         
         // Check this version is acceptable
         if compare(version, minVersion) == .lessThan {
-            MessageBox.shared.show(minMessage, showVersion: true) {
+            MessageBox.shared.show(minMessage, showVersion: true) { (_) in
                 exit(1)
             }
         }
@@ -67,11 +67,7 @@ class Version {
             MessageBox.shared.show(infoMessage, showVersion: true)
         }
     }
-    
-    private func messageBox(_ text: String, closeButton: Bool = true, completion: (()->())? = nil) {
-        MessageBox.shared.show(text, closeButton: closeButton, showVersion: true, completion: completion)
-    }
-    
+        
     private func upgradeToVersion() {
         if compare(lastVersion, "1.0") == .lessThan {
             // Upgrade to version 1.0
