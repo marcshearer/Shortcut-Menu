@@ -61,6 +61,7 @@ struct SetupSectionListView: View {
                         NestedSectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertNestedSectionAction)
                     }
                 }
+                .padding(.horizontal, 0)
                 .listStyle(PlainListStyle())
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
                 .opacity((self.selection.editAction != .none ? 0.6 : 1.0))
@@ -83,7 +84,7 @@ struct SetupSectionListView: View {
     }
     
     private func onInsertSectionAction(to: Int, from: Int) {
-        DispatchQueue.main.async {
+        Utility.mainThread {
             if to > 0 {
                 self.selection.sections.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
                 self.selection.updateSectionSequence()
@@ -92,7 +93,7 @@ struct SetupSectionListView: View {
     }
         
     private func onInsertNestedSectionAction(to: Int, from: Int) {
-        DispatchQueue.main.async {
+        Utility.mainThread {
             let shortcut = self.selection.shortcuts[from]
             if shortcut.type == .section {
                 // Remove section link shortcut
@@ -108,7 +109,7 @@ struct SetupSectionListView: View {
     }
 
     public func onDropShortcutAction(to: Int, from: Int) {
-        DispatchQueue.main.async {
+        Utility.mainThread {
             self.selection.shortcuts[from].section = self.selection.sections[to]
             self.selection.shortcuts[from].sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[to])
             self.selection.shortcuts[from].save()

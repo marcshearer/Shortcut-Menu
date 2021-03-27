@@ -110,6 +110,8 @@ struct SetupShortcutListView: View {
                         selection.dropUrl(afterIndex: 0, items: items)
                     }
                 }
+                .listStyle(PlainListStyle())
+                .environment(\.defaultMinListRowHeight, defaultRowHeight)
             } else {
                 List {
                     ForEach (selection.shortcuts, id: \.self) { (shortcut) in
@@ -127,7 +129,7 @@ struct SetupShortcutListView: View {
                         selection.dropUrl(afterIndex: index, items: items)
                     }
                 }
-                .padding(0)
+                .padding(.horizontal, 0) // Remove when bug fixed on Mac OS
                 .listStyle(PlainListStyle())
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
                 .opacity((selection.editAction != .none ? 0.6 : 1.0))
@@ -154,7 +156,7 @@ struct SetupShortcutListView: View {
     }
     
     func onInsertShortcutAction(to: Int, from: Int) {
-        DispatchQueue.main.async {
+        Utility.mainThread {
             print("from: \(from) to: \(to)")
             selection.shortcuts.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
             selection.updateShortcutSequence()
@@ -162,7 +164,7 @@ struct SetupShortcutListView: View {
     }
     
     func onInsertSectionAction(to: Int, from: Int) {
-        DispatchQueue.main.async {
+        Utility.mainThread {
             if let currentSection = selection.selectedSection {
                 let nestedSection = selection.sections[from]
                 if currentSection.id != nestedSection.id {

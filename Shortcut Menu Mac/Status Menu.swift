@@ -206,8 +206,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private func addSections(to subMenu: NSMenu) -> Int {
         var added = 0
-        for section in master.sections.filter({ $0.name != currentSection && $0.shortcuts.count > 0 && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
-            if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
+        for section in master.sections.filter({ $0.name != currentSection && (($0.shortcuts.count > 0 && $0.menuTitle == "") || $0.isDefault) }).sorted(by: {$0.sequence < $1.sequence}) {
+            if section.isDefault || master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
                 self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
                 added += 1
             }
@@ -438,7 +438,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
             UserDefault.currentSection.set(self.currentSection)
             self.update()
-            statusItem.button?.performClick(self)
+            if self.currentSection != "" {
+                statusItem.button?.performClick(self)
+            }
         }
     }
     

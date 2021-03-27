@@ -185,9 +185,6 @@ public class MasterData : ObservableObject {
         if let section = section {
             result = self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id})?.section
         }
-        if result?.name ?? "" != "" {
-            Utility.debugMessage("nestedParent", result?.name ?? "", force: true)
-        }
         return result
     }
     
