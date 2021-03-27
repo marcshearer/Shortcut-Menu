@@ -243,8 +243,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func whisper(header: String, caption: String = "", closeAfter: TimeInterval = 3) {
         // Create the window and set the content view.
         self.showPopover(popover: &self.whisperPopover,
-                         view: AnyView(WhisperView(header: header,
-                                                   caption: caption) ))
+                         view: AnyView(WhisperView(header: header, caption: caption)),
+                         backgroundColor: Palette.whisper.background)
         
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + closeAfter, qos: .userInteractive) {
             self.whisperPopover.close()
@@ -268,7 +268,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                                                       })))
     }
     
-    private func showPopover(popover: inout NSPopover?, view: AnyView, size: NSSize? = nil) {
+    private func showPopover(popover: inout NSPopover?, view: AnyView, size: NSSize? = nil, backgroundColor: Color = Palette.background.background) {
         if popover == nil {
             let newPopover = NSPopover()
             newPopover.behavior = .transient
@@ -282,7 +282,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             // Make the triangle callout background color
             let backgroundView = NSView(frame: frameView.bounds)
             backgroundView.wantsLayer = true
-            backgroundView.layer?.backgroundColor = Palette.background.background.cgColor
+            backgroundView.layer?.backgroundColor = backgroundColor.cgColor
             backgroundView.autoresizingMask = [.width, .height]
             frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
         }
