@@ -114,7 +114,7 @@ struct SetupShortcutListView: View {
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
             } else {
                 List {
-                    ForEach (selection.shortcuts, id: \.self) { (shortcut) in
+                    ForEach (selection.shortcuts, id: \.self.listHasher) { (shortcut) in
                         if selection.editAction != .none {
                             self.shortcutRow(shortcut)
                         } else {

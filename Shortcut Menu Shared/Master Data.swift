@@ -41,6 +41,10 @@ public class MasterData : ObservableObject {
     private var shortcutMOs: [ShortcutMO] = []
     private var cloudSectionMOs: [CloudSectionMO] = []
     private var cloudShortcutMOs: [CloudShortcutMO] = []
+    
+    public var mainSections: [SectionViewModel] {
+        self.sections.filter{!self.isNested($0)}
+    }
 
     init() {
         self.observer = NotificationCenter.default.addObserver(forName: Notification.Name.persistentStoreRemoteChangeNotification, object: nil, queue: nil, using: { (notification) in

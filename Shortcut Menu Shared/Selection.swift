@@ -29,7 +29,7 @@ public class Selection : ObservableObject, Identifiable {
     private var cancellableSet: Set<AnyCancellable> = []
 
     init() {
-        self.sections = self.master.sections.sorted(by: { $0.sequence < $1.sequence })
+        self.sections = self.master.mainSections
         
         self.setupMappings()
     }
@@ -96,7 +96,7 @@ public class Selection : ObservableObject, Identifiable {
         }
         section.save()
         
-        self.sections = master.sections
+        self.sections = master.mainSections
         
         // Need to update sections on shortcuts in this section
         for shortcut in section.shortcuts {
@@ -127,7 +127,7 @@ public class Selection : ObservableObject, Identifiable {
             self.master.sections.remove(at: removeIndex)
             section.remove()
             
-            self.sections = master.sections
+            self.sections = master.mainSections
             self.deselectSection()
             
         }

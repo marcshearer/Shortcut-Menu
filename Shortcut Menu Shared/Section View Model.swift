@@ -39,6 +39,14 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
+    // Hasher for lists - only dependent on id and shared
+    public var listHasher: Int {
+        var hasher = Hasher()
+        hasher.combine(self.id)
+        hasher.combine(self.shared)
+        return hasher.finalize()
+    }
+    
     init(id: UUID? = nil, isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false) {
         self.id = id ?? (isDefault ? defaultUUID : UUID())
         self.isDefault = isDefault

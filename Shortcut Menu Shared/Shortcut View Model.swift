@@ -54,6 +54,14 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
     // Auto-cleanup
     private var cancellableSet: Set<AnyCancellable> = []
     
+    // Hasher for lists - only dependent on id and shared
+    public var listHasher: Int {
+        var hasher = Hasher()
+        hasher.combine(self.id)
+        hasher.combine(self.shared)
+        return hasher.finalize()
+    }
+    
     init(id: UUID, name: String, type: ShortcutType = .shortcut, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", shared: Bool = false, sequence: Int = 0) {
         self.id = id
         self.type = type
