@@ -86,17 +86,14 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         $menuTitle
             .receive(on: RunLoop.main)
             .map { (menuTitle) in
-                return (menuTitle == "" ? "" : self.keyEquivalent)
+                return (menuTitle == "")
             }
-            .assign(to: \.keyEquivalent, on: self)
-            .store(in: &cancellableSet)
-        
-        $menuTitle
-            .receive(on: RunLoop.main)
-            .map { (menuTitle) in
-                return (menuTitle != "")
+            .sink { (canEditKeyEquivalent) in
+                if !canEditKeyEquivalent && (self.keyEquivalent != "" || self.canEditKeyEquivalent) {
+                    self.keyEquivalent = ""
+                    self.canEditKeyEquivalent = false
+                }
             }
-            .assign(to: \.canEditKeyEquivalent, on: self)
             .store(in: &cancellableSet)
         
         $shared
@@ -115,17 +112,20 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     public static func == (lhs: SectionViewModel, rhs: SectionViewModel) -> Bool {
-        lhs.id == rhs.id && lhs.name == rhs.name && lhs.sequence == rhs.sequence && lhs.menuTitle == rhs.menuTitle && lhs.keyEquivalent == rhs.keyEquivalent && lhs.inline == rhs.inline && lhs.shared == rhs.shared
+        lhs.id == rhs.id && lhs.isDefault == rhs.isDefault && lhs.name == rhs.name && lhs.sequence == rhs.sequence && lhs.menuTitle == rhs.menuTitle && lhs.keyEquivalent == rhs.keyEquivalent && lhs.inline == rhs.inline && lhs.shared == rhs.shared
     }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+        hasher.combine(isDefault)
         hasher.combine(name)
         hasher.combine(sequence)
         hasher.combine(menuTitle)
         hasher.combine(keyEquivalent)
         hasher.combine(inline)
         hasher.combine(shared)
+        hasher.combine(sectionMO)
+        hasher.combine(cloudSectionMO)
     }
     
     private func exists(name: String) -> Bool {
@@ -213,7 +213,9 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
                 // Need to create cloud record
                 self.cloudSectionMO = CloudSectionMO(context: context)
             }
-            self.shared = true
+            if !self.shared {
+                self.shared = true
+            }
             self.toManagedObject(sectionMO: self.cloudSectionMO!)
             
             // Keep local default section in line (in case cloud record is deleted)
@@ -235,7 +237,9 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
                 // Need to create local record
                 self.sectionMO = SectionMO(context: context)
             }
-            self.shared = false
+            if self.shared {
+                self.shared = false
+            }
             self.toManagedObject(sectionMO: self.sectionMO!)
         }
         
@@ -328,18 +332,20 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {
         DispatchQueue.main.async {
             for item in items {
-                _ = item.loadObject(ofClass: SectionItemProvider.self) { (droppedItem, error) in
-                    if error == nil {
-                        if let droppedItem = droppedItem as? SectionItemProvider {
-                            if let droppedIndex = selection.sections.firstIndex(where: {$0.id == droppedItem.id}) {
-                                action(index, droppedIndex)
+                if item.hasItemConformingToTypeIdentifier(SectionItemProvider.type.identifier) {
+                    _ = item.loadObject(ofClass: SectionItemProvider.self) { (droppedItem, error) in
+                        if error == nil {
+                            if let droppedItem = droppedItem as? SectionItemProvider {
+                                if let droppedIndex = selection.sections.firstIndex(where: {$0.id == droppedItem.id}) {
+                                    action(index, droppedIndex)
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
+}
 }
 
 class SectionListDropDelegate: DropDelegate {

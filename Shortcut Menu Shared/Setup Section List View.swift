@@ -44,6 +44,7 @@ struct SetupSectionListView: View {
                 .frame(height: defaultRowHeight)
                 .background(Palette.header.background)
                 .foregroundColor(Palette.header.text)
+                
                 List {
                     ForEach (self.selection.sections, id: \.self) { (section) in
                         if !master.isNested(section) {
@@ -55,7 +56,8 @@ struct SetupSectionListView: View {
                             }
                         }
                     }
-                    .onInsert(of: [SectionItemProvider.type.identifier, NestedSectionItemProvider.type.identifier])
+                    .onInsert(of: [SectionItemProvider.type.identifier,
+                                   NestedSectionItemProvider.type.identifier])
                     { (index, items) in
                         SectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertSectionAction)
                         NestedSectionItemProvider.dropAction(at: index, items, selection: self.selection, action: self.onInsertNestedSectionAction)
@@ -80,7 +82,7 @@ struct SetupSectionListView: View {
             }
         })
         .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: SectionListDropDelegate(self, id: section.id))
-        .listRowInsets(EdgeInsets())
+        .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
     private func onInsertSectionAction(to: Int, from: Int) {

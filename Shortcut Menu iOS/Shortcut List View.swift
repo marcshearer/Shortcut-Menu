@@ -80,7 +80,7 @@ struct ShortcutListView: View {
             if let copyMessage = copyMessage {
                 message += copyMessage
             }
-            MessageBox.shared.show(message, fontSize: 24, closeButton: false, hideAfter: 3)
+            MessageBox.shared.show(message, fontSize: 24, buttons: .none, hideAfter: 3)
             Utility.executeAfter(delay: 3) {
                 displayState.selectedShortcut = nil
             }
