@@ -110,6 +110,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     // MARK: - Main routines to handle the status elements of the menu =========================================================== -
     
     public func update() {
+        var optionsAdded = false
         
         self.statusMenu.removeAllItems()
         
@@ -118,6 +119,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                 if section.shortcuts.count > 0 {
                     self.addItem(id: "sectionTitle", (self.currentSection == "" ? "Shortcuts" : self.currentSection))
                     self.menuItemList["sectionTitle"]?.isEnabled = false
+                    optionsAdded = true
                 }
                 if self.addShortcuts(section: section, inset: 5) > 0 {
                     self.addSeparator()
@@ -128,13 +130,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         if let defaultSection = master.defaultSection {
             if self.addShortcuts(section: defaultSection) > 0 {
                 self.addSeparator()
+                optionsAdded = true
             }
         }
         
         let nonEmptySections = self.master.getSections(withShortcuts: true, excludeDefault: true).count
         if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
             
-            if self.addOtherShortcuts() > 0 {
+            if self.addOtherShortcuts(inline: !optionsAdded) > 0 {
                 self.addSeparator()
             }
             
@@ -215,9 +218,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return added
     }
     
-    private func addOtherShortcuts() -> Int {
+    private func addOtherShortcuts(inline: Bool) -> Int {
         var added = 0
-        let subMenu = self.addSubmenu("Other shortcuts")
+        var subMenu: NSMenu
+        
+        if !inline {
+            subMenu = self.addSubmenu("Other shortcuts")
+        } else {
+            subMenu = self.statusMenu
+        }
+        
         for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0  && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
                 if section.shortcuts.count > 1 {

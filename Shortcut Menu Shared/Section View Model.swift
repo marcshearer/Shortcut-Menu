@@ -161,7 +161,11 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     
     public var menuName: String {
         if self.isDefault {
-            return defaultSectionMenuName
+            if self.shortcuts.isEmpty {
+                return noDefaultSectionMenuName
+            } else {
+                return defaultSectionMenuName
+            }
         } else {
             return self.name
         }

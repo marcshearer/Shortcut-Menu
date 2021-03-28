@@ -51,6 +51,7 @@ var messageFont = Font.system(size: (MyApp.format == .tablet ? 16.0 : 12.0))
 let defaultSectionDisplayName = "Default Section"
 let defaultSectionTitleName = "Default"
 let defaultSectionMenuName = "Defaults only"
+let noDefaultSectionMenuName = "No Section"
 
 // Cloud database
 let iCloudIdentifier = "iCloud.ShearerOnline.Shortcuts"
