@@ -23,16 +23,6 @@ public enum EditObject: Int {
     case shortcut = 2
 }
 
-enum Database: String {
-    case development = "Development"
-    case production = "Production"
-    case unknown = "Unknown"
-    
-    public var name: String {
-        return self.rawValue
-    }
-}
-
 // UUID for default section
 let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
 
