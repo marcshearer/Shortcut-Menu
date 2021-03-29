@@ -18,7 +18,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     public static let shared = StatusMenu()
     
-    public let statusItem = NSStatusBar.system.statusItem(withLength: 15)
+    public let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
     private let master = MasterData.shared
     

@@ -38,19 +38,19 @@ enum UserDefault: String, CaseIterable {
     }
     
     public func set(_ value: Any) {
-        UserDefaults.standard.set(value, forKey: self.name)
+        UserDefaults.shared.set(value, forKey: self.name)
     }
     
     public var string: String {
-        return UserDefaults.standard.string(forKey: self.name)!
+        return UserDefaults.shared.string(forKey: self.name)!
     }
     
     public var int: Int {
-        return UserDefaults.standard.integer(forKey: self.name)
+        return UserDefaults.shared.integer(forKey: self.name)
     }
     
     public var bool: Bool {
-        return UserDefaults.standard.bool(forKey: self.name)
+        return UserDefaults.shared.bool(forKey: self.name)
     }
     
     public static func registerDefaults() {
@@ -58,6 +58,6 @@ enum UserDefault: String, CaseIterable {
         for value in UserDefault.allCases {
             initial[value.name] = value.defaultValue
         }
-        UserDefaults.standard.register(defaults: initial)
+        UserDefaults.shared.register(defaults: initial)
     }
 }

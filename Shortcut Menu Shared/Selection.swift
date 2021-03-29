@@ -55,7 +55,7 @@ public class Selection : ObservableObject, Identifiable {
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
         
-        self.selectedSection = self.sections.first(where: {$0.id == section?.id})
+        self.selectedSection = MasterData.shared.sections.first(where: {$0.id == section?.id})
         
         if self.selectedSection != nil {
             

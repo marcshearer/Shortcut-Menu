@@ -20,7 +20,7 @@ class Settings : ObservableObject {
 class Setting<Value> : ObservableObject {
     @Published public var value: Value {
         didSet {
-            UserDefaults.standard.set(value, forKey: name)
+            UserDefaults.shared.set(value, forKey: name)
         }
     }
     
@@ -28,7 +28,7 @@ class Setting<Value> : ObservableObject {
     
     init(_ defaultValue: Value, name: String) {
         self.name = "setting-\(name)"
-        self.value = UserDefaults.standard.value(forKey: self.name) as? Value ?? defaultValue
+        self.value = UserDefaults.shared.value(forKey: self.name) as? Value ?? defaultValue
     }
 }
 

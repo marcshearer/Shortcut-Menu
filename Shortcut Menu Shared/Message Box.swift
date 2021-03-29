@@ -83,7 +83,7 @@ struct MessageBoxView: View {
                     Spacer()
                     Text("Shortcuts").font(.largeTitle).minimumScaleFactor(0.75)
                     if values.showVersion {
-                        Text("Version \(Version.current.version) (\(Version.current.build)) \(MyApp.database.capitalized)").minimumScaleFactor(0.5)
+                        Text("Version \(Version.current.version) (\(Version.current.build)) \(MyApp.database.name)").minimumScaleFactor(0.5)
                     }
                     if let message = $values.text.wrappedValue {
                         Spacer().frame(height: 30)

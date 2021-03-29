@@ -50,6 +50,9 @@
 		B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46CE244DD9170001F984 /* Constraint.swift */; };
 		B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AA94A82452DC3A00664AAB /* Local Authentication.swift */; };
 		B2AA94AA2452DDA100664AAB /* Local Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AA94A82452DC3A00664AAB /* Local Authentication.swift */; };
+		B2B564BD2611D51400B2C8B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CE425F20F590005B07C /* Assets.xcassets */; };
+		B2B564C22611D53600B2C8B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B564B32611D37E00B2C8B5 /* Assets.xcassets */; };
+		B2B564D42611D61F00B2C8B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B564D32611D61F00B2C8B5 /* Assets.xcassets */; };
 		B2B82C5125F1477C0005B07C /* Master Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D46C9244D718F0001F984 /* Master Data.swift */; };
 		B2B82C6225F148D50005B07C /* Shortcut Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82C6125F148D50005B07C /* Shortcut Menu.swift */; };
 		B2B82C7025F14CD20005B07C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82C6F25F14CD20005B07C /* Preview Assets.xcassets */; };
@@ -60,8 +63,6 @@
 		B2B82CB025F20D490005B07C /* Status Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CA725F20D490005B07C /* Status Menu.swift */; };
 		B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CA825F20D490005B07C /* AppDelegate.swift */; };
 		B2B82CB325F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CAC25F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodeld */; };
-		B2B82CE625F20F590005B07C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CE425F20F590005B07C /* Assets.xcassets */; };
-		B2B82CEE25F20FB00005B07C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B82CD725F20F0E0005B07C /* Assets.xcassets */; };
 		B2B82CF425F257740005B07C /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CF325F257740005B07C /* MyApp.swift */; };
 		B2B82CF725F257790005B07C /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82CF325F257740005B07C /* MyApp.swift */; };
 		B2B82D0525F25DD20005B07C /* Input Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B82D0225F25DD10005B07C /* Input Title.swift */; };
@@ -129,19 +130,21 @@
 		B2860AB3260CD18D001E6E7D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		B2860AB8260CEC05001E6E7D /* Settings View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings View.swift"; sourceTree = "<group>"; };
 		B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Key View.swift"; sourceTree = "<group>"; };
-		B28D41E52443538B00C2577E /* Shortcuts iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcuts iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B28D41FF2443562C00C2577E /* Section Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420124435DF300C2577E /* Shortcut Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420324435F8500C2577E /* Section View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section View Model.swift"; sourceTree = "<group>"; };
 		B28D420524437C3B00C2577E /* Shortcut View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut View Model.swift"; sourceTree = "<group>"; };
-		B28D42652447515100C2577E /* Shortcuts Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcuts Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D42652447515100C2577E /* Shortcut Menu Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D42812447542C00C2577E /* Declarations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Declarations.swift; sourceTree = "<group>"; };
 		B28D428824475BB000C2577E /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
 		B29D46CE244DD9170001F984 /* Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constraint.swift; sourceTree = "<group>"; };
 		B2AA94A82452DC3A00664AAB /* Local Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Local Authentication.swift"; sourceTree = "<group>"; };
+		B2B564B42611D37E00B2C8B5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
+		B2B564D32611D61F00B2C8B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82C6125F148D50005B07C /* Shortcut Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Shortcut Menu.swift"; sourceTree = "<group>"; };
 		B2B82C6F25F14CD20005B07C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Preview Assets.xcassets"; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B2B82C7525F14D190005B07C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -153,7 +156,6 @@
 		B2B82CA825F20D490005B07C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B2B82CAB25F20D490005B07C /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		B2B82CAD25F20D490005B07C /* Shortcut_Menu_Mac.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu_Mac.xcdatamodel; sourceTree = "<group>"; };
-		B2B82CD825F20F0E0005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CE525F20F590005B07C /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2B82CF325F257740005B07C /* MyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyApp.swift; sourceTree = "<group>"; };
 		B2B82D0225F25DD10005B07C /* Input Title.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Input Title.swift"; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				B2DF650D25FB4AC600C92386 /* Notes.txt */,
+				B2B564D32611D61F00B2C8B5 /* Assets.xcassets */,
 				B28D42862447573900C2577E /* Shortcut Menu Shared */,
 				B28D41E72443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42662447515100C2577E /* Shortcut Menu Mac */,
@@ -338,8 +341,8 @@
 		B28D41E62443538B00C2577E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B28D41E52443538B00C2577E /* Shortcuts iOS.app */,
-				B28D42652447515100C2577E /* Shortcuts Mac.app */,
+				B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */,
+				B28D42652447515100C2577E /* Shortcut Menu Mac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -382,10 +385,18 @@
 			path = "Shortcut Menu Shared";
 			sourceTree = "<group>";
 		};
+		B2B564B22611D36A00B2C8B5 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				B2B564B32611D37E00B2C8B5 /* Assets.xcassets */,
+			);
+			path = Base.lproj;
+			sourceTree = "<group>";
+		};
 		B2B82C5425F147FF0005B07C /* Standard Components */ = {
 			isa = PBXGroup;
 			children = (
-				B2B82CD625F20F0E0005B07C /* Base.lproj */,
+				B2B564B22611D36A00B2C8B5 /* Base.lproj */,
 				B28D41F92443538D00C2577E /* Info.plist */,
 				B2B82C6125F148D50005B07C /* Shortcut Menu.swift */,
 			);
@@ -400,14 +411,6 @@
 			name = "Preview Content";
 			path = "Shortcut Menu iOS/Preview Content";
 			sourceTree = SOURCE_ROOT;
-		};
-		B2B82CD625F20F0E0005B07C /* Base.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				B2B82CD725F20F0E0005B07C /* Assets.xcassets */,
-			);
-			path = Base.lproj;
-			sourceTree = "<group>";
 		};
 		B2B82CE325F20F590005B07C /* Base.lproj */ = {
 			isa = PBXGroup;
@@ -475,9 +478,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B28D41E42443538B00C2577E /* Shortcuts iOS */ = {
+		B28D41E42443538B00C2577E /* Shortcut Menu iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcuts iOS" */;
+			buildConfigurationList = B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */;
 			buildPhases = (
 				B28D41E12443538B00C2577E /* Sources */,
 				B28D41E22443538B00C2577E /* Frameworks */,
@@ -487,14 +490,14 @@
 			);
 			dependencies = (
 			);
-			name = "Shortcuts iOS";
+			name = "Shortcut Menu iOS";
 			productName = "Shortcut Menu";
-			productReference = B28D41E52443538B00C2577E /* Shortcuts iOS.app */;
+			productReference = B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B28D42642447515100C2577E /* Shortcuts Mac */ = {
+		B28D42642447515100C2577E /* Shortcut Menu Mac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcuts Mac" */;
+			buildConfigurationList = B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu Mac" */;
 			buildPhases = (
 				B28D42612447515100C2577E /* Sources */,
 				B28D42622447515100C2577E /* Frameworks */,
@@ -504,9 +507,9 @@
 			);
 			dependencies = (
 			);
-			name = "Shortcuts Mac";
+			name = "Shortcut Menu Mac";
 			productName = "Shortcut Menu Mac";
-			productReference = B28D42652447515100C2577E /* Shortcuts Mac.app */;
+			productReference = B28D42652447515100C2577E /* Shortcut Menu Mac.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -540,8 +543,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B28D41E42443538B00C2577E /* Shortcuts iOS */,
-				B28D42642447515100C2577E /* Shortcuts Mac */,
+				B28D41E42443538B00C2577E /* Shortcut Menu iOS */,
+				B28D42642447515100C2577E /* Shortcut Menu Mac */,
 			);
 		};
 /* End PBXProject section */
@@ -551,10 +554,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2B564C22611D53600B2C8B5 /* Assets.xcassets in Resources */,
 				B2DF650E25FB4AC600C92386 /* Notes.txt in Resources */,
 				B2B82C7625F14D190005B07C /* Assets.xcassets in Resources */,
-				B2B82CEE25F20FB00005B07C /* Assets.xcassets in Resources */,
 				B2B82C7025F14CD20005B07C /* Preview Assets.xcassets in Resources */,
+				B2B564D42611D61F00B2C8B5 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -562,10 +566,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2B564BD2611D51400B2C8B5 /* Assets.xcassets in Resources */,
 				B2B82CA025F20CDD0005B07C /* Preview Assets.xcassets in Resources */,
 				B2E0708F25F4AF6A00316112 /* Main.storyboard in Resources */,
 				B2B82C7B25F14DF90005B07C /* Assets.xcassets in Resources */,
-				B2B82CE625F20F590005B07C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,10 +688,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		B2B82CD725F20F0E0005B07C /* Assets.xcassets */ = {
+		B2B564B32611D37E00B2C8B5 /* Assets.xcassets */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B2B82CD825F20F0E0005B07C /* Base */,
+				B2B564B42611D37E00B2C8B5 /* Base */,
 			);
 			name = Assets.xcassets;
 			sourceTree = "<group>";
@@ -827,6 +831,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu iOS/Shortcut Menu iOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
 				ENABLE_PREVIEWS = YES;
@@ -848,6 +853,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Shortcut Menu iOS/Shortcut Menu iOS.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
 				ENABLE_PREVIEWS = YES;
@@ -925,7 +931,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcuts iOS" */ = {
+		B28D41FC2443538D00C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B28D41FD2443538D00C2577E /* Debug */,
@@ -934,7 +940,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcuts Mac" */ = {
+		B28D427A2447515300C2577E /* Build configuration list for PBXNativeTarget "Shortcut Menu Mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B28D42782447515300C2577E /* Debug */,

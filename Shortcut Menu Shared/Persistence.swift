@@ -39,17 +39,18 @@ struct PersistenceController {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
             
-            // Get core data directory
+            // Get core data directory and append Development or Production
             let storeDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             
             // Create a store description for a local store
-            let localStoreLocation = storeDirectory.appendingPathComponent("Shortcut Menu Mac").appendingPathComponent("Shortcut_Menu_Mac.sqlite")
+            let localStoreLocation = storeDirectory.appendingPathComponent("ShortcutLocal-\(MyApp.expectedDatabase.name).sqlite")
+            
             let localStoreDescription =
                 NSPersistentStoreDescription(url: localStoreLocation)
             localStoreDescription.configuration = "Local"
             
             // Create a store description for a CloudKit-backed local store
-            let cloudStoreLocation = storeDirectory.appendingPathComponent("Shortcut_Cloud.sqlite")
+            let cloudStoreLocation = storeDirectory.appendingPathComponent("ShortcutCloud-\(MyApp.expectedDatabase.name).sqlite")
             let cloudStoreDescription =
                 NSPersistentStoreDescription(url: cloudStoreLocation)
             // Set the container ID on the cloud store

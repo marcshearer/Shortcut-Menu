@@ -26,7 +26,11 @@ class MyApp {
     
     static let shared = MyApp()
         
-    public static var database: String = "unknown"
+    /// Database to use - This  **MUST MUST MUST** match icloud entitlement
+    static let expectedDatabase: Database = .production
+
+    // Actual database found
+    public static var database: Database = .unknown
 
     #if os(macOS)
     public static let target: Target = .macOS
@@ -42,7 +46,7 @@ class MyApp {
         MasterData.backgroundContext = container.newBackgroundContext()
         
         // Uncomment to backup / restore
-        // Backup.shared.backup()/*.restore(dateString: "2021-03-15-17-21-46-381")*/ ; sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
+        // Backup.shared/*.backup()*/.restore(dateString: "Good Backup") ; sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
         
         MasterData.shared.load()
         MasterData.purgeTransactionHistory()
@@ -60,7 +64,7 @@ class MyApp {
     private func setupDatabase() {
         
         // Get saved database
-        MyApp.database = UserDefault.database.string
+        MyApp.database = Database(rawValue: UserDefault.database.string) ?? .unknown
         
         // Check which database we are connected to
         ICloud.shared.getDatabaseIdentifier { (success, errorMessage, database, minVersion, minMessage, infoMessage) in
@@ -69,15 +73,22 @@ class MyApp {
                 Utility.mainThread {
                     
                     // Store database identifier
-                    let cloudDatabase = database ?? "unknown"
-                    if MyApp.database != "unknown" && MyApp.database != cloudDatabase {
+                    let cloudDatabase: Database = Database(rawValue: database ?? "") ?? .unknown
+                    
+                    if cloudDatabase != MyApp.expectedDatabase {
+                        MessageBox.shared.show("Attached to the \(cloudDatabase.name) database but expected to be connected to the \(MyApp.expectedDatabase.name) database") { (_) in
+                            exit(1)
+                        }
+                    }
+                    
+                    if MyApp.database != .unknown && MyApp.database != cloudDatabase {
                         MessageBox.shared.show("This device was connected to the \(MyApp.database) database and is now trying to connect to the \(cloudDatabase) database") { (_) in
                             exit(1)
                         }
                     }
                     
                     MyApp.database = cloudDatabase
-                    UserDefault.database.set(cloudDatabase)
+                    UserDefault.database.set(cloudDatabase.name)
                     Version.current.set(minVersion: minVersion ?? "", minMessage: minMessage ?? "", infoMessage: infoMessage ?? "")
                 }
             }
@@ -95,4 +106,15 @@ class MyApp {
 
 enum ShortcutMenuError: Error {
     case invalidData
+}
+
+extension UserDefaults {
+    // Move user defaults to a suite on Mac non-production
+    static var shared: UserDefaults {
+        if MyApp.expectedDatabase != .production {
+            return UserDefaults(suiteName: "com.sheareronline.\(MyApp.expectedDatabase.name)")!
+        } else {
+            return UserDefaults.standard
+        }
+    }
 }

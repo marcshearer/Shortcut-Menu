@@ -1,1 +1,7 @@
 There seems to be a bug where drop (not insert) is not working on iOS
+
+To switch between Development and Production need to set 
+    1. MyApp.expectedDatabase in Declarations
+    2. com.apple.developer.icloud-container-environment key in entitlements
+
+Seem to need to have an Assets.xcassets at base level just to archive the iOS build
