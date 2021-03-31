@@ -43,7 +43,7 @@ public class MasterData : ObservableObject {
     private var cloudShortcutMOs: [CloudShortcutMO] = []
     
     public var mainSections: [SectionViewModel] {
-        self.sections.filter{!self.isNested($0)}
+        self.sections.filter{!self.isNested($0)}.sorted(by: {$0.sequence < $1.sequence})
     }
 
     init() {
@@ -196,7 +196,7 @@ public class MasterData : ObservableObject {
         return sections.first(where: {$0.name == name})
     }
     
-    public func section(withId id: UUID) -> SectionViewModel? {
+    public func section(withId id: UUID?) -> SectionViewModel? {
         return sections.first(where: {$0.id == id})
     }
     

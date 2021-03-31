@@ -141,7 +141,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     public var shortcuts: [ShortcutViewModel] {
-        return MasterData.shared.shortcuts.filter({ $0.section?.id == self.id })
+        return MasterData.shared.shortcuts.filter({ $0.section?.id == self.id }).sorted(by: {$0.sequence < $1.sequence})
     }
     
     public func copy() -> SectionViewModel {

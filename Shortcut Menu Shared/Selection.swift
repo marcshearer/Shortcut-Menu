@@ -45,7 +45,7 @@ public class Selection : ObservableObject, Identifiable {
     }
     
     func selectSection(section name: String, updateShortcuts: Bool = true) {
-        if let section = self.sections.first(where: {$0.name == name}) {
+        if let section = master.section(named: name) {
             self.selectSection(section: section, updateShortcuts: updateShortcuts)
         }
     }
@@ -55,16 +55,16 @@ public class Selection : ObservableObject, Identifiable {
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
         
-        self.selectedSection = MasterData.shared.sections.first(where: {$0.id == section?.id})
+        self.selectedSection = master.section(withId: section?.id)
         
-        if self.selectedSection != nil {
+        if let selectedSection = self.selectedSection {
             
-            self.editSection = self.selectedSection!.copy()
+            self.editSection = selectedSection.copy()
             self.editObject = .section
 
             if updateShortcuts {
-                self.shortcuts = self.master.shortcuts.filter( { $0.section?.id == self.selectedSection?.id} ).sorted(by: {$0.sequence < $1.sequence })
-                self.shortcutsTitle = "\(self.selectedSection!.titleName)\(MyApp.format == .phone ? "" : " Shortcuts")"
+                self.shortcuts = selectedSection.shortcuts
+                self.shortcutsTitle = "\(selectedSection.titleName)\(MyApp.format == .phone ? "" : " Shortcuts")"
             }
             
         } else {
@@ -99,10 +99,9 @@ public class Selection : ObservableObject, Identifiable {
         self.sections = master.mainSections
         
         // Need to update sections on shortcuts in this section
+        // Note that we have created a new copy section so they need to be overwritten even if the id matches
         for shortcut in section.shortcuts {
-            if shortcut.section?.id != section.id {
-                shortcut.section = section
-            }
+            shortcut.section = section
         }
         
         // Need to update section names and shared flags on shortcuts which nest this section
