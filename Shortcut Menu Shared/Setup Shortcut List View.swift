@@ -170,6 +170,7 @@ struct SetupShortcutListView: View {
                 if currentSection.id != nestedSection.id {
                     selection.newNestedSectionShortcut(in: currentSection, to: nestedSection, at: to)
                     selection.selectSection(section: nestedSection, updateShortcuts: false)
+                    selection.sections.remove(at: from)
                 }
             }
         }

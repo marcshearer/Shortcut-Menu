@@ -47,13 +47,11 @@ struct SetupSectionListView: View {
                 
                 List {
                     ForEach (self.selection.sections, id: \.self.listHasher) { (section) in
-                        if !master.isNested(section) {
-                            if section.isDefault || self.selection.editAction != .none {
-                                self.sectionRow(section)
-                            } else {
-                                self.sectionRow(section)
-                                    .onDrag({section.itemProvider})
-                            }
+                        if section.isDefault || self.selection.editAction != .none {
+                            self.sectionRow(section)
+                        } else {
+                            self.sectionRow(section)
+                                .onDrag({section.itemProvider})
                         }
                     }
                     .onInsert(of: [SectionItemProvider.type.identifier,
@@ -101,9 +99,9 @@ struct SetupSectionListView: View {
                 // Remove section link shortcut
                 self.selection.removeShortcut(shortcut: shortcut)
                 
-                // Find the section and move it to the drop location
-                if let sectionIndex = self.selection.sections.firstIndex(where: {$0.id == shortcut.id}) {
-                    self.selection.sections.move(fromOffsets: [sectionIndex], toOffset: to)
+                // Insert the section at the drop location
+                if let section = shortcut.nestedSection {
+                    self.selection.sections.insert(section, at: to)
                     self.selection.updateSectionSequence()
                 }
             }
