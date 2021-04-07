@@ -437,7 +437,7 @@ class ShortcutListDropDelegate: DropDelegate {
     
     private let parent: SetupShortcutListView
     private let toId: UUID
-    private var active = false
+    private var isEntered = false
     
     init(_ parent: SetupShortcutListView, id toId: UUID) {
         self.parent = parent
@@ -469,9 +469,9 @@ class ShortcutListDropDelegate: DropDelegate {
                 let items = info.itemProviders(for: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier])
                 if !items.isEmpty {
                     let selection = self.parent.selection
-                    self.active = true
+                    self.isEntered = true
                     Utility.executeAfter(delay: 0.5) {
-                        if self.active {
+                        if self.isEntered {
                             selection.selectSection(section: shortcut.nestedSection)
                         }
                     }
@@ -482,7 +482,7 @@ class ShortcutListDropDelegate: DropDelegate {
     
     func dropExited(info: DropInfo) {
         DispatchQueue.main.async {
-            self.active = false
+            self.isEntered = false
         }
     }
 }

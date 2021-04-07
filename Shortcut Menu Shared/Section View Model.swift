@@ -341,15 +341,15 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         return SectionItemProvider(id: id)
     }
     
-    static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {
+    static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, SectionViewModel)->()) {
         DispatchQueue.main.async {
             for item in items {
                 if item.hasItemConformingToTypeIdentifier(SectionItemProvider.type.identifier) {
                     _ = item.loadObject(ofClass: SectionItemProvider.self) { (droppedItem, error) in
                         if error == nil {
                             if let droppedItem = droppedItem as? SectionItemProvider {
-                                if let droppedIndex = selection.sections.firstIndex(where: {$0.id == droppedItem.id}) {
-                                    action(index, droppedIndex)
+                                if let section = MasterData.shared.section(withId: droppedItem.id) {
+                                    action(index, section)
                                 }
                             }
                         }
@@ -364,7 +364,7 @@ class SectionListDropDelegate: DropDelegate {
     
     private let parent: SetupSectionListView
     private let toId: UUID
-    private var active = false
+    private var isEntered = false
     
     init(_ parent: SetupSectionListView, id toId: UUID) {
         self.parent = parent
@@ -396,9 +396,9 @@ class SectionListDropDelegate: DropDelegate {
                 let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
                 if !items.isEmpty {
                     let selection = self.parent.selection
-                    self.active = true
+                    self.isEntered = true
                     Utility.executeAfter(delay: directoryHoverDelay) {
-                        if self.active {
+                        if self.isEntered {
                             selection.selectSection(section: selection.sections[toIndex])
                         }
                     }
@@ -409,7 +409,7 @@ class SectionListDropDelegate: DropDelegate {
     
     func dropExited(info: DropInfo) {
         DispatchQueue.main.async {
-            self.active = false
+            self.isEntered = false
         }
     }
 }

@@ -17,31 +17,8 @@ struct SetupSectionListView: View {
     var body: some View {
         GeometryReader { (geometry) in
             VStack(spacing: 0.0) {
-                ZStack {
-                    Tile(text: "Sections", color: Palette.header)
-                    
-                    HStack{
-                        Spacer()
-                        if self.selection.editAction == .none {
-                            if panel == .all && self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
-                                ToolbarButton("minus.circle.fill") {
-                                    selection.removeSection(section: self.selection.selectedSection!)
-                                }
-                            }
-                            
-                            ToolbarButton("plus.circle.fill") {
-                                self.selection.newSection()
-                                if panel != .all {
-                                    panel = .detail
-                                }
-                            }
-                        }
-                        Spacer().frame(width: 5.0)
-                    }
-                }
-                .frame(height: defaultRowHeight)
-                .background(Palette.header.background)
-                .foregroundColor(Palette.header.text)
+                
+                sectionHeading()
                 
                 List {
                     ForEach (self.selection.sections, id: \.self.listHasher) { (section) in
@@ -81,11 +58,41 @@ struct SetupSectionListView: View {
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
-    private func onInsertSectionAction(to: Int, from: Int) {
+    private func sectionHeading() -> some View {
+        ZStack {
+            Tile(text: "Sections", color: Palette.header)
+            
+            HStack{
+                Spacer()
+                if self.selection.editAction == .none {
+                    if panel == .all && self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
+                        ToolbarButton("minus.circle.fill") {
+                            selection.removeSection(section: self.selection.selectedSection!)
+                        }
+                    }
+                    
+                    ToolbarButton("plus.circle.fill") {
+                        self.selection.newSection()
+                        if panel != .all {
+                            panel = .detail
+                        }
+                    }
+                }
+                Spacer().frame(width: 5.0)
+            }
+        }
+        .frame(height: defaultRowHeight)
+        .background(Palette.header.background)
+        .foregroundColor(Palette.header.text)
+    }
+    
+    private func onInsertSectionAction(at: Int, section: SectionViewModel) {
         Utility.mainThread {
-            if to > 0 {
-                self.selection.sections.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
-                self.selection.updateSectionSequence()
+            if at > 0 {
+                if let fromIndex = selection.sections.firstIndex(where: {$0.id == section.id}) {
+                    self.selection.sections.move(fromOffsets: [fromIndex], toOffset: at + (at > fromIndex && MyApp.target == .iOS ? 1 : 0))
+                    self.selection.updateSectionSequence()
+                }
             }
         }
     }
