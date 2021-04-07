@@ -357,7 +357,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
                 }
             }
         }
-}
+    }
 }
 
 class SectionListDropDelegate: DropDelegate {
@@ -387,5 +387,17 @@ class SectionListDropDelegate: DropDelegate {
             }
         }
         return true
+    }
+    
+    func dropEntered(info: DropInfo) {
+        DispatchQueue.main.async {
+            if let toIndex = self.parent.selection.getSectionIndex(id: self.toId) {
+                let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                if !items.isEmpty {
+                    let selection = self.parent.selection
+                    selection.selectSection(section: selection.sections[toIndex])
+                }
+            }
+        }
     }
 }

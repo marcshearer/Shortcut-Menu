@@ -152,13 +152,21 @@ struct SetupShortcutListView: View {
                     }
                 }
         })
-        .listRowInsets(EdgeInsets())
+        .onDrop(of: [UTType.url.identifier, UTType.fileURL.identifier], delegate: ShortcutListDropDelegate(self, id: shortcut.id))
+        .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
-    func onInsertShortcutAction(to: Int, from: Int) {
+    func onInsertShortcutAction(at toIndex: Int, shortcut: ShortcutViewModel) {
         Utility.mainThread {
-            print("from: \(from) to: \(to)")
-            selection.shortcuts.move(fromOffsets: [from], toOffset: to + (to > from && MyApp.target == .iOS ? 1 : 0))
+            if let fromIndex = selection.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
+                // Short cut is in displayed list
+                selection.shortcuts.move(fromOffsets: [fromIndex], toOffset: toIndex + (toIndex > fromIndex && MyApp.target == .iOS ? 1 : 0))
+            } else {
+                // Come from a different section
+                selection.shortcuts.insert(shortcut, at: toIndex)
+                shortcut.section = selection.selectedSection
+                shortcut.save()
+            }
             selection.updateShortcutSequence()
         }
     }

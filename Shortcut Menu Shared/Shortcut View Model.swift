@@ -364,7 +364,7 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
         return id!
     }
     
-    static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, Int)->()) {
+    static public func dropAction(at index: Int, _ items: [NSItemProvider], selection: Selection, action: @escaping (Int, ShortcutViewModel)->()) {
         DispatchQueue.main.async {
             for item in items {
                 var classType: NSItemProviderReading.Type?
@@ -377,8 +377,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
                     _ = item.loadObject(ofClass: classType) { (droppedItem, error) in
                         if error == nil {
                             if let droppedItem = droppedItem as? ShortcutItemProviderBase {
-                                if let droppedIndex = selection.shortcuts.firstIndex(where: {$0.id == droppedItem.id}) {
-                                    action(index, droppedIndex)
+                                if let droppedShortcut = MasterData.shared.shortcut(withId: droppedItem.id) {
+                                    action(index, droppedShortcut)
                                 }
                             }
                         }
@@ -430,5 +430,47 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
     @objc public static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> NestedSectionItemProvider {
         let id = try ShortcutItemProviderBase.object(withItemProviderData: data, type: NestedSectionItemProvider.type)
         return NestedSectionItemProvider(id: id)
+    }
+}
+
+class ShortcutListDropDelegate: DropDelegate {
+    
+    private let parent: SetupShortcutListView
+    private let toId: UUID
+    
+    init(_ parent: SetupShortcutListView, id toId: UUID) {
+        self.parent = parent
+        self.toId = toId
+    }
+    
+    func validateDrop(info: DropInfo) -> Bool {
+        // Only allow drop on nested sections
+        var ok = false
+        if let shortcut = MasterData.shared.shortcut(withId: self.toId) {
+            if shortcut.type == .section {
+                let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                if !items.isEmpty {
+                    ok = true
+                }
+            }
+        }
+        return ok
+    }
+    
+    func performDrop(info: DropInfo) -> Bool {
+        // No actual drops allowed for now
+        return false
+    }
+    
+    func dropEntered(info: DropInfo) {
+        DispatchQueue.main.async {
+            if let shortcut = MasterData.shared.shortcut(withId: self.toId) {
+                let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                if !items.isEmpty {
+                    let selection = self.parent.selection
+                    selection.selectSection(section: shortcut.nestedSection)
+                }
+            }
+        }
     }
 }

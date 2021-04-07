@@ -15,8 +15,6 @@ struct SetupSectionListView: View {
     @State var width: CGFloat
     
     var body: some View {
-        let master = MasterData.shared
-
         GeometryReader { (geometry) in
             VStack(spacing: 0.0) {
                 ZStack {
@@ -92,27 +90,26 @@ struct SetupSectionListView: View {
         }
     }
         
-    private func onInsertNestedSectionAction(to: Int, from: Int) {
+    private func onInsertNestedSectionAction(at: Int, shortcut: ShortcutViewModel) {
         Utility.mainThread {
-            let shortcut = self.selection.shortcuts[from]
             if shortcut.type == .section {
                 // Remove section link shortcut
                 self.selection.removeShortcut(shortcut: shortcut)
                 
                 // Insert the section at the drop location
                 if let section = shortcut.nestedSection {
-                    self.selection.sections.insert(section, at: to)
+                    self.selection.sections.insert(section, at: at)
                     self.selection.updateSectionSequence()
                 }
             }
         }
     }
 
-    public func onDropShortcutAction(to: Int, from: Int) {
+    public func onDropShortcutAction(at: Int, shortcut: ShortcutViewModel) {
         Utility.mainThread {
-            self.selection.shortcuts[from].section = self.selection.sections[to]
-            self.selection.shortcuts[from].sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[to])
-            self.selection.shortcuts[from].save()
+            shortcut.section = self.selection.sections[at]
+            shortcut.sequence = MasterData.shared.nextShortcutSequence(section: self.selection.sections[at])
+            shortcut.save()
             self.selection.deselectShortcut()
             self.selection.selectSection(section: self.selection.selectedSection!)
             self.selection.updateShortcutSequence()
