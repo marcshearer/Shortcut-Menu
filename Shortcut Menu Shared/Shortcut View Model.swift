@@ -437,6 +437,7 @@ class ShortcutListDropDelegate: DropDelegate {
     
     private let parent: SetupShortcutListView
     private let toId: UUID
+    private var active = false
     
     init(_ parent: SetupShortcutListView, id toId: UUID) {
         self.parent = parent
@@ -448,7 +449,7 @@ class ShortcutListDropDelegate: DropDelegate {
         var ok = false
         if let shortcut = MasterData.shared.shortcut(withId: self.toId) {
             if shortcut.type == .section {
-                let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                let items = info.itemProviders(for: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier])
                 if !items.isEmpty {
                     ok = true
                 }
@@ -465,12 +466,23 @@ class ShortcutListDropDelegate: DropDelegate {
     func dropEntered(info: DropInfo) {
         DispatchQueue.main.async {
             if let shortcut = MasterData.shared.shortcut(withId: self.toId) {
-                let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
+                let items = info.itemProviders(for: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier])
                 if !items.isEmpty {
                     let selection = self.parent.selection
-                    selection.selectSection(section: shortcut.nestedSection)
+                    self.active = true
+                    Utility.executeAfter(delay: 0.5) {
+                        if self.active {
+                            selection.selectSection(section: shortcut.nestedSection)
+                        }
+                    }
                 }
             }
+        }
+    }
+    
+    func dropExited(info: DropInfo) {
+        DispatchQueue.main.async {
+            self.active = false
         }
     }
 }

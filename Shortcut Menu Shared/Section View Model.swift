@@ -364,6 +364,7 @@ class SectionListDropDelegate: DropDelegate {
     
     private let parent: SetupSectionListView
     private let toId: UUID
+    private var active = false
     
     init(_ parent: SetupSectionListView, id toId: UUID) {
         self.parent = parent
@@ -395,9 +396,20 @@ class SectionListDropDelegate: DropDelegate {
                 let items = info.itemProviders(for: [UTType.url.identifier, UTType.fileURL.identifier])
                 if !items.isEmpty {
                     let selection = self.parent.selection
-                    selection.selectSection(section: selection.sections[toIndex])
+                    self.active = true
+                    Utility.executeAfter(delay: directoryHoverDelay) {
+                        if self.active {
+                            selection.selectSection(section: selection.sections[toIndex])
+                        }
+                    }
                 }
             }
+        }
+    }
+    
+    func dropExited(info: DropInfo) {
+        DispatchQueue.main.async {
+            self.active = false
         }
     }
 }

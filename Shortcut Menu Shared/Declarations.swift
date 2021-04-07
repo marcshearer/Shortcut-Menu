@@ -60,3 +60,6 @@ let iCloudIdentifier = "iCloud.ShearerOnline.Shortcuts"
 let backupDirectoryDateFormat = "yyyy-MM-dd-HH-mm-ss-SSS"
 let backupDateFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
 
+// Delay for opening directories
+let directoryHoverDelay: TimeInterval = 0.75
+

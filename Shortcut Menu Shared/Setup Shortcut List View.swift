@@ -152,7 +152,7 @@ struct SetupShortcutListView: View {
                     }
                 }
         })
-        .onDrop(of: [UTType.url.identifier, UTType.fileURL.identifier], delegate: ShortcutListDropDelegate(self, id: shortcut.id))
+        .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: ShortcutListDropDelegate(self, id: shortcut.id))
         .listRowInsets(EdgeInsets(top: (MyApp.target == .macOS ? 4 : 0), leading: 0, bottom: (MyApp.target == .macOS ? 4 : 0), trailing: 0))
     }
     
