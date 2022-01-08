@@ -10,6 +10,7 @@ import CoreData
 #if canImport(AppKit)
 import AppKit
 #endif
+import CloudKit
 
 class Backup {
     
