@@ -95,6 +95,14 @@ public class MasterData : ObservableObject {
                                                  sort: [(key: "sectionId", ascending: true),
                                                         (key: "sequence64", ascending: true)])
                 
+        // Remove local copy if already in cloud
+        for (index, sectionMO) in sectionMOs.enumerated().reversed() {
+            if cloudSectionMOs.contains(where: {$0.id == sectionMO.id}) {
+                sectionMOs.remove(at: index)
+                MasterData.context.delete(sectionMO)
+            }
+        }
+        
         // Build section list
         sections = []
         let cloudDefaultSectionExists = cloudSectionMOs.first(where: {$0.isDefault}) != nil

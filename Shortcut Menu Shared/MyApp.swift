@@ -56,7 +56,9 @@ class MyApp {
         MasterData.backgroundContext = container.newBackgroundContext()
         
         // Uncomment to backup / restore
-        // Backup.shared/*.backup()*/.restore(dateString: "Restore after july failure") ; sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
+        /*Utility.executeAfter(delay: 10) {
+            Backup.shared.backup()/*.restore(dateString: "2023-03-06-08-12-15-014")*/ ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
+        }*/
         
         MasterData.shared.load()
         MasterData.purgeTransactionHistory()

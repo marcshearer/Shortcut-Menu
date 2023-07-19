@@ -15,8 +15,21 @@ class LocalAuthentication {
         let context = LAContext()
         var error: NSError?
         
-        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) {
+                (success, authenticationError) in
+                
+                DispatchQueue.main.async {
+                    if success {
+                        completion()
+                    } else {
+                        failure()
+                    }
+                }
+            }
+        } else if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+                
             context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) {
                 (success, authenticationError) in
                 
@@ -28,8 +41,6 @@ class LocalAuthentication {
                     }
                 }
             }
-        } else {
-            failure()
         }
     }
 }

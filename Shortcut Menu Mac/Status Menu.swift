@@ -416,7 +416,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
             
             // Display view
-            let contentView = SetupView(selection: selection)
+            let contentView = SetupView(selection: selection) {
+                print("Exiting")
+            }
             self.showMenubarWindow(menubarWindowController: &self.defineWindowController, view: AnyView(contentView), title: "Define Shortcuts", saveName: "Shortcuts Define Window", size: CGSize(width: defaultSectionWidth + defaultShortcutWidth + defaultDetailWidth, height: defaultFormHeight))
             self.defineWindowController.contentViewController?.view.window?.becomeKey()
             self.defineAlways(onTop: true)

@@ -66,7 +66,7 @@ struct SlideInMenuView : View {
                                         Spacer()
                                     }
                                     .background(Palette.header.background)
-                                    .frame(height: SlideInMenuRowHeight * 1.2)
+                                    .frame(height: slideInMenuRowHeight * 1.2)
                                 }
                                 let options = $values.options.wrappedValue
                                 ScrollView {
@@ -90,15 +90,15 @@ struct SlideInMenuView : View {
                                                 values.shown = false
                                             }
                                             .background(Palette.background.background)
-                                            .frame(height: SlideInMenuRowHeight)
+                                            .frame(height: slideInMenuRowHeight)
                                         }
                                         .listRowInsets(EdgeInsets())
                                         .listStyle(PlainListStyle())
                                     }
                                 }
                                 .background(Palette.background.background)
-                                .environment(\.defaultMinListRowHeight, SlideInMenuRowHeight)
-                                .frame(height: max(0, min(CGFloat(values.options.count) * SlideInMenuRowHeight, fullGeometry.size.height - values.top - (3.0 * SlideInMenuRowHeight))))
+                                .environment(\.defaultMinListRowHeight, slideInMenuRowHeight)
+                                .frame(height: max(0, min(CGFloat(values.options.count) * slideInMenuRowHeight, fullGeometry.size.height - values.top - (3.0 * slideInMenuRowHeight))))
                                 VStack(spacing: 0) {
                                     Spacer()
                                     HStack {
@@ -114,7 +114,7 @@ struct SlideInMenuView : View {
                                 .onTapGesture {
                                     values.shown = false
                                 }
-                                .frame(height: SlideInMenuRowHeight).layoutPriority(.greatestFiniteMagnitude)
+                                .frame(height: slideInMenuRowHeight).layoutPriority(.greatestFiniteMagnitude)
                             }
                             .background(Palette.background.background)
                             .frame(width: values.width)

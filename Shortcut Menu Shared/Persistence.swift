@@ -34,7 +34,8 @@ struct PersistenceController {
     
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "Shortcut_Menu")
-        
+        Utility.debugMessage("Log",container.persistentStoreCoordinator.persistentStores.debugDescription)
+
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {

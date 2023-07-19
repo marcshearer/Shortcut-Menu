@@ -1,7 +1,10 @@
 There seems to be a bug where drop (not insert) is not working on iOS
 
 To switch between Development and Production need to set 
-    1. MyApp.expectedDatabase in Declarations
+    1. MyApp.expectedDatabase in MyApp.swift
     2. com.apple.developer.icloud-container-environment key in entitlements
 
 Seem to need to have an Assets.xcassets at base level just to archive the iOS build
+
+To distribute Mac version, just archive Shortcut Menu Mac. The Copy it and move to apps directory.
+    TestFlight doesn't work as blocks hot keys

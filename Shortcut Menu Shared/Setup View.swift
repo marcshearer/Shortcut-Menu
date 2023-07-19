@@ -93,7 +93,7 @@ struct SetupView: View {
                             HStack {
                                 Spacer()
                                 Button{
-                                    SlideInMenu.shared.show(title: "Options", options: ["Show shared shortcuts", "Shortcuts preferences", "About Shortcuts"], top: formGeometry.size.height - (SlideInMenuRowHeight * 6), completion: optionSelected)
+                                    SlideInMenu.shared.show(title: "Options", options: ["Show shared shortcuts", "Shortcuts preferences", "About Shortcuts"], top: formGeometry.size.height - (slideInMenuRowHeight * 6), completion: optionSelected)
                                 } label: {
                                     Image(systemName: "line.horizontal.3")
                                         .resizable()

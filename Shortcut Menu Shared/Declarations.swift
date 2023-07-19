@@ -38,7 +38,7 @@ let inputToggleDefaultHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 16.0)
 let bannerHeight: CGFloat = (MyApp.format == .tablet ? 70.0 : 50.0)
 let minimumBannerHeight: CGFloat = 40.0
 let bannerBottom: CGFloat = (MyApp.format == .tablet ? 20.0 : 10.0)
-let SlideInMenuRowHeight: CGFloat = (MyApp.target == .iOS ? 50 : 35)
+let slideInMenuRowHeight: CGFloat = (MyApp.target == .iOS ? 50 : 35)
 
 // Fonts
 var defaultFont = Font.system(size: (MyApp.format == .tablet ? 28.0 : 20.0))
