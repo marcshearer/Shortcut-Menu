@@ -169,7 +169,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             NSStatusBar.system.removeStatusItem(item)
         }
         self.additionalStatusItems = [:]
-        for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && $0.shortcuts.count > 0}) {
+        for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && $0.shortcuts.count > 0}).reversed() {
             let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             statusItem.menu = NSMenu()
             self.additionalStatusItems[section.id] = statusItem
