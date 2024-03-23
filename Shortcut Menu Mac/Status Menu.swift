@@ -487,7 +487,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
                 // URL if non-blank
                 if !shortcut.url.isEmpty {
-                    if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                    if let url = URL(string: shortcut.url ?? "") { // }.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
                         
                         if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
                             // Shortcut to a local file
