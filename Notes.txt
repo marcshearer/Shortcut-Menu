@@ -8,3 +8,12 @@ Seem to need to have an Assets.xcassets at base level just to archive the iOS bu
 
 To distribute Mac version, just archive Shortcut Menu Mac. The Copy it and move to apps directory.
     TestFlight doesn't work as blocks hot keys
+
+
+================================
+If everything goes badly wrong
+
+In MyApp.swift replace the backup with a restore (find location by searching for existing one in comment)
+Comment out rest of function
+Run and wait for 5 mins.
+Then stop that version, revert MyApp.swift and re-run
