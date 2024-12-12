@@ -318,9 +318,11 @@ struct SetupDetailView: View {
         
         return Button(action: {
             Utility.mainThread {
-                refresh.toggle()
                 selection.editShortcut.url = ""
                 selection.editShortcut.urlSecurityBookmark = nil
+                Utility.executeAfter(delay: 0) {
+                    refresh.toggle()
+                }
             }
        }, label: {
         Image(systemName: "xmark.circle.fill")
@@ -337,9 +339,11 @@ struct SetupDetailView: View {
             StatusMenu.shared.defineAlways(onTop: false)
             SetupDetailView.findFile { (url, data) in
                 Utility.mainThread {
-                    refresh.toggle()
                     selection.editShortcut.urlSecurityBookmark = data
                     selection.editShortcut.url = url.absoluteString
+                    Utility.executeAfter(delay: 0) {
+                        refresh.toggle()
+                    }
                 }
             }
         },label: {
