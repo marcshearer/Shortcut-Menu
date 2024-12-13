@@ -186,7 +186,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                 if shortcut.nestedSection?.shortcuts.count ?? 0 > 0 {
                     if nestedSection.inline {
                         self.addSeparator(to: subMenu)
-                        let attrString = NSAttributedString(string: nestedSection.name.uppercased(), attributes: [NSAttributedString.Key.font:NSFont.systemFont(ofSize: 10)])
+                        let attrString = NSAttributedString(string: nestedSection.name.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1)])
                         self.addItem(attributedText: attrString, to: subMenu)
                         self.addShortcuts(section: nestedSection, inset: 5, to: subMenu)
                     } else {
@@ -367,7 +367,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             menuItem = menu!.addItem(withTitle: text, action: action, keyEquivalent: "")
         } else {
             menuItem = menu!.addItem(withTitle: "", action: action, keyEquivalent: "")
-            menuItem.attributedTitle = attributedText
+            menuItem.view = NSView(frame: NSRect(origin: CGPoint(), size: CGSize(width: max(100, menuItem.menu!.size.width), height: 18)))
+            let text = NSTextField(labelWithAttributedString: attributedText!)
+            menuItem.view!.addSubview(text, anchored: .bottom, .trailing)
+            Constraint.anchor(view: menuItem.view!, control: text, constant: 15.0, attributes: .leading)
         }
         if keyEquivalent != "" {
             if let (characters, modifiers) = ShortcutKeyMonitor.shared.decompose(key: keyEquivalent) {

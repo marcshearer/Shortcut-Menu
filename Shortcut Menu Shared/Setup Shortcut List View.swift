@@ -38,10 +38,10 @@ struct SetupShortcutListView: View, DropDelegate {
                     ForEach(0..<1) { (index) in
                         Tile(text: "No shortcuts defined", disabled: true)
                     }
-                    .onInsert(of: [SectionItemProvider.type.identifier, UTType.url.identifier])
-                    { (index, items) in
-                        // Allow insert in empty list
+                    .onInsert(of: [SectionItemProvider.type.identifier, ShortcutItemProvider.type.identifier, UTType.url.identifier]) { (index, items) in
+                            // Allow insert in empty list
                         SectionItemProvider.dropAction(at: 0, items, selection: selection, action: self.onInsertSectionAction)
+                        ShortcutItemProvider.dropAction(at: 0, items, selection: selection, action: self.onInsertShortcutAction)
                         selection.dropUrl(afterIndex: 0, items: items)
                     }
                 }
