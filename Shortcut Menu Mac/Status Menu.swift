@@ -111,41 +111,50 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     public func update() {
         var optionsAdded = false
+        var othersAdded = false
         
         self.statusMenu.removeAllItems()
         
         if self.currentSection != "" {
             if let section = self.master.sections.first(where: { $0.name == self.currentSection }) {
                 if section.shortcuts.count > 0 {
-                    self.addItem(id: "sectionTitle", (self.currentSection == "" ? "Shortcuts" : self.currentSection))
-                    self.menuItemList["sectionTitle"]?.isEnabled = false
-                    optionsAdded = true
-                }
-                if self.addShortcuts(section: section, inset: 5) > 0 {
-                    self.addSeparator()
+                    if self.addShortcuts(section: section, title: String(self.currentSection == "" ? "Shortcuts" : self.currentSection), inset: 5) > 0 {
+                        optionsAdded = true
+                        self.addSeparator()
+                    }
                 }
             }
         }
        
         if let defaultSection = master.defaultSection {
-            if self.addShortcuts(section: defaultSection) > 0 {
-                self.addSeparator()
+            let added = self.addShortcuts(section: defaultSection, title: "Shortcuts", inset: 5)
+            if added > 0 {
                 optionsAdded = true
+                othersAdded = true
             }
         }
         
         let nonEmptySections = self.master.getSections(withShortcuts: true, excludeDefault: true).count
-        if  nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == "") {
+        let otherSections = (nonEmptySections > 1 || (nonEmptySections == 1 && self.currentSection == ""))
+        
+        if otherSections {
             
-            if self.addOtherShortcuts(inline: !optionsAdded) > 0 {
+            if self.addOtherShortcuts(inline: !optionsAdded, inset: 5) > 0 {
+                othersAdded = true
+            }
+            if othersAdded {
                 self.addSeparator()
             }
-            
-            let sectionMenu = self.addSubmenu("Choose section")
+        }
+        
+        addHeading(title: "Admin")
+        
+        if otherSections {
+            let sectionMenu = self.addSubmenu("Choose section", inset: 5)
             _ = self.addSections(to: sectionMenu)
         }
         
-        let adminMenu = self.addSubmenu("Configuration")
+        let adminMenu = self.addSubmenu("Configuration", inset: 5)
         self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d", to: adminMenu)
         
         if Settings.shared.shareShortcuts.value {
@@ -156,9 +165,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
         self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
         
-        self.addSeparator()
-                
-        self.addItem("Quit Shortcuts", action: #selector(StatusMenu.quit(_:)), keyEquivalent: "q")
+        self.addItem("Quit Shortcuts", inset: 5, action: #selector(StatusMenu.quit(_:)), keyEquivalent: "q")
 
         self.setupAdditionalMenus()
 
@@ -174,24 +181,37 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             statusItem.menu = NSMenu()
             self.additionalStatusItems[section.id] = statusItem
             statusItem.button?.attributedTitle = NSAttributedString(string: section.menuTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 15)])
-            self.addShortcuts(section: section, to: statusItem.menu)
+            
+            var title: String?
+            if !(section.shortcuts.first?.nestedSection?.inline ?? false) {
+                title = section.name
+            }
+            self.addShortcuts(section: section, title: title, inset: 5, to: statusItem.menu)
         }
     }
     
-    @discardableResult private func addShortcuts(section: SectionViewModel, inset: Int = 0, to subMenu: NSMenu? = nil) -> Int {
+    @discardableResult private func addShortcuts(section: SectionViewModel, title: String? = nil, inset fixedInset: Int? = nil, to subMenu: NSMenu? = nil) -> Int {
         var added = 0
+        var inset: Int
         
+        if let title = title {
+            addHeading(title: title, to: subMenu)
+            inset = fixedInset ?? 5
+        } else {
+            inset = fixedInset ?? 0
+        }
         for shortcut in section.shortcuts.sorted(by: {$0.sequence < $1.sequence}) {
             if shortcut.type == .section, let nestedSection = shortcut.nestedSection {
-                if shortcut.nestedSection?.shortcuts.count ?? 0 > 0 {
-                    if nestedSection.inline {
-                        self.addSeparator(to: subMenu)
-                        let attrString = NSAttributedString(string: nestedSection.name.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1)])
-                        self.addItem(attributedText: attrString, to: subMenu)
-                        self.addShortcuts(section: nestedSection, inset: 5, to: subMenu)
+                if nestedSection.shortcuts.count > 0 {
+                    if nestedSection.inline || nestedSection.shortcuts.count == 1 {
+                        if nestedSection.inline {
+                            self.addSeparator(to: subMenu)
+                            addHeading(title: nestedSection.name, to: subMenu)
+                        }
+                        self.addShortcuts(section: nestedSection, inset: inset, to: subMenu)
                     } else {
-                    let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
-                    self.addShortcuts(section: nestedSection, to: subMenuEntry)
+                        let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                        self.addShortcuts(section: nestedSection, to: subMenuEntry)
                     }
                 }
             } else {
@@ -202,8 +222,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return added
     }
     
-    @discardableResult private func addShortcut(shortcut: ShortcutViewModel, inset: Int = 0, to subMenu: NSMenu?) -> Int {
-        self.addItem(String(repeating: " ", count: inset) + shortcut.name, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
+    func addHeading(title: String, to subMenu: NSMenu? = nil) {
+        let attrString = NSAttributedString(string: title.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1)])
+        self.addItem(attributedText: attrString, to: subMenu)
+    }
+    
+    @discardableResult private func addShortcut(shortcut: ShortcutViewModel, inset: Int = 5, to subMenu: NSMenu?) -> Int {
+        self.addItem(shortcut.name, inset: inset, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
         return 1
     }
     
@@ -218,12 +243,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return added
     }
     
-    private func addOtherShortcuts(inline: Bool) -> Int {
+    private func addOtherShortcuts(inline: Bool, inset: Int) -> Int {
         var added = 0
         var subMenu: NSMenu
+        var inset = inset
         
         if !inline {
-            subMenu = self.addSubmenu("Other shortcuts")
+            subMenu = self.addSubmenu("Other shortcuts", inset: 5)
+            inset = 0
         } else {
             subMenu = self.statusMenu
         }
@@ -231,10 +258,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0  && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
                 if section.shortcuts.count > 1 {
-                    let sectionMenu = self.addSubmenu(section.menuName, to: subMenu)
+                    let sectionMenu = self.addSubmenu(section.menuName, inset: inset, to: subMenu)
                     added += self.addShortcuts(section: section, to: sectionMenu)
                 } else {
-                    added += self.addShortcut(shortcut: section.shortcuts.first!, to: subMenu)
+                    added += self.addShortcut(shortcut: section.shortcuts.first!, inset: inset, to: subMenu)
                 }
             }
         }
@@ -357,17 +384,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     // MARK: - Helper routines for the popup menu =========================================================== -
 
-    @discardableResult private func addItem(id: String? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
+    @discardableResult private func addItem(id: String? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, inset: Int = 0, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
         var menu = menu
         if menu == nil {
             menu = self.statusMenu
         }
         var menuItem: NSMenuItem
         if attributedText == nil {
-            menuItem = menu!.addItem(withTitle: text, action: action, keyEquivalent: "")
+            menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + text, action: action, keyEquivalent: "")
         } else {
             menuItem = menu!.addItem(withTitle: "", action: action, keyEquivalent: "")
-            menuItem.view = NSView(frame: NSRect(origin: CGPoint(), size: CGSize(width: max(100, menuItem.menu!.size.width), height: 18)))
+            menuItem.view = NSView(frame: NSRect(origin: CGPoint(), size: CGSize(width: max(200, menuItem.menu!.size.width), height: 18)))
             let text = NSTextField(labelWithAttributedString: attributedText!)
             menuItem.view!.addSubview(text, anchored: .bottom, .trailing)
             Constraint.anchor(view: menuItem.view!, control: text, constant: 15.0, attributes: .leading)
@@ -390,13 +417,13 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return menuItem
     }
     
-    private func addSubmenu(_ text: String, to menu: NSMenu? = nil) -> NSMenu {
+private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) -> NSMenu {
         var menu = menu
         if menu == nil {
             menu = self.statusMenu
         }
         let subMenu = NSMenu(title: text)
-        let menuItem = menu!.addItem(withTitle: text, action: nil, keyEquivalent: "")
+        let menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + text, action: nil, keyEquivalent: "")
         menu!.setSubmenu(subMenu, for: menuItem)
         return subMenu
     }
@@ -490,7 +517,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
                 // URL if non-blank
                 if !shortcut.url.isEmpty {
-                    if let url = URL(string: shortcut.url ?? "") { // }.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                    if let url = URL(string: shortcut.url) {
                         
                         if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
                             // Shortcut to a local file
