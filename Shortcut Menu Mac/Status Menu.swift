@@ -206,6 +206,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
             self.addShortcuts(section: section, title: title, inset: 5, to: statusItem.menu)
             if section.temporary {
+                self.addSeparator(to: statusItem.menu)
                 addHeading(title: "Maintenance", to: statusItem.menu)
                 let menuItem = self.addItem("Edit shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
                 menuItem.tag = tag
