@@ -14,6 +14,17 @@ protocol StatusMenuPopoverDelegate {
     var popover: NSPopover? {get set}
 }
 
+class StatusMenuAdditional {
+    var statusItem: NSStatusItem
+    var section: SectionViewModel
+    
+    init(statusItem: NSStatusItem, section: SectionViewModel, tag: Int) {
+        self.statusItem = statusItem
+        self.statusItem.button?.tag = tag
+        self.section = section
+    }
+}
+
 class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate {
     
     public static let shared = StatusMenu()
@@ -29,15 +40,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private var menuItemList: [String: NSMenuItem] = [:]
     
     private var currentSection: String = ""
-    private var whisperPopover: NSPopover!
+    fileprivate var whisperPopover: NSPopover!
     private var aboutPopover: NSPopover!
     private var showSharedPopover: NSPopover!
     
     private var defineWindowController: MenubarWindowController!
     private var settingsWindowController: MenubarWindowController!
-    private var windowShowing = false
+    fileprivate var windowShowing = false
+    public var selection = Selection()
     
-    private var additionalStatusItems: [UUID : NSStatusItem] = [:]
+    private var additionalStatusItemsSectionId: [UUID : StatusMenuAdditional] = [:]
+    fileprivate var additionalStatusItemsTag: [Int: StatusMenuAdditional] = [:]
     
     public var displayedRemoteUpdates = 0
    
@@ -48,7 +61,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.statusMenu = NSMenu()
         self.statusMenu.autoenablesItems = false
         self.statusMenuButton = self.statusItem.button!
-        self.statusMenuButton.registerForDraggedTypes([NSPasteboard.PasteboardType.URL])
+        self.statusMenuButton.registerForDraggedTypes([NSPasteboard.PasteboardType.URL, NSPasteboard.PasteboardType.string])
         
         super.init()
         
@@ -172,21 +185,31 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func setupAdditionalMenus() {
-        for (_, item) in self.additionalStatusItems {
-            NSStatusBar.system.removeStatusItem(item)
+        for (_, item) in self.additionalStatusItemsSectionId {
+            NSStatusBar.system.removeStatusItem(item.statusItem)
         }
-        self.additionalStatusItems = [:]
+        self.additionalStatusItemsSectionId = [:]
+        var tag = 0
         for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && $0.shortcuts.count > 0}).reversed() {
             let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             statusItem.menu = NSMenu()
-            self.additionalStatusItems[section.id] = statusItem
+            tag += 1
+            let statusMenuAdditional = StatusMenuAdditional(statusItem: statusItem, section: section, tag: tag)
+            self.additionalStatusItemsSectionId[section.id] = statusMenuAdditional
+            self.additionalStatusItemsTag[tag] = statusMenuAdditional
             statusItem.button?.attributedTitle = NSAttributedString(string: section.menuTitle, attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 15)])
+            statusItem.button?.registerForDraggedTypes([NSPasteboard.PasteboardType.URL, NSPasteboard.PasteboardType.string])
             
             var title: String?
             if !(section.shortcuts.first?.nestedSection?.inline ?? false) {
                 title = section.name
             }
             self.addShortcuts(section: section, title: title, inset: 5, to: statusItem.menu)
+            if section.temporary {
+                addHeading(title: "Maintenance", to: statusItem.menu)
+                let menuItem = self.addItem("Edit shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
+                menuItem.tag = tag
+            }
         }
     }
     
@@ -277,10 +300,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         event2?.post(tap: CGEventTapLocation.cghidEventTap)
     }
     
-    private func whisper(header: String, caption: String = "", closeAfter: TimeInterval = 3) {
+    fileprivate func whisper(button: NSButton? = nil, header: String? = nil, caption: String? = nil, size: NSSize? = nil, closeAfter: TimeInterval = 3, tight: Bool = false) {
         // Create the window and set the content view.
-        self.showPopover(popover: &self.whisperPopover,
-                         view: AnyView(WhisperView(header: header, caption: caption)),
+        let button = button ?? self.statusItem.button!
+        self.showPopover(button: button, popover: &self.whisperPopover,
+                         view: AnyView(WhisperView(header: header, caption: caption, tight: tight)), size: size,
                          backgroundColor: Palette.whisper.background)
         
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + closeAfter, qos: .userInteractive) {
@@ -289,7 +313,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     @objc private func about(_ sender: Any) {
-        self.showPopover(popover: &self.aboutPopover,
+        self.showPopover(button: self.statusItem.button!, popover: &self.aboutPopover,
                          view: AnyView(MessageBoxView().frame(width: 400, height: 250)), size: NSSize(width: 400, height: 250))
         MessageBox.shared.show("A Shortcut Management app from\nShearer Online Ltd", showVersion: true, completion: { (_) in
                 self.aboutPopover.close()
@@ -298,14 +322,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc private func showShared(_ sender: Any) {
         
-        self.showPopover(popover: &self.showSharedPopover,
+        self.showPopover(button: self.statusItem.button!, popover: &self.showSharedPopover,
                          view: AnyView(ShowSharedView(minimumBanner: true,
                                                       completion: {
                                                             self.showSharedPopover.close()
                                                       })))
     }
     
-    private func showPopover(popover: inout NSPopover?, view: AnyView, size: NSSize? = nil, backgroundColor: Color = Palette.background.background) {
+    private func showPopover(button: NSButton, popover: inout NSPopover?, view: AnyView, size: NSSize? = nil, backgroundColor: Color = Palette.background.background) {
         if popover == nil {
             let newPopover = NSPopover()
             newPopover.behavior = .transient
@@ -314,7 +338,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             popover = newPopover
         }
         popover?.contentViewController = NSHostingController(rootView: view)
-        popover?.show(relativeTo: self.statusItem.button!.bounds, of: self.statusItem.button!, preferredEdge: .minY)
+        popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
         if let frameView = popover?.contentViewController?.view.superview {
             // Make the triangle callout background color
             let backgroundView = NSView(frame: frameView.bounds)
@@ -433,19 +457,38 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
         menu.addItem(NSMenuItem.separator())
     }
     
-    @objc public func define(_ sender: Any?) {
+    @objc func define(_ button: NSButton) {
+        var section: SectionViewModel?
+        if let additional = StatusMenu.shared.additionalStatusItemsTag[button.tag] {
+            section = additional.section
+        }
+        define(section: section)
+    }
+    
+    public func define(section: SectionViewModel? = nil) {
+        if let section = section {
+            self.selection.selectSection(section: section)
+            selection.singleSection = true
+            if let first = section.shortcuts.first(where: {$0.nestedSection == nil}) {
+                selection.selectShortcut(shortcut: first)
+            } else {
+                selection.deselectShortcut()
+            }
+        } else {
+            self.selection.deselectSection()
+            selection.singleSection = false
+        }
+        
         // Create the window and set the content view.
         if !self.windowShowing {
-            let selection = Selection()
-            
-            // Suspend any additional core data updates
+                // Suspend any additional core data updates
             MasterData.shared.suspendRemoteUpdates(true)
-            // Reload any pending changes
+                // Reload any pending changes
             if MasterData.shared.publishedRemoteUpdates > self.displayedRemoteUpdates {
                 self.displayedRemoteUpdates = MasterData.shared.load()
             }
             
-            // Display view
+                // Display view
             let contentView = SetupView(selection: selection) {
                 print("Exiting")
             }
@@ -556,6 +599,53 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
         
     }
     
+    fileprivate func quickDrop(section: SectionViewModel, pasteboard: NSPasteboard) {
+        if let urlString = pasteboard.string(forType: NSPasteboard.PasteboardType.URL) {
+            // URL (hyperlink)
+            if let url = URL(string: urlString) {
+                LinkPresentation.getDetail(url: url, completion: { (result) in
+                    var urlName = "Unknown URL"
+                    Utility.mainThread { [self] in
+                        switch result {
+                        case .success(let (_, name)):
+                            urlName = name ?? urlName
+                        default:
+                            break
+                        }
+                        createShortcut(section: section, name: urlName, url: urlString)
+                    }
+                })
+            }
+        } else if let fileUrlData = pasteboard.data(forType: NSPasteboard.PasteboardType.fileURL) {
+            // File URL
+            if let fileUrl = URL(dataRepresentation: fileUrlData, relativeTo: nil, isAbsolute: false) {
+                if let bookmarkData = try? fileUrl.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
+                    let name =
+                    fileUrl.deletingPathExtension().lastPathComponent.removingPercentEncoding ?? "Unknown file"
+                    let url = fileUrl.absoluteString
+                    let urlSecurityBookmark = bookmarkData
+                    self.createShortcut(section: section, name: name, url: url, urlSecurityBookmark: urlSecurityBookmark)
+                }
+            }
+        } else if let copyText = pasteboard.string(forType: NSPasteboard.PasteboardType.string) {
+            // Plain String
+            self.createShortcut(section: section, name: copyText, copyText: copyText)
+        }
+    }
+    
+    private func createShortcut(section: SectionViewModel, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "") {
+        let shortcut = ShortcutViewModel()
+        shortcut.section = section
+        shortcut.name = name
+        shortcut.url = url
+        shortcut.urlSecurityBookmark = urlSecurityBookmark
+        shortcut.copyText = copyText
+        shortcut.sequence = (section.shortcuts.last?.sequence ?? 0) + 1
+        master.shortcuts.append(shortcut)
+        shortcut.save()
+        refresh(nil)
+    }
+    
     public func updateShortcutKeys() {
         var keys: [(String, (ShortcutType?, UUID))] = []
         
@@ -580,8 +670,8 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
         if let (type, shortcutId) = id as? (ShortcutType?, UUID) {
             switch type {
             case .section:
-                if let statusItem = additionalStatusItems[shortcutId] {
-                    statusItem.button?.performClick(self)
+                if let statusItem = additionalStatusItemsSectionId[shortcutId] {
+                    statusItem.statusItem.button?.performClick(self)
                 }
             case .shortcut:
                 if let shortcut = master.shortcut(withId: shortcutId) {
@@ -621,7 +711,38 @@ class MenubarWindowController: NSWindowController {
 extension NSStatusBarButton {
     
     open override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        StatusMenu.shared.define(self)
+        if let additional = StatusMenu.shared.additionalStatusItemsTag[self.tag] {
+            if let types = sender.draggingPasteboard.types {
+                var found = false
+                for type in types {
+                    if additional.statusItem.button?.registeredDraggedTypes.contains(where: {$0 == type}) ?? false {
+                        found = true
+                    }
+                }
+                if found {
+                    if let additional = StatusMenu.shared.additionalStatusItemsTag[self.tag] {
+                        if additional.section.quickDrop && !StatusMenu.shared.windowShowing {
+                            StatusMenu.shared.whisper(button: additional.statusItem.button, header: "Release mouse", caption: "to add shortcut", closeAfter: 60)
+                        } else {
+                            StatusMenu.shared.define(section: additional.section)
+                        }
+                    }
+                }
+            }
+        }
         return .private
     }
+    
+    open override func draggingExited(_ sender: NSDraggingInfo?) {
+        StatusMenu.shared.whisperPopover?.close()
+    }
+    
+    open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        if let additional = StatusMenu.shared.additionalStatusItemsTag[self.tag] {
+            StatusMenu.shared.quickDrop(section: additional.section, pasteboard: sender.draggingPasteboard)
+        }
+        StatusMenu.shared.whisperPopover?.close()
+        return true
+    }
+    
 }

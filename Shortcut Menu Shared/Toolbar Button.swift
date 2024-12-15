@@ -30,5 +30,6 @@ struct ToolbarButton: View {
         .background(Color.clear)
         .foregroundColor(Color.clear)
         .buttonStyle(PlainButtonStyle())
+        .focusEffectDisabled()
     }
 }

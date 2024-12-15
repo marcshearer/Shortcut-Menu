@@ -31,6 +31,8 @@ public class SectionBaseMO : NSManagedObject, Identifiable {
     @NSManaged public var inline: Bool
     @NSManaged public var shared: Bool
     @NSManaged public var lastUpdate : Date
+    @NSManaged public var temporary: Bool
+    @NSManaged public var quickDrop: Bool
     
     public var sequence: Int {
         get {

@@ -178,11 +178,20 @@ struct SetupDetailView: View {
                 
                 if MyApp.target == .macOS {
                     
-                    Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled)
+                    Input(title: "Stand-alone menu bar title", field: $selection.editSection.menuTitle, width: 100, isEnabled: isEnabled) { (newValue) in
+                        if newValue == "" {
+                            selection.editSection.temporary = false
+                            selection.editSection.quickDrop = false
+                        }
+                    }
                     
                     self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
                 }
             }
+            
+            InputToggle(title: "Section type", text: "Temporary shortcuts", field: $selection.editSection.temporary, isEnabled: isEnabled && selection.editSection.menuTitle != "")
+            
+            InputToggle(text: "Allow quick drop", field: $selection.editSection.quickDrop, isEnabled: isEnabled && selection.editSection.menuTitle != "")
             
             if Settings.shared.shareShortcuts.value {
                 

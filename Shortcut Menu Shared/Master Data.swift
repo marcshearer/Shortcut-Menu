@@ -103,6 +103,9 @@ public class MasterData : ObservableObject {
             }
         }
         
+        
+        
+        
         // Build section list
         sections = []
         let cloudDefaultSectionExists = cloudSectionMOs.first(where: {$0.isDefault}) != nil

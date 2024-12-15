@@ -13,10 +13,12 @@ struct WhisperView: View {
     
     var header: String?
     var caption: String?
+    var tight: Bool
     
-    init(header: String? = nil, caption: String? = nil) {
+    init(header: String? = nil, caption: String? = nil, tight: Bool = false) {
         self.header = header
         self.caption = caption
+        self.tight = tight
         #if canImport(AppKit)
         NSSound(named: "Morse")?.play()
         #else
@@ -26,22 +28,21 @@ struct WhisperView: View {
     
     var body: some View {
         HStack {
-            Spacer()
-                .frame(width: 40)
+            Spacer().frame(width: tight ? 5 : 40)
             
             VStack(alignment: .center) {
-                Spacer()
-                    .frame(height: 20)
+                    Spacer().frame(height: tight ? 5 : 20)
                 
                 if self.header != nil {
                     
                     Text(self.header!)
                         .font(defaultFont)
                         .foregroundColor(Color(Palette.whisper.text.cgColor!))
-                    
-                    Spacer()
-                        .frame(height: 10)
-                    
+        
+                }
+                
+                if self.header != nil && self.caption != nil {
+                    Spacer().frame(height: 10)
                 }
                 
                 if self.caption != nil {
@@ -49,13 +50,11 @@ struct WhisperView: View {
                         .font(captionFont)
                 }
                 
-                Spacer()
-                .frame(height: 20)
+                Spacer().frame(height: tight ? 5 : 20)
                 
             }
                 
-            Spacer()
-                .frame(width: 40)
+            Spacer().frame(width: tight ? 5 : 40)
         }
         .background(Palette.whisper.background)
     }

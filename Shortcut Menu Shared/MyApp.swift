@@ -57,7 +57,7 @@ class MyApp {
         
         // Uncomment to backup / restore
         Utility.executeAfter(delay: 10) {
-            Backup.shared.backup()/*.restore(dateString: "2024-05-23-17-09-00-872")*/ ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
+            Backup.shared.backup()/*.restore(dateString: "2024-12-13-16-20-55-127")*/ ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
         }
         MasterData.shared.load()
         MasterData.purgeTransactionHistory()

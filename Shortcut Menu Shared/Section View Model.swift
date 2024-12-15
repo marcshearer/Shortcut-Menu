@@ -26,6 +26,8 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     @Published public var keyEquivalent: String
     @Published public var inline: Bool
     @Published public var shared: Bool
+    @Published public var temporary: Bool
+    @Published public var quickDrop: Bool
 
     // Linked managed objects
     private var sectionMO: SectionMO?
@@ -47,7 +49,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         return hasher.finalize()
     }
     
-    init(id: UUID? = nil, isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false) {
+    init(id: UUID? = nil, isDefault: Bool = false, name: String = "", sequence: Int = 0, menuTitle: String = "", keyEquivalent: String = "", inline: Bool = false, shared: Bool = false, temporary: Bool = false, quickDrop: Bool = false) {
         self.id = id ?? (isDefault ? defaultUUID : UUID())
         self.isDefault = isDefault
         self.name = name
@@ -56,6 +58,8 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         self.inline = inline
         self.shared = shared
         self.menuTitle = menuTitle
+        self.temporary = temporary
+        self.quickDrop = quickDrop
         
         self.setupMappings()
     }
@@ -65,7 +69,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     convenience init(sectionMO: SectionBaseMO, shared: Bool) {
-        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, inline: sectionMO.inline, shared: sectionMO.shared)
+        self.init(id: sectionMO.id, isDefault: sectionMO.isDefault, name: sectionMO.name, sequence: sectionMO.sequence, menuTitle: sectionMO.menuTitle, keyEquivalent: sectionMO.keyEquivalent, inline: sectionMO.inline, shared: sectionMO.shared, temporary: sectionMO.temporary, quickDrop: sectionMO.quickDrop)
         if shared {
             self.cloudSectionMO = sectionMO as? CloudSectionMO
         } else {
@@ -120,7 +124,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     public static func == (lhs: SectionViewModel, rhs: SectionViewModel) -> Bool {
-        lhs.id == rhs.id && lhs.isDefault == rhs.isDefault && lhs.name == rhs.name && lhs.sequence == rhs.sequence && lhs.menuTitle == rhs.menuTitle && lhs.keyEquivalent == rhs.keyEquivalent && lhs.inline == rhs.inline && lhs.shared == rhs.shared
+        lhs.id == rhs.id && lhs.isDefault == rhs.isDefault && lhs.name == rhs.name && lhs.sequence == rhs.sequence && lhs.menuTitle == rhs.menuTitle && lhs.keyEquivalent == rhs.keyEquivalent && lhs.inline == rhs.inline && lhs.shared == rhs.shared && lhs.temporary == rhs.temporary && lhs.quickDrop == rhs.quickDrop
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -132,6 +136,8 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         hasher.combine(keyEquivalent)
         hasher.combine(inline)
         hasher.combine(shared)
+        hasher.combine(temporary)
+        hasher.combine(quickDrop)
         hasher.combine(sectionMO)
         hasher.combine(cloudSectionMO)
     }
@@ -145,7 +151,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     }
     
     public func copy() -> SectionViewModel {
-        let copy = SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, inline: self.inline, shared: shared)
+        let copy = SectionViewModel(id: self.id, isDefault: isDefault, name: self.name, sequence: self.sequence, menuTitle: self.menuTitle, keyEquivalent: self.keyEquivalent, inline: self.inline, shared: shared, temporary: temporary, quickDrop: quickDrop)
         copy.sectionMO = self.sectionMO
         copy.cloudSectionMO = self.cloudSectionMO
         return copy
@@ -271,6 +277,8 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         sectionMO.inline = self.inline
         sectionMO.shared = self.shared
         sectionMO.menuTitle = self.menuTitle
+        sectionMO.temporary = self.temporary
+        sectionMO.quickDrop = self.quickDrop
         sectionMO.lastUpdate = Date()
     }
     

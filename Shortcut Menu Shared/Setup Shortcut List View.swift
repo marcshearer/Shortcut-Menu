@@ -14,6 +14,7 @@ struct SetupShortcutListView: View, DropDelegate {
     @ObservedObject public var selection: Selection
     @Binding public var panel: SetupPanel
     @State var width: CGFloat
+    @State var singleSection = false
     @State private var parentSectionIsEntered = false
     
     var body: some View {
@@ -31,18 +32,19 @@ struct SetupShortcutListView: View, DropDelegate {
                      tapAction: {
                             selection.selectSection(section: MasterData.shared.nestedParent(selection.selectedSection))
                      })
-                    .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: self)
+                .onDrop(of: [ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.fileURL.identifier], delegate: self)
             }
             if selection.shortcuts.isEmpty {
                 List {
                     ForEach(0..<1) { (index) in
                         Tile(text: "No shortcuts defined", disabled: true)
                     }
-                    .onInsert(of: [SectionItemProvider.type.identifier, ShortcutItemProvider.type.identifier, UTType.url.identifier]) { (index, items) in
+                    .onInsert(of: [SectionItemProvider.type.identifier, ShortcutItemProvider.type.identifier, UTType.url.identifier, UTType.text.identifier]) { (index, items) in
                             // Allow insert in empty list
                         SectionItemProvider.dropAction(at: 0, items, selection: selection, action: self.onInsertSectionAction)
                         ShortcutItemProvider.dropAction(at: 0, items, selection: selection, action: self.onInsertShortcutAction)
                         selection.dropUrl(afterIndex: 0, items: items)
+                        selection.dropString(afterIndex: 0, items: items)
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -57,11 +59,12 @@ struct SetupShortcutListView: View, DropDelegate {
                                 .onDrag({shortcut.itemProvider})
                         }
                     }
-                    .onInsert(of: [ShortcutItemProvider.type.identifier, NestedSectionItemProvider.type.identifier, SectionItemProvider.type.identifier, UTType.url.identifier])
+                    .onInsert(of: [ShortcutItemProvider.type.identifier, NestedSectionItemProvider.type.identifier, SectionItemProvider.type.identifier, UTType.url.identifier, UTType.text.identifier])
                     { (index, items) in
                         ShortcutItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertShortcutAction)
                         SectionItemProvider.dropAction(at: index, items, selection: selection, action: self.onInsertSectionAction)
                         selection.dropUrl(afterIndex: index, items: items)
+                        selection.dropString(afterIndex: index, items: items)
                     }
                 }
                 .padding(.horizontal, 0) // Remove when bug fixed on Mac OS
@@ -123,7 +126,7 @@ struct SetupShortcutListView: View, DropDelegate {
     private func toolbarButtons() -> some View {
         HStack {
             if selection.editAction == .none {
-                if selection.editObject != .none {
+                if selection.editObject != .none && !singleSection {
                     if let shortcut = MasterData.shared.shortcuts.first(where: {$0.nestedSection?.id == selection.selectedSection?.id}) {
                         // Nested section - add button to un-nest it
                         ToolbarButton("folder.fill.badge.minus") {
@@ -159,7 +162,7 @@ struct SetupShortcutListView: View, DropDelegate {
                     }
                 }
                 
-                if selection.selectedSection != nil {
+                if selection.selectedSection != nil && !singleSection {
                     ToolbarButton("plus.circle.fill") {
                         selection.newShortcut(section: selection.selectedSection!)
                         if panel != .all {

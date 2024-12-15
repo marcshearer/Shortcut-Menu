@@ -53,11 +53,11 @@ struct SetupView: View {
                             let formHeight: CGFloat = geometry.size.height
                             let sectionWidth: CGFloat = geometry.size.width * (panel == .all ? 0.25 : 1.0)
                             let shortcutWidth: CGFloat = geometry.size.width * (panel == .all ? 0.35 : 1.0)
-                            let detailWidth: CGFloat = geometry.size.width * (panel == .all ? 0.40 : 1.0)
+                            let detailWidth: CGFloat = geometry.size.width * (panel == .all ? (selection.singleSection ? 0.65 : 0.40) : 1.0)
                             
                             HStack(spacing: 0) {
                                 
-                                if panel == .sections || panel == .all {
+                                if (panel == .sections || panel == .all) && !selection.singleSection {
                                     SetupSectionListView(selection: selection, panel: $panel, width: sectionWidth)
                                         .frame(width: sectionWidth, height: formHeight, alignment: .leading)
                                 }
@@ -69,7 +69,7 @@ struct SetupView: View {
                                 }
                                 
                                 if panel == .shortcuts || panel == .all {
-                                    SetupShortcutListView(selection: selection, panel: $panel, width: shortcutWidth)
+                                    SetupShortcutListView(selection: selection, panel: $panel, width: shortcutWidth, singleSection: selection.singleSection)
                                         .frame(width: shortcutWidth, height: formHeight, alignment: .leading)
                                 }
                                 

@@ -7,17 +7,63 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EC2A2E58-CE1B-4B34-9284-BD831EB0E042"
+            uuid = "283511BA-4E95-47EE-A096-905222E4ADF8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Shortcut Menu iOS/Main View.swift"
+            filePath = "Shortcut Menu Shared/Setup Shortcut List View.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
-            landmarkName = "showSetupView()"
+            startingLineNumber = "221"
+            endingLineNumber = "221"
+            landmarkName = "performDrop(info:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "741F2D8B-319D-4D17-8F0B-4AEA13F0AF8C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Shortcut Menu Shared/Setup Shortcut List View.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "226"
+            endingLineNumber = "226"
+            landmarkName = "dropEntered(info:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "741F2D8B-319D-4D17-8F0B-4AEA13F0AF8C - 143a8b879d0b484c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Shortcut_Menu_Mac.SetupShortcutListView.dropEntered(info: SwiftUI.DropInfo) -&gt; ()"
+                  moduleName = "Shortcut Menu Mac.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "226"
+                  endingLineNumber = "226">
+               </Location>
+               <Location
+                  uuid = "741F2D8B-319D-4D17-8F0B-4AEA13F0AF8C - 2d8d12400e75152f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Shortcut_Menu_Mac.SetupShortcutListView.dropEntered(info: SwiftUI.DropInfo) -&gt; ()"
+                  moduleName = "Shortcut Menu Mac.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "227"
+                  endingLineNumber = "227">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

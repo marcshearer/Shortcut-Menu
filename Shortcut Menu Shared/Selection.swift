@@ -23,6 +23,7 @@ public class Selection : ObservableObject, Identifiable {
     @Published public var editAction: EditAction = .none
     @Published public var editObject: EditObject = .none
     @Published public var canExit: Bool = false
+    @Published public var singleSection: Bool = false
     @Published public var id = UUID()
     
     // Auto-cleanup
@@ -32,6 +33,13 @@ public class Selection : ObservableObject, Identifiable {
         self.sections = self.master.mainSections
         
         self.setupMappings()
+    }
+    
+    convenience init(section: SectionViewModel?) {
+        self.init()
+        if let section = section {
+            self.selectSection(section: section)
+        }
     }
     
     func setupMappings() {
@@ -52,6 +60,10 @@ public class Selection : ObservableObject, Identifiable {
     
     func selectSection(section: SectionViewModel?, updateShortcuts: Bool = true) {
         
+        if self.editObject != .section || self.editSection != section {
+            self.editAction = .none
+        }
+    
         self.selectedShortcut = nil
         self.editShortcut = ShortcutViewModel()
         
@@ -81,6 +93,7 @@ public class Selection : ObservableObject, Identifiable {
         self.shortcuts = []
         self.shortcutsTitle = "No Section Selected"
         self.editObject = .none
+        self.editAction = .none
         
     }
     
@@ -162,6 +175,10 @@ public class Selection : ObservableObject, Identifiable {
     
     func selectShortcut(shortcut: ShortcutViewModel) {
         
+        if self.editObject != .shortcut || self.editShortcut != shortcut {
+            self.editAction = .none
+        }
+        
         self.selectedShortcut = self.shortcuts.first(where: {$0.id == shortcut.id})
         
         if self.selectedShortcut != nil {
@@ -182,6 +199,7 @@ public class Selection : ObservableObject, Identifiable {
         self.editShortcut = ShortcutViewModel()
         self.editSection = SectionViewModel()
         self.editObject = .none
+        self.editAction = .none
 
 }
     
@@ -324,26 +342,7 @@ public class Selection : ObservableObject, Identifiable {
                                             }
                                             
                                             if let urlString = urlString {
-                                                
-                                                // Use provided section or if none use selected section or default
-                                                let section = section ?? self.selectedSection ?? self.master.defaultSection!
-                                                
-                                                // Switch to this section
-                                                self.selectSection(section: section)
-                                                
-                                                //Create shortcut
-                                                let shortcut = ShortcutViewModel()
-                                                shortcut.name = name
-                                                shortcut.url = urlString
-                                                shortcut.urlSecurityBookmark = urlSecurityBookmark
-                                                
-                                                // Work out where to put it - if no index insert at end
-                                                let insertAfterIndex = afterIndex ?? section.shortcuts.count
-                                                let insertAfter = (insertAfterIndex == 0 ? nil : section.shortcuts[insertAfterIndex - 1])
-                                                shortcut.sequence = self.updateShortcutSequence(leavingGapAfter: insertAfter)
-                                                
-                                                // Create the shortcut
-                                                self.newShortcut(section: (section), shortcut: shortcut)
+                                                self.createShortcut(section: section, name: name, url: urlString, urlSecurityBookmark: urlSecurityBookmark, afterIndex: afterIndex)
                                             }
                                         }
                                     }
@@ -354,6 +353,45 @@ public class Selection : ObservableObject, Identifiable {
                 })
             }
         }
+    }
+    
+    public func dropString(afterIndex: Int? = nil, section: SectionViewModel? = nil, items: [NSItemProvider]) {
+        DispatchQueue.main.async {
+            for item in items {
+                item.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil, completionHandler: { (string, error) in
+                    if let string = string {
+                        if let string = try? NSAttributedString(data: string as! Data, options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
+                            DispatchQueue.main.async {
+                                self.createShortcut(section: section, name: string.string, copyText: string.string, afterIndex: afterIndex)
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    }
+    
+    func createShortcut(section: SectionViewModel?, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "", afterIndex: Int? = 0) {
+        // Use provided section or if none use selected section or default
+        let section = section ?? self.selectedSection ?? self.master.defaultSection!
+        
+        // Switch to this section
+        self.selectSection(section: section)
+        
+        //Create shortcut
+        let shortcut = ShortcutViewModel()
+        shortcut.name = name
+        shortcut.url = url
+        shortcut.urlSecurityBookmark = urlSecurityBookmark
+        shortcut.copyText = copyText
+        
+        // Work out where to put it - if no index insert at end
+        let insertAfterIndex = afterIndex ?? section.shortcuts.count
+        let insertAfter = (insertAfterIndex == 0 ? nil : section.shortcuts[insertAfterIndex - 1])
+        shortcut.sequence = self.updateShortcutSequence(leavingGapAfter: insertAfter)
+        
+        // Create the shortcut
+        self.newShortcut(section: (section), shortcut: shortcut)
     }
     
     func getSection(name: String) -> SectionViewModel? {
