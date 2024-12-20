@@ -98,12 +98,14 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         $menuTitle
             .receive(on: RunLoop.main)
             .map { (menuTitle) in
-                return (menuTitle == "")
+                return (menuTitle != "")
             }
             .sink { (canEditKeyEquivalent) in
                 if !canEditKeyEquivalent && (self.keyEquivalent != "" || self.canEditKeyEquivalent) {
                     self.keyEquivalent = ""
                     self.canEditKeyEquivalent = false
+                } else {
+                    self.canEditKeyEquivalent = canEditKeyEquivalent
                 }
             }
             .store(in: &cancellableSet)
@@ -191,7 +193,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     
     public var canShare: Bool {
         var canShare = true
-        for parentShortcut in MasterData.shared.shortcuts.filter({$0.type == .section && $0.nestedSection?.id == self.id}) {
+        for parentShortcut in MasterData.shared.shortcuts.filter({$0.action == .nestedSection && $0.nestedSection?.id == self.id}) {
             // Should only be one parent, but belts and braces
             canShare = canShare && (parentShortcut.section?.isShared ?? false)
         }
@@ -206,7 +208,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
         for shortcut in self.shortcuts {
             shortcut.shared = shared
             shortcut.save()
-            if shortcut.type == .section {
+            if shortcut.action == .nestedSection {
                 if let nested = shortcut.nestedSection {
                     if nested.shared != shared {
                         nested.shared = shared

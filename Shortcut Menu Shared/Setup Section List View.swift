@@ -99,7 +99,7 @@ struct SetupSectionListView: View {
         
     private func onInsertNestedSectionAction(at: Int, shortcut: ShortcutViewModel) {
         Utility.mainThread {
-            if shortcut.type == .section {
+            if shortcut.action == .nestedSection {
                 // Remove section link shortcut
                 self.selection.removeShortcut(shortcut: shortcut)
                 

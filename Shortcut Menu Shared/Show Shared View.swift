@@ -82,7 +82,7 @@ struct ShowSharedView : View {
                 sections.append((record.value(forKey: "CD_id") as! String, (name == "" ? defaultSectionDisplayName : name)))
                             },
             completeAction: {
-                                let predicate = NSPredicate(format: "CD_type16 = %d and CD_shared = true", ShortcutType.shortcut.rawValue)
+                                let predicate = NSPredicate(format: "CD_action16 != %d and CD_shared = true", ShortcutAction.nestedSection.rawValue)
                 ICloud.shared.download(
                                     recordType: "CD_\(CloudShortcutMO.tableName)",
                                     database: ICloud.shared.privateDatabase,

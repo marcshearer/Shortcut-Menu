@@ -31,11 +31,12 @@ public class ShortcutBaseMO : NSManagedObject, Identifiable {
     @NSManaged public var copyMessage: String
     @NSManaged public var sectionId: UUID?
     @NSManaged public var sequence64: Int64
-    @NSManaged public var type16: Int16
     @NSManaged public var nestedSectionId: UUID?
     @NSManaged public var keyEquivalent: String
     @NSManaged public var shared: Bool
     @NSManaged public var lastUpdate: Date
+    @NSManaged public var action16: Int16
+    @NSManaged public var replacementToken: String
     
     public var sequence: Int {
         get {
@@ -46,8 +47,8 @@ public class ShortcutBaseMO : NSManagedObject, Identifiable {
         }
     }
     
-    public var type: ShortcutType {
-        get { ShortcutType(rawValue: Int(self.type16)) ?? .shortcut }
-        set { self.type16 = Int16(newValue.rawValue) }
+    public var action: ShortcutAction {
+        get { ShortcutAction(rawValue: Int(self.action16)) ?? .urlLink }
+        set { self.action16 = Int16(newValue.rawValue) }
     }
 }

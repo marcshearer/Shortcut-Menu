@@ -181,6 +181,13 @@ class Utility {
         return Int(value)
     }
     
+    class func round(_ value: Float, places: Int = 0) -> Float {
+        let scale: Float = powf(10, Float(places))
+        var large = value * scale
+        large.round()
+        return large / scale
+    }
+    
     // MARK: - Array helper functions ==================================================================== -
     
     class func sum(_ array: [Int]) -> Int {

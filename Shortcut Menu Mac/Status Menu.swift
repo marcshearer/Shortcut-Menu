@@ -25,6 +25,18 @@ class StatusMenuAdditional {
     }
 }
 
+class StatusMenuInfo {
+    var menuTag: Int
+    var shortcut: ShortcutViewModel?
+    var menuItem: NSMenuItem
+    
+    init(menuTag: Int, shortcut: ShortcutViewModel?, menuItem: NSMenuItem) {
+        self.menuTag = menuTag
+        self.shortcut = shortcut
+        self.menuItem = menuItem
+    }
+}
+
 class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate {
     
     public static let shared = StatusMenu()
@@ -37,7 +49,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     public var statusMenuButton: NSButton
     public var statusMenuRefreshMenuItem: NSMenuItem?
 
-    private var menuItemList: [String: NSMenuItem] = [:]
+    private var menuItemList: [Int: StatusMenuInfo] = [:] // Tag / MenuInfo
+    private var menuItemReplace: [StatusMenuInfo] = []
+    private var lastTag: Int = 0
     
     private var currentSection: String = ""
     fileprivate var whisperPopover: NSPopover!
@@ -46,6 +60,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     private var defineWindowController: MenubarWindowController!
     private var settingsWindowController: MenubarWindowController!
+    private var replacementsWindowController: MenubarWindowController!
     fileprivate var windowShowing = false
     public var selection = Selection()
     
@@ -127,6 +142,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var othersAdded = false
         
         self.statusMenu.removeAllItems()
+        self.menuItemList = [:]
+        self.menuItemReplace = []
+        lastTag = 0
         
         if self.currentSection != "" {
             if let section = self.master.sections.first(where: { $0.name == self.currentSection }) {
@@ -174,7 +192,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             self.addItem("Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
         }
         
-        self.addItem("Preferences",  action: #selector(StatusMenu.settings(_:)), keyEquivalent: "p", to: adminMenu)
+        self.addItem("Replacements", action: #selector(StatusMenu.replacements(_:)), keyEquivalent: "r", to: adminMenu)
+        self.addItem("Preferences", action: #selector(StatusMenu.settings(_:)), keyEquivalent: "p", to: adminMenu)
         self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
         self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
         
@@ -182,6 +201,14 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
 
         self.setupAdditionalMenus()
 
+    }
+    
+    func updateReplacements() {
+        for statusMenuInfo in menuItemReplace {
+            if let title = statusMenuInfo.shortcut?.name.replacingTokens() {
+                statusMenuInfo.menuItem.title = title
+            }
+        }
     }
     
     private func setupAdditionalMenus() {
@@ -208,7 +235,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             if section.temporary {
                 self.addSeparator(to: statusItem.menu)
                 addHeading(title: "Maintenance", to: statusItem.menu)
-                let menuItem = self.addItem("Edit shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
+                let menuItem = self.addItem("Edit \(section.name) shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
                 menuItem.tag = tag
             }
         }
@@ -225,7 +252,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             inset = fixedInset ?? 0
         }
         for shortcut in section.shortcuts.sorted(by: {$0.sequence < $1.sequence}) {
-            if shortcut.type == .section, let nestedSection = shortcut.nestedSection {
+            if shortcut.action == .nestedSection, let nestedSection = shortcut.nestedSection {
                 if nestedSection.shortcuts.count > 0 {
                     if nestedSection.inline || nestedSection.shortcuts.count == 1 {
                         if nestedSection.inline {
@@ -252,14 +279,31 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     @discardableResult private func addShortcut(shortcut: ShortcutViewModel, inset: Int = 5, to subMenu: NSMenu?) -> Int {
-        self.addItem(shortcut.name, inset: inset, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
-        return 1
+        var added = 0
+        
+        if shortcut.action != .setReplacement {
+            self.addItem(shortcut: shortcut, shortcut.name, inset: inset, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
+            added += 1
+        } else {
+            if let replacement = MasterData.shared.replacements.first(where: {$0.token == shortcut.replacementToken}) {
+                let allowed = replacement.allowedValues.split(at: ",")
+                if allowed.count > 1 {
+                    let subMenuEntry = self.addSubmenu(shortcut: shortcut, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                    added += 1
+                    for value in allowed {
+                        self.addItem(shortcut: shortcut, value, inset: 0, action: #selector(StatusMenu.actionReplacement(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenuEntry)
+                        added += 1
+                    }
+                }
+            }
+        }
+        return added
     }
     
     private func addSections(to subMenu: NSMenu) -> Int {
         var added = 0
         for section in master.sections.filter({ $0.name != currentSection && (($0.shortcuts.count > 0 && $0.menuTitle == "") || $0.isDefault) }).sorted(by: {$0.sequence < $1.sequence}) {
-            if section.isDefault || master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
+            if section.isDefault || master.shortcuts.firstIndex(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id}) == nil {
                 self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
                 added += 1
             }
@@ -280,9 +324,9 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
         
         for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0  && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
-            if master.shortcuts.firstIndex(where: {$0.type == .section && $0.nestedSection?.id == section.id}) == nil {
+            if master.shortcuts.firstIndex(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id}) == nil {
                 if section.shortcuts.count > 1 {
-                    let sectionMenu = self.addSubmenu(section.menuName, inset: inset, to: subMenu)
+                    let sectionMenu = self.addSubmenu(section.menuName, inset: inset, keyEquivalent: section.keyEquivalent, to: subMenu)
                     added += self.addShortcuts(section: section, to: sectionMenu)
                 } else {
                     added += self.addShortcut(shortcut: section.shortcuts.first!, inset: inset, to: subMenu)
@@ -380,6 +424,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         self.settingsWindowController?.window?.level = (onTop ? .floating : .normal)
     }
     
+    public func replacementsAlways(onTop: Bool) {
+        self.replacementsWindowController?.window?.level = (onTop ? .floating : .normal)
+    }
+    
     public func bringToFront() {
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -409,14 +457,17 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     // MARK: - Helper routines for the popup menu =========================================================== -
 
-    @discardableResult private func addItem(id: String? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, inset: Int = 0, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
+    @discardableResult private func addItem(shortcut: ShortcutViewModel? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, inset: Int = 0, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
         var menu = menu
+        var replaced = false
         if menu == nil {
             menu = self.statusMenu
         }
         var menuItem: NSMenuItem
         if attributedText == nil {
-            menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + text, action: action, keyEquivalent: "")
+            let replacedText = text.replacingTokens()
+            replaced = (text != replacedText)
+            menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + replacedText, action: action, keyEquivalent: "")
         } else {
             menuItem = menu!.addItem(withTitle: "", action: action, keyEquivalent: "")
             menuItem.view = NSView(frame: NSRect(origin: CGPoint(), size: CGSize(width: max(200, menuItem.menu!.size.width), height: 18)))
@@ -436,20 +487,30 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         } else {
             menuItem.target = self
         }
-        if id != nil {
-            self.menuItemList[id!] = menuItem
+        if shortcut != nil {
+            lastTag += 1
+            let statusMenuInfo = StatusMenuInfo(menuTag: lastTag, shortcut: shortcut, menuItem: menuItem)
+            self.menuItemList[lastTag] = statusMenuInfo
+            if replaced {
+                self.menuItemReplace.append(statusMenuInfo)
+            }
+            menuItem.tag = lastTag
         }
         return menuItem
     }
     
-private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) -> NSMenu {
+    private func addSubmenu(shortcut: ShortcutViewModel? = nil, _ text: String, inset: Int = 0, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenu {
         var menu = menu
         if menu == nil {
             menu = self.statusMenu
         }
-        let subMenu = NSMenu(title: text)
-        let menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + text, action: nil, keyEquivalent: "")
+        let replacedText = text.replacingTokens()
+        let subMenu = NSMenu(title: replacedText)
+        let menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + replacedText, action: nil, keyEquivalent: keyEquivalent)
         menu!.setSubmenu(subMenu, for: menuItem)
+        if text != replacedText {
+            menuItemReplace.append(StatusMenuInfo(menuTag: 0, shortcut: shortcut, menuItem: menuItem))
+        }
         return subMenu
     }
     
@@ -515,6 +576,19 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
         }
     }
     
+    @objc public func replacements(_ sender: Any?) {
+        // Create the window and set the content view.
+        if !self.windowShowing {
+            // Display view
+            let contentView = ReplacementsView()
+            self.showMenubarWindow(menubarWindowController: &self.replacementsWindowController, view: AnyView(contentView), title: "Text Replacements Setup", saveName: "Text Replacements Setup Window", size: CGSize(width: 600, height: 450))
+            self.replacementsWindowController.contentViewController?.view.window?.becomeKey()
+            self.replacementsAlways(onTop: true)
+            self.changeImage(close: true)
+            self.windowShowing = true
+        }
+    }
+    
     @objc private func changeSection(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
             if menuItem.title == defaultSectionMenuName {
@@ -532,13 +606,31 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
     
     @objc private func actionShortcut(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            if let shortcut = self.master.shortcuts.first(where: {$0.name == menuItem.title.trim()}) {
+            if let statusMenuInfo = menuItemList[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
                 self.actionShortcut(shortcut: shortcut)
             }
         }
     }
     
+    @objc private func actionReplacement(_ sender: Any?) {
+        if let menuItem = sender as? NSMenuItem {
+            if let statusMenuInfo = menuItemList[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
+                if let replacement = MasterData.shared.replacements.first(where: {$0.token == shortcut.replacementToken}) {
+                    replacement.replacement = menuItem.title
+                    replacement.entered = Date()
+                    replacement.save()
+                    updateReplacements()
+                }
+            }
+        }
+    }
+    
     private func actionShortcut(shortcut: ShortcutViewModel) {
+        
+        var copyText: String = ""
+        var copyMessage: String = ""
+        var urlString: String = ""
+        var references: Set<ReplacementViewModel> = []
         
         func copyAction() {
             
@@ -546,12 +638,14 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
             if !shortcut.copyText.isEmpty {
                 let pasteboard = NSPasteboard.general
                 pasteboard.clearContents()
-                pasteboard.setString(shortcut.copyText, forType: .string)
+                pasteboard.setString(copyText, forType: .string)
                 
                 if shortcut.url.isEmpty {
                     self.paste()
                 } else {
-                    self.whisper(header: shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage, caption: "Copied to clipboard")
+                    if !copyMessage.isEmpty {
+                        self.whisper(header: copyMessage, caption: "Copied to clipboard")
+                    }
                 }
             }
         }
@@ -561,23 +655,22 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
                 // URL if non-blank
                 if !shortcut.url.isEmpty {
-                    if let url = URL(string: shortcut.url) {
-                        
-                        if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
+                    if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
                             // Shortcut to a local file
-                            var isStale: Bool = false
-                            do {
-                                let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
-                                if url.startAccessingSecurityScopedResource() {
-                                    NSWorkspace.shared.open(url)
-                                }
-                                url.stopAccessingSecurityScopedResource()
-                            } catch {
-                                self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
+                        var isStale: Bool = false
+                        do {
+                            let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
+                            if url.startAccessingSecurityScopedResource() {
+                                NSWorkspace.shared.open(url)
                             }
-                            
-                        } else {
-                            // Shortcut to a remote url
+                            url.stopAccessingSecurityScopedResource()
+                        } catch {
+                            self.whisper(header: "Unable to access this file", caption: error.localizedDescription)
+                        }
+                        
+                    } else {
+                        // Shortcut to a remote url
+                        if let url = URL(string: urlString) {
                             NSWorkspace.shared.open(url)
                         }
                     }
@@ -585,19 +678,43 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
             }
         }
         
-        if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
-            
-            LocalAuthentication.authenticate(reason: "reveal private data", completion: {
-                copyAction()
-                urlAction(wait: true)
-            }, failure: {
-                urlAction(wait: false)
-            })
+        // Replace tokens and accumulate references
+        var newReferences: Set<ReplacementViewModel> = []
+        if !shortcut.copyText.isEmpty {
+            (copyText, newReferences) = shortcut.copyText.processTokens()
+            references.formUnion(newReferences)
+        }
+        if !shortcut.copyMessage.isEmpty {
+            copyMessage = shortcut.copyMessage.replacingTokens()
+            references.formUnion(newReferences)
         } else {
-            copyAction()
-            urlAction(wait: true)
+            copyMessage = copyText
+        }
+        if !shortcut.url.isEmpty && (shortcut.url.trim().left(5) != "file:" && shortcut.urlSecurityBookmark == nil) {
+            urlString = shortcut.url.replacingTokens()
+            references.formUnion(newReferences)
         }
         
+        // Check expired tokens
+        let expired = ReplacementViewModel.expired(tokens: references).map{"'\($0.token.replacingOccurrences(of: "-", with: " "))'".capitalized}
+        if expired.count > 0 {
+            let message = "The \(Utility.toString(expired)) \(expired.count > 1 ? "tokens have" : "token has") expired"
+            self.whisper(header: message, caption: "Update \(expired.count > 1 ? "them" : "it") to continue", closeAfter: 5)
+        } else {
+            // All OK - go ahead and execute
+            if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
+                
+                LocalAuthentication.authenticate(reason: "reveal private data", completion: {
+                    copyAction()
+                    urlAction(wait: true)
+                }, failure: {
+                    urlAction(wait: false)
+                })
+            } else {
+                copyAction()
+                urlAction(wait: true)
+            }
+        }
     }
     
     fileprivate func quickDrop(section: SectionViewModel, pasteboard: NSPasteboard) {
@@ -613,7 +730,7 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
                         default:
                             break
                         }
-                        createShortcut(section: section, name: urlName, url: urlString)
+                        createShortcut(section: section, name: urlName, url: urlString, action: .urlLink)
                     }
                 })
             }
@@ -625,51 +742,58 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
                     fileUrl.deletingPathExtension().lastPathComponent.removingPercentEncoding ?? "Unknown file"
                     let url = fileUrl.absoluteString
                     let urlSecurityBookmark = bookmarkData
-                    self.createShortcut(section: section, name: name, url: url, urlSecurityBookmark: urlSecurityBookmark)
+                    self.createShortcut(section: section, name: name, url: url, urlSecurityBookmark: urlSecurityBookmark, action: .urlLink)
                 }
             }
         } else if let copyText = pasteboard.string(forType: NSPasteboard.PasteboardType.string) {
             // Plain String
-            self.createShortcut(section: section, name: copyText, copyText: copyText)
+            self.createShortcut(section: section, name: copyText, copyText: copyText, action: .clipboardText)
         }
     }
     
-    private func createShortcut(section: SectionViewModel, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "") {
+    private func createShortcut(section: SectionViewModel, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "", action: ShortcutAction) {
         let shortcut = ShortcutViewModel()
         shortcut.section = section
         shortcut.name = name
         shortcut.url = url
         shortcut.urlSecurityBookmark = urlSecurityBookmark
         shortcut.copyText = copyText
+        shortcut.action = action
         shortcut.sequence = (section.shortcuts.last?.sequence ?? 0) + 1
         master.shortcuts.append(shortcut)
         shortcut.save()
         refresh(nil)
     }
     
+    private enum Source {
+        case section
+        case shortcut
+        case mainMenu
+    }
+    
     public func updateShortcutKeys() {
-        var keys: [(String, (ShortcutType?, UUID))] = []
+        var keys: [(String, (Source, UUID))] = []
         
         // Main menu
         let key = Settings.shared.shortcutKey.value
         if key != "" {
-            keys.append((key, (nil, defaultUUID)))
+            keys.append((key, (.mainMenu, defaultUUID)))
         }
     
         // Add additional sections
-        let sectionKeys = master.sections.filter{$0.keyEquivalent != "" && !$0.isDefault}.map{($0.keyEquivalent, (ShortcutType.section, $0.id))}
+        let sectionKeys = master.sections.filter{$0.keyEquivalent != "" && !$0.isDefault}.map{($0.keyEquivalent, (Source.section, $0.id))}
         keys.append(contentsOf: sectionKeys)
         
         // Add shortcuts
-        let shortcutKeys = master.shortcuts.filter{$0.keyEquivalent != ""}.map{($0.keyEquivalent, (ShortcutType.shortcut, $0.id))}
+        let shortcutKeys = master.shortcuts.filter{$0.keyEquivalent != ""}.map{($0.keyEquivalent, (Source.shortcut, $0.id))}
         keys.append(contentsOf: shortcutKeys)
         
         ShortcutKeyMonitor.shared.updateMonitor(keys: keys)
     }
     
     private func shortcutKeyNotify(_ id: Any?) {
-        if let (type, shortcutId) = id as? (ShortcutType?, UUID) {
-            switch type {
+        if let (source, shortcutId) = id as? (Source, UUID) {
+            switch source {
             case .section:
                 if let statusItem = additionalStatusItemsSectionId[shortcutId] {
                     statusItem.statusItem.button?.performClick(self)
@@ -678,7 +802,7 @@ private func addSubmenu(_ text: String, inset: Int = 0, to menu: NSMenu? = nil) 
                 if let shortcut = master.shortcut(withId: shortcutId) {
                     actionShortcut(shortcut: shortcut)
                 }
-            default:
+            case .mainMenu:
                 self.statusItem.button?.performClick(self)
             }
         }

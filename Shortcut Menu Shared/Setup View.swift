@@ -20,6 +20,7 @@ struct SetupView: View {
     enum SetupSheet : Identifiable {
         case settings
         case showShared
+        case replacements
         
         var id: Int {
             hashValue
@@ -93,7 +94,7 @@ struct SetupView: View {
                             HStack {
                                 Spacer()
                                 Button{
-                                    SlideInMenu.shared.show(title: "Options", options: ["Show shared shortcuts", "Shortcuts preferences", "About Shortcuts"], top: formGeometry.size.height - (slideInMenuRowHeight * 6), completion: optionSelected)
+                                    SlideInMenu.shared.show(title: "Options", options: ["Shortcuts preferences", "Text Replacements Setup", "Show shared shortcuts", "About Shortcuts"], top: formGeometry.size.height - (slideInMenuRowHeight * 6), completion: optionSelected)
                                 } label: {
                                     Image(systemName: "line.horizontal.3")
                                         .resizable()
@@ -114,6 +115,8 @@ struct SetupView: View {
                             switch item {
                             case .settings:
                                 SettingsView()
+                            case .replacements:
+                                ReplacementsView()
                             case .showShared:
                                 let padding: CGFloat = (MyApp.target == .iOS ? 0.0 : 60.0)
                                 ShowSharedView(width: formGeometry.size.width - padding, height: formGeometry.size.height - padding)
@@ -133,6 +136,8 @@ struct SetupView: View {
             switch selected {
             case "Shortcuts preferences":
                 showSheet = .settings
+            case "Text replacments setup":
+                showSheet = .replacements
             case "Show shared shortcuts":
                 showSheet = .showShared
             case "About Shortcuts":

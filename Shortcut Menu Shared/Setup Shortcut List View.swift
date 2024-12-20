@@ -80,7 +80,7 @@ struct SetupShortcutListView: View, DropDelegate {
         let nested = (shortcut.nestedSection != nil)
         return Tile(leadingImageName: { (nested ? "folder" : nil) }, dynamicText: { shortcut.name }, trailingImageName: { shortcut.shared ? "icloud.and.arrow.up" : nil }, selected: { shortcut.id == selection.selectedShortcut?.id && panel == .all }, disabled: nested, tapAction: {
                 if selection.editAction == .none {
-                    if shortcut.type == .shortcut {
+                    if shortcut.action != .nestedSection {
                         selection.selectShortcut(shortcut: shortcut)
                         if panel != .all {
                             panel = .detail

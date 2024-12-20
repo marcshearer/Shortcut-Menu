@@ -30,8 +30,8 @@ let defaultUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
 let defaultRowHeight:CGFloat = (MyApp.format == .tablet ? 60.0 : (MyApp.format == .phone ? 40 : 50.0))
 let defaultSectionWidth: CGFloat = 200.0
 let defaultShortcutWidth: CGFloat = 300.0
-let defaultDetailWidth: CGFloat = 400.0
-let defaultFormHeight: CGFloat = 600.0
+let defaultDetailWidth: CGFloat = 600.0
+let defaultFormHeight: CGFloat = 700.0
 let inputTopHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 10.0)
 let inputDefaultHeight: CGFloat = 30.0
 let inputToggleDefaultHeight: CGFloat = (MyApp.format == .tablet ? 30.0 : 16.0)

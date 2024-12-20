@@ -22,6 +22,7 @@ struct Tile: View {
     @State var insets = EdgeInsets()
     @State var trailingContent: (()->AnyView)?
     @State var tapAction: (()->())?
+    @State var width: CGFloat = -1
 
     var body: some View {
         let color = ((selected?() ?? false) ? self.selectedColor : self.color)
@@ -69,9 +70,11 @@ struct Tile: View {
         .background(color.background)
         .cornerRadius(rounded ? 10 : 0)
         .padding(insets)
-        .onTapGesture {
-            Utility.mainThread {
-                tapAction?()
+        .if(tapAction != nil) { (view) in
+            view.onTapGesture {
+                Utility.mainThread {
+                    tapAction?()
+                }
             }
         }
     }

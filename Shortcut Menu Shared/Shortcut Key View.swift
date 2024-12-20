@@ -11,6 +11,7 @@ import SwiftUI
 struct ShortcutKeyView : View {
     @Binding var key: String
     @Binding var isSettingShortcutKey: Bool
+    @State var topSpace: CGFloat = 10
     @State var isEnabled: ()->(Bool) = { true }
     @State var notify: ((String)->())?
 
@@ -18,8 +19,7 @@ struct ShortcutKeyView : View {
         VStack {
 #if canImport(AppKit)
             let enable = (isEnabled() || isSettingShortcutKey)
-            Spacer().frame(height: inputTopHeight)
-            InputTitle(title: "Shortcut key", isEnabled: enable)
+            InputTitle(title: "Shortcut key", topSpace: topSpace, isEnabled: enable)
             Spacer().frame(height: 8)
             HStack {
                 Spacer().frame(width: 32)
@@ -53,21 +53,17 @@ struct ShortcutKeyView : View {
                     .buttonStyle(PlainButtonStyle())
                     .disabled(!enable)
                 }
+                Spacer().frame(width: 32)
+                Text(isSettingShortcutKey ? "Press key to set or Backspace to clear" : "")
+                    .font(messageFont)
+                    .foregroundColor(Palette.background.themeText)
+                    .frame(height: inputDefaultHeight)
                 Spacer()
-            }
-                Spacer().frame(height: 8)
-                HStack {
-                    Spacer().frame(width: 32)
-                    Text(isSettingShortcutKey ? "Press key to set or Backspace to clear" : "")
-                        .font(messageFont)
-                        .foregroundColor(Palette.background.themeText)
-                        .frame(height: 10)
-                    Spacer()
             }
             Spacer()
 #endif
         }
-        .frame(height: inputDefaultHeight + inputTopHeight + 40)
+        .frame(height: inputDefaultHeight + inputTopHeight + 24)
     }
     
     private func notifyWrapper(_ key: String) {

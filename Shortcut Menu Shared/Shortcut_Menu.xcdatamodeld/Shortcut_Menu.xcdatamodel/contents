@@ -14,6 +14,7 @@
         <attribute name="temporary" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <entity name="CloudShortcut" representedClassName=".CloudShortcutMO" syncable="YES">
+        <attribute name="action16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="copyMessage" optional="YES" attributeType="String"/>
         <attribute name="copyPrivate" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="copyText" optional="YES" attributeType="String"/>
@@ -22,12 +23,19 @@
         <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="nestedSectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="replacementToken" optional="YES" attributeType="String"/>
         <attribute name="sectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sequence64" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="type16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="urlSecurityBookmark" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="Replacement" representedClassName=".ReplacementMO" syncable="YES">
+        <attribute name="allowedValues" optional="YES" attributeType="String"/>
+        <attribute name="entered" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="expiry" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="replacement" optional="YES" attributeType="String"/>
+        <attribute name="token" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Section" representedClassName=".SectionMO" syncable="YES">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -43,6 +51,7 @@
         <attribute name="temporary" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <entity name="Shortcut" representedClassName=".ShortcutMO" syncable="YES">
+        <attribute name="action16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="copyMessage" optional="YES" attributeType="String"/>
         <attribute name="copyPrivate" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="copyText" optional="YES" attributeType="String"/>
@@ -51,10 +60,10 @@
         <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="nestedSectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="replacementToken" optional="YES" attributeType="String"/>
         <attribute name="sectionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sequence64" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="shared" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="type16" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="urlSecurityBookmark" optional="YES" attributeType="Binary"/>
     </entity>
@@ -65,5 +74,6 @@
     <configuration name="Local">
         <memberEntity name="Shortcut"/>
         <memberEntity name="Section"/>
+        <memberEntity name="Replacement"/>
     </configuration>
 </model>

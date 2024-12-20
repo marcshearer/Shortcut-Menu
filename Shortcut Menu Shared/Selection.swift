@@ -118,7 +118,7 @@ public class Selection : ObservableObject, Identifiable {
         }
         
         // Need to update section names and shared flags on shortcuts which nest this section
-        for shortcut in self.master.shortcuts.filter({$0.type == .section && $0.nestedSection?.name == oldName}) {
+        for shortcut in self.master.shortcuts.filter({$0.action == .nestedSection && $0.nestedSection?.name == oldName}) {
             shortcut.nestedSection = section
             shortcut.name = section.name
             if true || oldName != section.name || shortcut.shared != section.shared {
@@ -266,7 +266,7 @@ public class Selection : ObservableObject, Identifiable {
         let shortcut = ShortcutViewModel()
         shortcut.name = nestedSection.name
         shortcut.section = section
-        shortcut.type = .section
+        shortcut.action = .nestedSection
         shortcut.nestedSection = nestedSection
         if !section.shared {
             nestedSection.shared = false

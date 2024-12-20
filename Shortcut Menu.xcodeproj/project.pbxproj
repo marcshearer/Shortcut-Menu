@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -96,12 +96,26 @@
 		B2C2643125F8B45E0054D2ED /* Setup Detail View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */; };
 		B2C2643525F8BB9B0054D2ED /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2643425F8BB9B0054D2ED /* Tile.swift */; };
 		B2C2643625F8BB9B0054D2ED /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2643425F8BB9B0054D2ED /* Tile.swift */; };
+		B2C894112D146E990042AB46 /* Input Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C894102D146E990042AB46 /* Input Float.swift */; };
+		B2C894122D146E990042AB46 /* Input Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C894102D146E990042AB46 /* Input Float.swift */; };
 		B2C9F96025FE95E00004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */; };
 		B2C9F96225FE95F60004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F96125FE95F60004E4E4 /* CloudKit.framework */; };
 		B2D84BE125F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BE225F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
 		B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE925F7C22A00966421 /* Persistence.swift */; };
 		B2D84BEB25F7C22A00966421 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE925F7C22A00966421 /* Persistence.swift */; };
+		B2D915732D10349B0007F179 /* Replacements View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915722D10349B0007F179 /* Replacements View.swift */; };
+		B2D915742D10349B0007F179 /* Replacements View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915722D10349B0007F179 /* Replacements View.swift */; };
+		B2D915792D1035880007F179 /* Replacement Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915782D10357E0007F179 /* Replacement Managed Object.swift */; };
+		B2D9157A2D1035880007F179 /* Replacement Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915782D10357E0007F179 /* Replacement Managed Object.swift */; };
+		B2D9157C2D10364C0007F179 /* Replacement View Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157B2D1036460007F179 /* Replacement View Model.swift */; };
+		B2D9157D2D10364C0007F179 /* Replacement View Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157B2D1036460007F179 /* Replacement View Model.swift */; };
+		B2D9157F2D10B1260007F179 /* Other Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157E2D10B1260007F179 /* Other Extensions.swift */; };
+		B2D915802D10B1260007F179 /* Other Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157E2D10B1260007F179 /* Other Extensions.swift */; };
+		B2D915822D11BDC20007F179 /* Replace Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915812D11BDC20007F179 /* Replace Tokens.swift */; };
+		B2D915832D11BDC20007F179 /* Replace Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915812D11BDC20007F179 /* Replace Tokens.swift */; };
+		B2D915852D1302660007F179 /* Input Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915842D1302600007F179 /* Input Picker.swift */; };
+		B2D915862D1302660007F179 /* Input Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915842D1302600007F179 /* Input Picker.swift */; };
 		B2DF650E25FB4AC600C92386 /* Notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = B2DF650D25FB4AC600C92386 /* Notes.txt */; };
 		B2DF651225FB5E0900C92386 /* Link Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651125FB5E0900C92386 /* Link Presentation.swift */; };
 		B2DF651325FB5E0900C92386 /* Link Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DF651125FB5E0900C92386 /* Link Presentation.swift */; };
@@ -175,10 +189,17 @@
 		B2C2641D25F7E43A0054D2ED /* Shortcut List View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Shortcut List View.swift"; sourceTree = "<group>"; };
 		B2C2642425F7EDDA0054D2ED /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		B2C2643425F8BB9B0054D2ED /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
+		B2C894102D146E990042AB46 /* Input Float.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Input Float.swift"; sourceTree = "<group>"; };
 		B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B2C9F96125FE95F60004E4E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
 		B2D84BE025F779B500966421 /* Debug Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Debug Utilities.swift"; sourceTree = "<group>"; };
 		B2D84BE925F7C22A00966421 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		B2D915722D10349B0007F179 /* Replacements View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Replacements View.swift"; sourceTree = "<group>"; };
+		B2D915782D10357E0007F179 /* Replacement Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Replacement Managed Object.swift"; sourceTree = "<group>"; };
+		B2D9157B2D1036460007F179 /* Replacement View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Replacement View Model.swift"; sourceTree = "<group>"; };
+		B2D9157E2D10B1260007F179 /* Other Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Other Extensions.swift"; sourceTree = "<group>"; };
+		B2D915812D11BDC20007F179 /* Replace Tokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Replace Tokens.swift"; sourceTree = "<group>"; };
+		B2D915842D1302600007F179 /* Input Picker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Input Picker.swift"; sourceTree = "<group>"; };
 		B2DF650D25FB4AC600C92386 /* Notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
 		B2DF651125FB5E0900C92386 /* Link Presentation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Link Presentation.swift"; sourceTree = "<group>"; };
 		B2DF651625FB5EC200C92386 /* My Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "My Image.swift"; sourceTree = "<group>"; };
@@ -228,7 +249,9 @@
 				B2B82D0325F25DD10005B07C /* Banner.swift */,
 				B2B82D0225F25DD10005B07C /* Input Title.swift */,
 				B2B82D0425F25DD20005B07C /* Input.swift */,
+				B2D915842D1302600007F179 /* Input Picker.swift */,
 				B22DED5C25FF845B00E4BA15 /* Input Toggle.swift */,
+				B2C894102D146E990042AB46 /* Input Float.swift */,
 				B2C2643425F8BB9B0054D2ED /* Tile.swift */,
 				B2B82D1D25F27DD50005B07C /* Target View Modifiers.swift */,
 				B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */,
@@ -253,6 +276,7 @@
 			children = (
 				B28D420324435F8500C2577E /* Section View Model.swift */,
 				B28D420524437C3B00C2577E /* Shortcut View Model.swift */,
+				B2D9157B2D1036460007F179 /* Replacement View Model.swift */,
 			);
 			name = "View Models";
 			sourceTree = "<group>";
@@ -262,6 +286,7 @@
 			children = (
 				B28D41FF2443562C00C2577E /* Section Managed Object.swift */,
 				B28D420124435DF300C2577E /* Shortcut Managed Object.swift */,
+				B2D915782D10357E0007F179 /* Replacement Managed Object.swift */,
 			);
 			name = "Managed Objects";
 			sourceTree = "<group>";
@@ -272,6 +297,7 @@
 				B2AA94A82452DC3A00664AAB /* Local Authentication.swift */,
 				B2DF651125FB5E0900C92386 /* Link Presentation.swift */,
 				B20B324824557E0C003F6664 /* String Extensions.swift */,
+				B2D9157E2D10B1260007F179 /* Other Extensions.swift */,
 				B2B82D2325F27F450005B07C /* Palette.swift */,
 				B2B82D2225F27F450005B07C /* Themes.swift */,
 				B2DF651625FB5EC200C92386 /* My Image.swift */,
@@ -282,6 +308,7 @@
 				B2DF652025FD11D300C92386 /* Shortcut Key.swift */,
 				B2860A8A2605FC52001E6E7D /* ICloud.swift */,
 				B2860A9A2609C59C001E6E7D /* Version.swift */,
+				B2D915812D11BDC20007F179 /* Replace Tokens.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -437,6 +464,7 @@
 				B2C2640E25F7E35F0054D2ED /* Setup Detail View.swift */,
 				B2860A862605FC25001E6E7D /* Show Shared View.swift */,
 				B2860AB8260CEC05001E6E7D /* Settings View.swift */,
+				B2D915722D10349B0007F179 /* Replacements View.swift */,
 			);
 			name = "Shared Views";
 			sourceTree = "<group>";
@@ -518,8 +546,9 @@
 		B28D41DD2443538B00C2577E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1140;
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = "Marc Shearer";
 				TargetAttributes = {
 					B28D41E42443538B00C2577E = {
@@ -584,11 +613,16 @@
 				B2D84BEA25F7C22A00966421 /* Persistence.swift in Sources */,
 				B28D428924475BB000C2577E /* Selection.swift in Sources */,
 				B2860A912605FC61001E6E7D /* Show Shared View.swift in Sources */,
+				B2D915862D1302660007F179 /* Input Picker.swift in Sources */,
 				B2B82D2B25F27F840005B07C /* My Color.swift in Sources */,
+				B2D9157D2D10364C0007F179 /* Replacement View Model.swift in Sources */,
+				B2D9157F2D10B1260007F179 /* Other Extensions.swift in Sources */,
+				B2C894112D146E990042AB46 /* Input Float.swift in Sources */,
 				B2B82D0D25F25DFB0005B07C /* Input Title.swift in Sources */,
 				B2B82D2625F27F450005B07C /* Palette.swift in Sources */,
 				B2C2641E25F7E43A0054D2ED /* Shortcut List View.swift in Sources */,
 				B22DED5D25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
+				B2D915742D10349B0007F179 /* Replacements View.swift in Sources */,
 				B2AA94A92452DC3A00664AAB /* Local Authentication.swift in Sources */,
 				B2DF651725FB5EC200C92386 /* My Image.swift in Sources */,
 				B22DED6725FFCF5700E4BA15 /* Backup.swift in Sources */,
@@ -600,6 +634,7 @@
 				B2C2641A25F7E3D00054D2ED /* Main View.swift in Sources */,
 				B2B82CF725F257790005B07C /* MyApp.swift in Sources */,
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
+				B2D915822D11BDC20007F179 /* Replace Tokens.swift in Sources */,
 				B2B82C6225F148D50005B07C /* Shortcut Menu.swift in Sources */,
 				B2B82D1E25F27DD50005B07C /* Target View Modifiers.swift in Sources */,
 				B2C2643525F8BB9B0054D2ED /* Tile.swift in Sources */,
@@ -616,6 +651,7 @@
 				B2860AB9260CEC05001E6E7D /* Settings View.swift in Sources */,
 				B2B82D1025F25DFE0005B07C /* Input.swift in Sources */,
 				B2B82C9725F20A5D0005B07C /* Status Menu.swift in Sources */,
+				B2D9157A2D1035880007F179 /* Replacement Managed Object.swift in Sources */,
 				B2B82D1925F27DBE0005B07C /* Message Box.swift in Sources */,
 				B2B82D2425F27F450005B07C /* Themes.swift in Sources */,
 				B28D42822447542C00C2577E /* Declarations.swift in Sources */,
@@ -636,6 +672,7 @@
 			files = (
 				B2860A872605FC25001E6E7D /* Show Shared View.swift in Sources */,
 				B2860ABA260CEC05001E6E7D /* Settings View.swift in Sources */,
+				B2C894122D146E990042AB46 /* Input Float.swift in Sources */,
 				B2860ABF260CF433001E6E7D /* Shortcut Key View.swift in Sources */,
 				B2860A8B2605FC52001E6E7D /* ICloud.swift in Sources */,
 				B29D46D1244DE4FA0001F984 /* Constraint.swift in Sources */,
@@ -648,6 +685,7 @@
 				B2B82D0625F25DD20005B07C /* Banner.swift in Sources */,
 				B22DED5E25FF845B00E4BA15 /* Input Toggle.swift in Sources */,
 				B2860A9C2609C59C001E6E7D /* Version.swift in Sources */,
+				B2D915732D10349B0007F179 /* Replacements View.swift in Sources */,
 				B2B82CB125F20D490005B07C /* AppDelegate.swift in Sources */,
 				B2DF651825FB5EC200C92386 /* My Image.swift in Sources */,
 				B22DED5725FF48F900E4BA15 /* Backup.swift in Sources */,
@@ -660,16 +698,19 @@
 				B2B82CF425F257740005B07C /* MyApp.swift in Sources */,
 				B2B82D0725F25DD20005B07C /* Input.swift in Sources */,
 				B28D427D244753F400C2577E /* Section View Model.swift in Sources */,
+				B2D915832D11BDC20007F179 /* Replace Tokens.swift in Sources */,
 				B2FD28CD25F6CA9D00F2B450 /* Utility.swift in Sources */,
 				B2860AAE260C7D75001E6E7D /* UserDefault.swift in Sources */,
 				B28D42852447566B00C2577E /* Shortcut_Menu.xcdatamodeld in Sources */,
 				B2C2643625F8BB9B0054D2ED /* Tile.swift in Sources */,
+				B2D9157C2D10364C0007F179 /* Replacement View Model.swift in Sources */,
 				B24DED6825F0D8BD00F76629 /* Whisper View.swift in Sources */,
 				B2D84BEB25F7C22A00966421 /* Persistence.swift in Sources */,
 				B2B82D1525F27DA50005B07C /* Standard View.swift in Sources */,
 				B28D42832447545000C2577E /* Declarations.swift in Sources */,
 				B2C2642B25F8B4570054D2ED /* Setup Section List View.swift in Sources */,
 				B2C2642E25F8B45B0054D2ED /* Setup Shortcut List View.swift in Sources */,
+				B2D915852D1302660007F179 /* Input Picker.swift in Sources */,
 				B2DF651325FB5E0900C92386 /* Link Presentation.swift in Sources */,
 				B28D428A24475BB200C2577E /* Selection.swift in Sources */,
 				B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */,
@@ -679,9 +720,11 @@
 				B2B82CB025F20D490005B07C /* Status Menu.swift in Sources */,
 				B2B82D2C25F27F840005B07C /* My Color.swift in Sources */,
 				B28D427E244753F800C2577E /* Shortcut View Model.swift in Sources */,
+				B2D915802D10B1260007F179 /* Other Extensions.swift in Sources */,
 				B2B82D2725F27F450005B07C /* Palette.swift in Sources */,
 				B2E0709A25F4D8DA00316112 /* Slide In Menu.swift in Sources */,
 				B2AA94AA2452DDA100664AAB /* Local Authentication.swift in Sources */,
+				B2D915792D1035880007F179 /* Replacement Managed Object.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -744,6 +787,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -806,6 +850,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -882,6 +927,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 29;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu Mac/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -909,9 +955,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 29;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Shortcut Menu Mac/Preview Content\"";
 				DEVELOPMENT_TEAM = 3T7CT2S464;
-				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Shortcut Menu Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

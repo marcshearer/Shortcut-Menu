@@ -185,13 +185,13 @@ struct SetupDetailView: View {
                         }
                     }
                     
-                    self.shortcutKey(key: $selection.editSection.keyEquivalent, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
+                    self.shortcutKey(key: $selection.editSection.keyEquivalent, topSpace: 10, notify: sectionKeyNotify, disabled: {!selection.editSection.canEditKeyEquivalent})
                 }
             }
             
-            InputToggle(title: "Section type", text: "Temporary shortcuts", field: $selection.editSection.temporary, isEnabled: isEnabled && selection.editSection.menuTitle != "")
+            InputToggle(title: "Section type", text: "Temporary shortcuts", field: $selection.editSection.temporary, topSpace: 10, isEnabled: isEnabled && selection.editSection.menuTitle != "")
             
-            InputToggle(text: "Allow quick drop", field: $selection.editSection.quickDrop, isEnabled: isEnabled && selection.editSection.menuTitle != "")
+            InputToggle(text: "Allow quick drop", field: $selection.editSection.quickDrop, topSpace: 10, isEnabled: isEnabled && selection.editSection.menuTitle != "")
             
             if Settings.shared.shareShortcuts.value {
                 
@@ -209,45 +209,56 @@ struct SetupDetailView: View {
             let hideVisible = (isEnabled && $selection.editShortcut.copyText.wrappedValue != "")
             
             Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
-
-            OverlapButton( {
-                let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && $selection.editShortcut.canEditUrl.wrappedValue)
-            }, {
-                if finderVisible {
-                    if $selection.editShortcut.canEditUrl.wrappedValue {
-                        self.finderButton()
-                    } else {
-                        self.clearButton()
-                    }
-                }
-            })
-            
-            OverlapButton( {
-                let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
-                      onChange: { (value) in
-                        if value == "" {
-                            selection.editShortcut.copyPrivate = false
-                            refresh.toggle()
-                        }
-                      })
-            }, {
-                if hideVisible {
-                    self.lockButton()
-                }
-            })
-            
-            Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
-            
+        
             if MyApp.target == .macOS {
-                self.shortcutKey(key: $selection.editShortcut.keyEquivalent, notify: shortcutKeyNotify, disabled: {false})
+                self.shortcutKey(key: $selection.editShortcut.keyEquivalent, topSpace: 10, notify: shortcutKeyNotify, disabled: {false})
             }
             
             if Settings.shared.shareShortcuts.value {
                 
-                InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
+                InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, topSpace: 10, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
                 
+            }
+            
+            InputPicker(title: "Shortcut type", field: $selection.editShortcut.action, topSpace: 20, isEnabled: isEnabled, width: 50)
+
+            if selection.editShortcut.action == .urlLink {
+                OverlapButton( {
+                    let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
+                    Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && $selection.editShortcut.canEditUrl.wrappedValue)
+                }, {
+                    if finderVisible {
+                        if $selection.editShortcut.canEditUrl.wrappedValue {
+                            self.finderButton()
+                        } else {
+                            self.clearButton()
+                        }
+                    }
+                })
+            }
+            
+            if selection.editShortcut.action != .setReplacement {
+                OverlapButton( {
+                    let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
+                    Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
+                          onChange: { (value) in
+                        if value == "" {
+                            selection.editShortcut.copyPrivate = false
+                            refresh.toggle()
+                        }
+                    })
+                }, {
+                    if hideVisible {
+                        self.lockButton()
+                    }
+                })
+                
+                Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
+            }
+            
+            if selection.editShortcut.action == .setReplacement {
+                
+                Input(title: "Replacement token", field: $selection.editShortcut.replacementToken, message: $selection.editShortcut.replacementTokenError, placeHolder: "Must be non-blank", isEnabled: isEnabled)
             }
 
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
@@ -392,9 +403,9 @@ struct SetupDetailView: View {
 #endif
     }
     
-    private func shortcutKey(key: Binding<String>, notify: @escaping (String)->(), disabled: @escaping ()->(Bool)) -> some View {
+    private func shortcutKey(key: Binding<String>, topSpace: CGFloat = 10, notify: @escaping (String)->(), disabled: @escaping ()->(Bool)) -> some View {
         
-        return ShortcutKeyView(key: key, isSettingShortcutKey: $isSettingShortcutKey, isEnabled: { isEnabled && !disabled() }, notify: notify)
+        return ShortcutKeyView(key: key, isSettingShortcutKey: $isSettingShortcutKey, topSpace: topSpace, isEnabled: { isEnabled && !disabled() }, notify: notify)
     }
     
     private func shortcutKeyNotify(_ key: String) {

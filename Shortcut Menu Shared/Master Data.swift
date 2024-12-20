@@ -35,12 +35,14 @@ public class MasterData : ObservableObject {
     // Master data
     @Published var sections: [SectionViewModel] = []
     @Published var shortcuts: [ShortcutViewModel] = []
+    @Published var replacements: [ReplacementViewModel] = []
         
     // Core data
     private var sectionMOs: [SectionMO] = []
     private var shortcutMOs: [ShortcutMO] = []
     private var cloudSectionMOs: [CloudSectionMO] = []
     private var cloudShortcutMOs: [CloudShortcutMO] = []
+    private var replacementMOs: [ReplacementMO] = []
     
     public var mainSections: [SectionViewModel] {
         self.sections.filter{!self.isNested($0)}.sorted(by: {$0.sequence < $1.sequence})
@@ -94,6 +96,10 @@ public class MasterData : ObservableObject {
         self.cloudShortcutMOs = MasterData.fetch(from: CloudShortcutMO.tableName,
                                                  sort: [(key: "sectionId", ascending: true),
                                                         (key: "sequence64", ascending: true)])
+        
+        self.replacementMOs = MasterData.fetch(from: ReplacementMO.tableName,
+                                               sort: [(key: "token", ascending: true),
+                                                      (key: "replacement", ascending: true)])
                 
         // Remove local copy if already in cloud
         for (index, sectionMO) in sectionMOs.enumerated().reversed() {
@@ -102,9 +108,6 @@ public class MasterData : ObservableObject {
                 MasterData.context.delete(sectionMO)
             }
         }
-        
-        
-        
         
         // Build section list
         sections = []
@@ -118,7 +121,7 @@ public class MasterData : ObservableObject {
             sections.append(SectionViewModel(sectionMO: sectionMO, shared: true))
         }
         sections.sort(by: {$0.sequence < $1.sequence})
-
+        
         // Build shortcut list
         shortcuts = []
         for shortcutMO in self.shortcutMOs {
@@ -131,6 +134,13 @@ public class MasterData : ObservableObject {
         }
         shortcuts.sort(by: {Utility.lessThan([$0.section?.sequence ?? 0, $0.sequence], [ $1.section?.sequence ?? 0, $1.sequence])})
 
+        // Build replacement list
+        replacements = []
+        for replacementMO in replacementMOs {
+            let replacement = ReplacementViewModel(replacementMO: replacementMO)
+            replacements.append(replacement)
+        }
+        
         // Make sure default section existst
         if self.sections.first(where: {$0.isDefault}) == nil {
             // Need to create a default section
@@ -146,8 +156,8 @@ public class MasterData : ObservableObject {
             // Things have moved since load started - reload
             return self.load()
         }
-    }
-    
+    }    
+
     func setupShortcut(shortcutMO: ShortcutBaseMO, shared: Bool) -> ShortcutViewModel {
         var section = sections.first(where: {$0.id == shortcutMO.sectionId})
         if section == nil {
@@ -158,7 +168,7 @@ public class MasterData : ObservableObject {
             sections.append(section!)
             section?.save()
         }
-        let nestedSection = (shortcutMO.type == .section ? sections.first(where: {$0.id == shortcutMO.nestedSectionId}) : nil)
+        let nestedSection = (shortcutMO.action == .nestedSection ? sections.first(where: {$0.id == shortcutMO.nestedSectionId}) : nil)
         return ShortcutViewModel(shortcutMO: shortcutMO, section: section!, nestedSection: nestedSection, shared: shared)
     }
     
@@ -179,7 +189,7 @@ public class MasterData : ObservableObject {
     public func descendents(section: SectionViewModel) -> [String] {
         var result: [String] = []
         for shortcut in section.shortcuts {
-            if shortcut.type == .section, let nestedSection = shortcut.nestedSection {
+            if shortcut.action == .nestedSection, let nestedSection = shortcut.nestedSection {
                 result.append(nestedSection.name)
                 result.append(contentsOf: descendents(section: nestedSection))
             }
@@ -190,7 +200,7 @@ public class MasterData : ObservableObject {
     public func isNested(_ section: SectionViewModel?) -> Bool {
         var result = false
         if let section = section {
-            result = self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id}) != nil
+            result = self.shortcuts.first(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id}) != nil
         }
         return result
     }
@@ -198,7 +208,7 @@ public class MasterData : ObservableObject {
     public func nestedParent(_ section: SectionViewModel?) -> SectionViewModel? {
         var result: SectionViewModel?
         if let section = section {
-            result = self.shortcuts.first(where: {$0.type == .section && $0.nestedSection?.id == section.id})?.section
+            result = self.shortcuts.first(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id})?.section
         }
         return result
     }
