@@ -70,10 +70,10 @@
     <configuration name="Cloud" usedWithCloudKit="YES">
         <memberEntity name="CloudSection"/>
         <memberEntity name="CloudShortcut"/>
+        <memberEntity name="Replacement"/>
     </configuration>
     <configuration name="Local">
         <memberEntity name="Shortcut"/>
         <memberEntity name="Section"/>
-        <memberEntity name="Replacement"/>
     </configuration>
 </model>

@@ -27,37 +27,6 @@ extension UIView {
         }
     }
     
-    @discardableResult func addSubview(_ parent: UIView, constant: CGFloat = 0, anchored attributes: ConstraintAnchor...) -> [NSLayoutConstraint] {
-        self.addSubview(parent)
-        return Constraint.anchor(view: self, control: parent, constant: constant, attributes: attributes)
-    }
-    
-    @discardableResult func addSubview(_ parent: UIView, constant: CGFloat = 0, anchored attributes: [ConstraintAnchor]?)  -> [NSLayoutConstraint] {
-        self.addSubview(parent)
-        if let attributes = attributes {
-            return Constraint.anchor(view: self, control: parent, constant: constant, attributes: attributes)
-        } else {
-            return []
-        }
-    }
-    
-    @discardableResult func addSubview(_ parent: UIView, leading: CGFloat? = nil, trailing: CGFloat? = nil, top: CGFloat? = nil, bottom: CGFloat? = nil) -> [NSLayoutConstraint] {
-        var constraints: [NSLayoutConstraint] = []
-        self.addSubview(parent)
-        if let leading = leading {
-            constraints.append(contentsOf: Constraint.anchor(view: self, control: parent, constant: leading, attributes: .leading))
-        }
-        if let trailing = trailing {
-            constraints.append(contentsOf: Constraint.anchor(view: self, control: parent, constant: trailing, attributes: .trailing))
-        }
-        if let top = top {
-            constraints.append(contentsOf: Constraint.anchor(view: self, control: parent, constant: top, attributes: .top))
-        }
-        if let bottom = bottom {
-            constraints.append(contentsOf: Constraint.anchor(view: self, control: parent, constant: bottom, attributes: .bottom))
-        }
-        return constraints
-    }
     
     public func addShadow(shadowSize: CGSize = CGSize(width: 4.0, height: 4.0), shadowColor: UIColor? = nil, shadowOpacity: CGFloat = 0.2, shadowRadius: CGFloat? = nil) {
         
@@ -133,33 +102,8 @@ extension UIView {
         }
         return results
     }
-    
-    func processPressedKeys(_ presses: Set<UIPress>, with event: UIPressesEvent?, allowCharacters: Bool = false, action: (KeyAction, String)->(Bool)) -> Bool {
-        for press in presses {
-            if let key = press.key {
-                var keyAction = KeyAction(keyCode: key.keyCode, modifierFlags: key.modifierFlags)
-                    // Look in events for shift-Tab
-                if let event = event {
-                    for keyPress in event.allPresses.map({$0.key?.keyCode}) {
-                        if let keyPress = keyPress {
-                            if keyPress == .keyboardTab && key.modifierFlags.contains(.shift){
-                                keyAction = .previous
-                            }
-                        }
-                    }
-                }
-                if keyAction == .other && allowCharacters && key.characters != "" {
-                    keyAction = .characters
-                }
-                if action(keyAction, key.characters) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
 }
-#endif
+
 extension CGPoint {
     
     func distance(to point: CGPoint) -> CGFloat {
@@ -199,7 +143,6 @@ extension CGPoint {
     }
 }
 
-#if canImport(UIKit)
 extension UIImage {
     convenience init(color: UIColor, size: CGSize) {
         UIGraphicsBeginImageContextWithOptions(size, false, 1)
@@ -286,9 +229,8 @@ extension AttributedString {
     
 }
 
-#if canImport(UIKit)
 extension NSAttributedString {
-    
+#if canImport(UIKit)
     convenience init(_ string: String, color: UIColor? = nil, font: UIFont? = nil) {
         var attributes: [NSAttributedString.Key : Any] = [:]
         
@@ -301,7 +243,7 @@ extension NSAttributedString {
         
         self.init(string: string, attributes: attributes)
     }
-    
+
     convenience init(markdown string: String, font: UIFont? = nil) {
         let font = font ?? UIFont.systemFont(ofSize: 17)
         let tokens = ["@*/",
@@ -349,6 +291,7 @@ extension NSAttributedString {
         }
         self.init(attributedString: imageString)
     }
+    #endif
     
     private static func replace(in string: String, tokens: [String], with attributes: [[NSAttributedString.Key : Any]], level: Int = 0) -> NSAttributedString {
         var result = NSAttributedString()
@@ -356,7 +299,7 @@ extension NSAttributedString {
         for (index, substring) in part.enumerated() {
             if index % 2 == 0 {
                 if level == tokens.count - 1 {
-                    result = result + NSAttributedString(substring)
+                    result = result + NSAttributedString(string: substring)
                 } else {
                     result = result + replace(in: substring, tokens: tokens, with: attributes, level: level + 1)
                 }
@@ -367,15 +310,17 @@ extension NSAttributedString {
         return result
     }
     
-    static func ~= (left: inout NSAttributedString, right: String) {
-        left = NSAttributedString(markdown: right)
-    }
-    
+
     static func + (left: NSAttributedString, right: NSAttributedString) -> NSAttributedString {
         let result = NSMutableAttributedString()
         result.append(left)
         result.append(right)
         return result
+    }
+
+#if canImport(UIKit)
+    static func ~= (left: inout NSAttributedString, right: String) {
+        left = NSAttributedString(markdown: right)
     }
     
     static func + (left: NSAttributedString, right: String) -> NSAttributedString {
@@ -414,8 +359,10 @@ extension NSAttributedString {
         bboNameLabel.sizeToFit()
         return bboNameLabel.frame.width
     }
+    #endif
 }
 
+#if canImport(UIKit)
 extension UIFont {
     
     var bold: UIFont {

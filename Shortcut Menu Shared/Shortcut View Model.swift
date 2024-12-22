@@ -21,6 +21,7 @@ public enum ShortcutAction: Int, PickerEnum, Hashable, Identifiable {
     case clipboardText = 1
     case setReplacement = 2
     case nestedSection = 3
+    case replacementValue = 4
     
     public var string: String {
         switch self {
@@ -32,6 +33,8 @@ public enum ShortcutAction: Int, PickerEnum, Hashable, Identifiable {
             "Set replacement"
         case.nestedSection:
             "Nested section"
+        case .replacementValue:
+            "Replacement value"
         }
     }
     
@@ -163,6 +166,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
                     self.copyMessage = ""
                     self.copyPrivate = false
                     self.keyEquivalent = ""
+                default:
+                    break
                 }
             })
         .store(in: &cancellableSet)

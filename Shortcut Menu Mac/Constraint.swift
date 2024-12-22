@@ -6,7 +6,11 @@
 //  Copyright © 2020 Marc Shearer. All rights reserved.
 //
 
+#if os(macOS)
 import Cocoa
+#else
+import UIKit
+#endif
 
 enum ConstraintAnchor: CustomStringConvertible {
     case leading

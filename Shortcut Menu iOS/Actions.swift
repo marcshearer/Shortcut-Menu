@@ -10,72 +10,124 @@ import SwiftUI
 
 class Actions {
     
-    static func shortcut(name: String, completion: ((String?)->())? = nil) {
+    static func shortcut(shortcut: ShortcutViewModel, completion: ((String?,String?)->())? = nil) {
         var message: String?
-        if let shortcut = MasterData.shared.shortcuts.first(where: {$0.name == name}) {
+        var copyText: String = ""
+        var copyMessage: String = ""
+        var urlString: String = ""
+        
+        var references: Set<ReplacementViewModel> = []
+        
+        func copyAction() {
             
-            func copyAction() {
-                
-                // Copy text to clipboard if non-blank
-                if !shortcut.copyText.isEmpty {
-                    #if canImport(UIKit)
-                    let pasteboard = UIPasteboard.general
-                    pasteboard.string = shortcut.copyText
-                    #else
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.setString(shortcut.copyText, forType: .string)
-                    #endif
-                    
-                    message = "'\(shortcut.copyMessage.isEmpty ? shortcut.copyText : shortcut.copyMessage)' \n\ncopied to clipboard"
+            // Copy text to clipboard if non-blank
+            if !copyText.isEmpty {
+#if canImport(UIKit)
+                let pasteboard = UIPasteboard.general
+                pasteboard.string = copyText
+#else
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(copyText, forType: .string)
+                if urlString.isEmpty {
+                    Actions.paste()
+                }
+#endif
+                if MyApp.target == .iOS || !urlString.isEmpty {
+                    message = "'\(copyMessage.isEmpty ? copyText : copyMessage)' \n\ncopied to clipboard"
                 }
             }
+        }
+        
+        func urlAction(wait: Bool) {
             
-            func urlAction(wait: Bool) {
-                
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (shortcut.copyText.isEmpty || !wait ? 0 : 3), qos: .userInteractive) {
                     // URL if non-blank
-                    if !shortcut.url.isEmpty {
-                        if let url = URL(string: shortcut.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
-                            
-                            if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
-                                // File links not supported on iOS
-                            } else {
-                                // Shortcut to a remote url
-                                Actions.browseUrl(url: url)
+                if !shortcut.url.isEmpty {
+                    if shortcut.url.trim().left(5) == "file:" && shortcut.urlSecurityBookmark != nil {
+#if os(macOS)
+                        // Shortcut to a local file
+                        var isStale: Bool = false
+                        do {
+                            let url = try URL(resolvingBookmarkData: shortcut.urlSecurityBookmark!, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
+                            if url.startAccessingSecurityScopedResource() {
+                                NSWorkspace.shared.open(url)
                             }
+                            url.stopAccessingSecurityScopedResource()
+                        } catch {
+                            completion?("Unable to access this file",error.localizedDescription)
+                            return
+                        }
+#endif
+                    } else {
+                        // Shortcut to a remote url
+                        if let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                            Actions.browseUrl(url: url)
                         }
                     }
                 }
             }
-            
+        }
+        
+        // Replace tokens and accumulate references
+        var newReferences: Set<ReplacementViewModel> = []
+        if !shortcut.copyText.isEmpty {
+            (copyText, newReferences) = shortcut.copyText.processTokens()
+            references.formUnion(newReferences)
+        }
+        if !shortcut.copyMessage.isEmpty {
+            copyMessage = shortcut.copyMessage.replacingTokens()
+            references.formUnion(newReferences)
+        } else {
+            copyMessage = copyText
+        }
+        if !shortcut.url.isEmpty && (shortcut.url.trim().left(5) != "file:" && shortcut.urlSecurityBookmark == nil) {
+            urlString = shortcut.url.replacingTokens()
+            references.formUnion(newReferences)
+        }
+        
+        // Check expired tokens
+        let expired = ReplacementViewModel.expired(tokens: references).map{"'\($0.token.replacingOccurrences(of: "-", with: " "))'".capitalized}
+        if expired.count > 0 {
+            let message = "The \(Utility.toString(expired)) \(expired.count > 1 ? "tokens have" : "token has") expired"
+            completion?(message, "Update \(expired.count > 1 ? "them" : "it") to continue")
+        } else {
+            // All OK - go ahead and execute
             if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
-                
-                LocalAuthentication.authenticate(reason: "Passcode must be entered to copy \(shortcut.copyMessage)", completion: {
+                LocalAuthentication.authenticate(reason: "reveal private data", completion: {
                     copyAction()
                     urlAction(wait: true)
-                    completion?(message)
+                    completion?(message, nil)
                 }, failure: {
                     urlAction(wait: false)
-                    completion?("\(shortcut.copyMessage) not copied due to incorrect passcode entry")
+                    completion?("\(shortcut.copyMessage) not copied due to incorrect passcode entry", nil)
                 })
             } else {
                 copyAction()
                 urlAction(wait: true)
-                completion?(message)
+                completion?(message, nil)
             }
-        } else {
-            completion?(nil)
         }
     }
     
+    fileprivate static func paste() {
+        #if os(macOS)
+        let event1 = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: true); // cmd-v down
+        event1?.flags = CGEventFlags.maskCommand;
+        event1?.post(tap: CGEventTapLocation.cghidEventTap);
+        
+        let event2 = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: false) // cmd-v up
+        event2?.post(tap: CGEventTapLocation.cghidEventTap)
+        #endif
+    }
+    
     fileprivate static func browseUrl(url: URL) {
-        #if canImport(UIKit)
+#if canImport(UIKit)
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         }
-        #else
-            NSWorkspace.shared.open(url)
-        #endif
+#else
+        NSWorkspace.shared.open(url)
+#endif
     }
 }

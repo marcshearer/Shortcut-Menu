@@ -18,17 +18,18 @@ struct ReplacementsView : View {
         
         StandardView {
             
-            if MyApp.target == .iOS {
-                Banner(title: Binding.constant("Text Replacements Setup"),
-                       backAction: {
-                })
-            }
-            
-            HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                if MyApp.target == .iOS {
+                    Banner(title: Binding.constant("Text Replacements Setup"),
+                           backAction: {
+                    })
+                }
                 
-                ReplacementsListView(replacement: $replacement, editReplacement: editReplacement, editAction: $editAction, startAt: $startAt)
-                Spacer()
+                HStack(spacing: 0) {
                     
+                    ReplacementsListView(replacement: $replacement, editReplacement: editReplacement, editAction: $editAction, startAt: $startAt)
+                    
+                }
             }
         }
     }
@@ -86,7 +87,9 @@ struct ReplacementsListView: View {
         .sheet(item: $showReplacement) { (_) in
             ReplacementDetail(replacement: $replacement, editReplacement: editReplacement, startAt: $startAt, editAction: $editAction)
         }
+        #if os(macOS)
         .frame(width: 600)
+        #endif
     }
 }
 

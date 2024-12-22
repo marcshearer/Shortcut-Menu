@@ -136,7 +136,7 @@ struct SetupView: View {
             switch selected {
             case "Shortcuts preferences":
                 showSheet = .settings
-            case "Text replacments setup":
+            case "Text Replacements Setup":
                 showSheet = .replacements
             case "Show shared shortcuts":
                 showSheet = .showShared

@@ -98,6 +98,8 @@
 		B2C2643625F8BB9B0054D2ED /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2643425F8BB9B0054D2ED /* Tile.swift */; };
 		B2C894112D146E990042AB46 /* Input Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C894102D146E990042AB46 /* Input Float.swift */; };
 		B2C894122D146E990042AB46 /* Input Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C894102D146E990042AB46 /* Input Float.swift */; };
+		B2C894132D1571090042AB46 /* Other Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157E2D10B1260007F179 /* Other Extensions.swift */; };
+		B2C894152D15D77D0042AB46 /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C2642425F7EDDA0054D2ED /* Actions.swift */; };
 		B2C9F96025FE95E00004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F95F25FE95E00004E4E4 /* CloudKit.framework */; };
 		B2C9F96225FE95F60004E4E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C9F96125FE95F60004E4E4 /* CloudKit.framework */; };
 		B2D84BE125F779B500966421 /* Debug Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D84BE025F779B500966421 /* Debug Utilities.swift */; };
@@ -110,7 +112,6 @@
 		B2D9157A2D1035880007F179 /* Replacement Managed Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915782D10357E0007F179 /* Replacement Managed Object.swift */; };
 		B2D9157C2D10364C0007F179 /* Replacement View Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157B2D1036460007F179 /* Replacement View Model.swift */; };
 		B2D9157D2D10364C0007F179 /* Replacement View Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157B2D1036460007F179 /* Replacement View Model.swift */; };
-		B2D9157F2D10B1260007F179 /* Other Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157E2D10B1260007F179 /* Other Extensions.swift */; };
 		B2D915802D10B1260007F179 /* Other Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9157E2D10B1260007F179 /* Other Extensions.swift */; };
 		B2D915822D11BDC20007F179 /* Replace Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915812D11BDC20007F179 /* Replace Tokens.swift */; };
 		B2D915832D11BDC20007F179 /* Replace Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D915812D11BDC20007F179 /* Replace Tokens.swift */; };
@@ -330,8 +331,8 @@
 		B24DED5B25F0D09800F76629 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				B29D46CE244DD9170001F984 /* Constraint.swift */,
 				B22DED5525FF48F900E4BA15 /* Backup.swift */,
+				B29D46CE244DD9170001F984 /* Constraint.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -616,7 +617,6 @@
 				B2D915862D1302660007F179 /* Input Picker.swift in Sources */,
 				B2B82D2B25F27F840005B07C /* My Color.swift in Sources */,
 				B2D9157D2D10364C0007F179 /* Replacement View Model.swift in Sources */,
-				B2D9157F2D10B1260007F179 /* Other Extensions.swift in Sources */,
 				B2C894112D146E990042AB46 /* Input Float.swift in Sources */,
 				B2B82D0D25F25DFB0005B07C /* Input Title.swift in Sources */,
 				B2B82D2625F27F450005B07C /* Palette.swift in Sources */,
@@ -631,6 +631,7 @@
 				B2C2642525F7EDDA0054D2ED /* Actions.swift in Sources */,
 				B28D420224435DF300C2577E /* Shortcut Managed Object.swift in Sources */,
 				B2B82D1425F27DA50005B07C /* Standard View.swift in Sources */,
+				B2C894132D1571090042AB46 /* Other Extensions.swift in Sources */,
 				B2C2641A25F7E3D00054D2ED /* Main View.swift in Sources */,
 				B2B82CF725F257790005B07C /* MyApp.swift in Sources */,
 				B28D420624437C3B00C2577E /* Shortcut View Model.swift in Sources */,
@@ -711,6 +712,7 @@
 				B2C2642B25F8B4570054D2ED /* Setup Section List View.swift in Sources */,
 				B2C2642E25F8B45B0054D2ED /* Setup Shortcut List View.swift in Sources */,
 				B2D915852D1302660007F179 /* Input Picker.swift in Sources */,
+				B2C894152D15D77D0042AB46 /* Actions.swift in Sources */,
 				B2DF651325FB5E0900C92386 /* Link Presentation.swift in Sources */,
 				B28D428A24475BB200C2577E /* Selection.swift in Sources */,
 				B20B324A24557E5A003F6664 /* String Extensions.swift in Sources */,
@@ -881,7 +883,7 @@
 				DEVELOPMENT_TEAM = 3T7CT2S464;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Shortcut Menu iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -905,7 +907,7 @@
 				DEVELOPMENT_TEAM = 3T7CT2S464;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Shortcut Menu iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

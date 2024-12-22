@@ -17,3 +17,12 @@ In MyApp.swift replace the backup with a restore (find location by searching for
 Comment out rest of function
 Run and wait for 5 mins.
 Then stop that version, revert MyApp.swift and re-run
+
+================================
+To add a new column to a synchronised table you also need to create it on CloudKit (with CD_ prefix) and make it Queryable and Sortable
+
+To add a new table you also need to create it on CloudKit (with CD_ prefix)
+Also make modifiedTimestamp Queryable and Sortable
+Also add a CD_entityName column which is Queryable, Sortable and Searchable
+
+Do the above on Development and then Deploy Schema Changes
