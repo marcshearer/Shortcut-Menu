@@ -207,6 +207,7 @@ struct SetupDetailView: View {
         return VStack(spacing: 0) {
             let finderVisible = (isEnabled && MyApp.target == .macOS)
             let hideVisible = (isEnabled && $selection.editShortcut.copyText.wrappedValue != "")
+            let allowedTokens = MasterData.shared.replacements.filter{$0.allowedValues != ""}
             
             Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
         
@@ -220,7 +221,7 @@ struct SetupDetailView: View {
                 
             }
             
-            InputPicker(title: "Shortcut type", field: $selection.editShortcut.action, topSpace: 20, isEnabled: isEnabled, width: 50)
+            InputPicker(title: "Shortcut type", field: $selection.editShortcut.SOL  - Div 3 -  v ? - Stanza ?, topSpace: 20, isEnabled: isEnabled, width: 50)
 
             if selection.editShortcut.action == .urlLink {
                 OverlapButton( {
@@ -257,11 +258,38 @@ struct SetupDetailView: View {
             }
             
             if selection.editShortcut.action == .setReplacement {
-                
-                Input(title: "Replacement token", field: $selection.editShortcut.replacementToken, message: $selection.editShortcut.replacementTokenError, placeHolder: "Must be non-blank", isEnabled: isEnabled)
+                Spacer().frame(height: 10)
+                InputTitle(title: "Replacement token", isEnabled: isEnabled)
+                Spacer().frame(height: 8)
+                HStack(spacing: 0) {
+                    Spacer().frame(width: 26)
+                    Menu {
+                        ForEach(allowedTokens) { replacement in
+                            Button(action: {
+                                selection.editShortcut.replacementToken = replacement.token
+                                selection.objectWillChange.send()
+                            }, label: {
+                                Text(replacement.name)
+                            })
+                        }
+                    } label: {
+                        Text(tokenName(token: selection.editShortcut.replacementToken))
+                    }
+                    .menuStyle(.automatic)
+                    .disabled(!isEnabled)
+                    Spacer().frame(width: 24)
+                }
             }
 
             Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
+        }
+    }
+    
+    private func tokenName(token: String) -> String {
+        if let replacement = MasterData.shared.replacements.first(where: {$0.token == token}) {
+            return replacement.name
+        } else {
+            return token
         }
     }
     

@@ -20,6 +20,7 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
     // Properties in core data model
     public var id: UUID
     @Published public var token: String
+    @Published public var name: String
     @Published public var replacement: String
     @Published public var allowedValues: String
     @Published public var expiry: Float
@@ -30,6 +31,7 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
         
     // Other properties
     @Published public var tokenError: String = ""
+    @Published public var nameError: String = ""
     @Published public var canSave: Bool = false
 
     // Auto-cleanup
@@ -43,9 +45,10 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
         return hasher.finalize()
     }
     
-    init(id: UUID? = nil, token: String = "", replacement: String = "", allowedValues: String = "", expiry: Float = 0, entered: Date? = nil) {
+    init(id: UUID? = nil, token: String = "", name: String = "", replacement: String = "", allowedValues: String = "", expiry: Float = 0, entered: Date? = nil) {
         self.id = id ?? UUID()
         self.token = token
+        self.name = name
         self.replacement = replacement
         self.allowedValues = allowedValues
         self.expiry = expiry
@@ -55,7 +58,7 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
     }
 
     convenience init(replacementMO: ReplacementMO) {
-        self.init(token: replacementMO.token, replacement: replacementMO.replacement, allowedValues: replacementMO.allowedValues, expiry: replacementMO.expiry, entered: replacementMO.entered)
+        self.init(token: replacementMO.token, name: replacementMO.name, replacement: replacementMO.replacement, allowedValues: replacementMO.allowedValues, expiry: replacementMO.expiry, entered: replacementMO.entered)
         self.replacementMO = replacementMO
     }
     
@@ -76,10 +79,26 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
             }
             .assign(to: \.canSave, on: self)
             .store(in: &cancellableSet)
+        
+        $name
+            .receive(on: RunLoop.main)
+            .map { (name) in
+                return (name.isEmpty ? "Name must be non-blank" : (self.exists(name: name) ? "Name already exists" : ""))
+            }
+            .assign(to: \.nameError, on: self)
+            .store(in: &cancellableSet)
+        
+        Publishers.CombineLatest($tokenError, $nameError)
+            .receive(on: RunLoop.main)
+            .map { (tokenError, nameError) in
+                return (tokenError == "" && nameError == "")
+            }
+            .assign(to: \.canSave, on: self)
+            .store(in: &cancellableSet)
     }
     
     public static func == (lhs: ReplacementViewModel, rhs: ReplacementViewModel) -> Bool {
-        lhs.token == rhs.token && lhs.replacement == rhs.replacement && lhs.id == rhs.id && lhs.allowedValues == rhs.allowedValues && lhs.expiry == rhs.expiry && lhs.entered == rhs.entered
+        lhs.token == rhs.token && lhs.name == rhs.name && lhs.replacement == rhs.replacement && lhs.id == rhs.id && lhs.allowedValues == rhs.allowedValues && lhs.expiry == rhs.expiry && lhs.entered == rhs.entered
     }
     
     public var isNew: Bool {
@@ -89,6 +108,7 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(token)
+        hasher.combine(name)
         hasher.combine(replacement)
         hasher.combine(allowedValues)
         hasher.combine(expiry)
@@ -99,15 +119,14 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
         return MasterData.shared.replacements.contains(where: {$0.token == token && $0.id != self.id})
     }
     
-    public func copy() -> ReplacementViewModel {
-        let copy = ReplacementViewModel(id: self.id, token: self.token, replacement: self.replacement, allowedValues: allowedValues, expiry: self.expiry, entered: self.entered)
-        copy.replacementMO = self.replacementMO
-        return copy
+    private func exists(name: String) -> Bool {
+        return MasterData.shared.replacements.contains(where: {$0.name == name && $0.id != self.id})
     }
     
     public func copy(from: ReplacementViewModel) {
         self.id = from.id
         self.token = from.token
+        self.name = from.name
         self.replacement = from.replacement
         self.replacementMO = from.replacementMO
         self.allowedValues = from.allowedValues
@@ -140,6 +159,7 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
     
     private func toManagedObject(replacementMO: ReplacementMO) {
         replacementMO.token = self.token
+        replacementMO.name = self.name
         replacementMO.replacement = self.replacement
         replacementMO.allowedValues = self.allowedValues
         replacementMO.expiry = self.expiry

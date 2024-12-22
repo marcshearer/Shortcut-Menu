@@ -39,7 +39,11 @@ public enum ShortcutAction: Int, PickerEnum, Hashable, Identifiable {
     }
     
     public static var pickerCases: [ShortcutAction] {
-        [.urlLink, .clipboardText, .setReplacement]
+        var result = [ShortcutAction.urlLink, .clipboardText]
+        if MasterData.shared.replacements.count(where: {$0.allowedValues == ""}) != 0 {
+            result = result + [.setReplacement]
+        }
+        return result
     }
 }
 

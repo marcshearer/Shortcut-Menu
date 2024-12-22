@@ -13,6 +13,7 @@ public class ReplacementMO : NSManagedObject, Identifiable {
 
     static public let tableName = "Replacement"
     @NSManaged public var token: String
+    @NSManaged public var name: String
     @NSManaged public var replacement: String
     @NSManaged public var allowedValues: String
     @NSManaged public var expiry: Float

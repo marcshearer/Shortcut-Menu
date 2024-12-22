@@ -572,7 +572,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         if !self.windowShowing {
             // Display view
             let contentView = ReplacementsView()
-            self.showMenubarWindow(menubarWindowController: &self.replacementsWindowController, view: AnyView(contentView), title: "Text Replacements Setup", saveName: "Text Replacements Setup Window", size: CGSize(width: 600, height: 450))
+            self.showMenubarWindow(menubarWindowController: &self.replacementsWindowController, view: AnyView(contentView), title: "Text Replacements Setup", saveName: "Text Replacements Setup Window", size: CGSize(width: 800, height: 600))
             self.replacementsWindowController.contentViewController?.view.window?.becomeKey()
             self.replacementsAlways(onTop: true)
             self.changeImage(close: true)
@@ -619,7 +619,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     private func actionShortcut(shortcut: ShortcutViewModel) {
         Actions.shortcut(shortcut: shortcut) { (message, caption) in
             if let message = message {
-                self.whisper(header: message, caption: "Copied to clipboard", closeAfter: (caption == nil ? 1 : 5))
+                self.whisper(header: message, caption: caption, closeAfter: (caption == nil ? 1 : 5))
             }
         }
     }

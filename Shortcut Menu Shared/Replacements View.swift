@@ -52,13 +52,16 @@ struct ReplacementsListView: View {
                         ForEach (data.replacements) { (replacement) in
                             VStack(spacing: 0) {
                                 HStack(spacing: 0) {
-                                    Tile(dynamicText: {replacement.token}, selected: {replacement.id == self.editReplacement.id})
+                                    Tile(dynamicText: {replacement.name}, selected: {replacement.id == self.editReplacement.id})
                                         .frame(width: 200)
-                                    
                                     Divider()
                                         .background(Palette.divider.background)
                                         .frame(width: 2.0)
-                                    
+                                    Tile(dynamicText: {replacement.token}, selected: {replacement.id == self.editReplacement.id})
+                                        .frame(width: 200)
+                                    Divider()
+                                        .background(Palette.divider.background)
+                                        .frame(width: 2.0)
                                     Tile(dynamicText: {replacement.replacement}, selected: {replacement.id == self.editReplacement.id})
                                 }
                                 Divider()
@@ -88,7 +91,7 @@ struct ReplacementsListView: View {
             ReplacementDetail(replacement: $replacement, editReplacement: editReplacement, startAt: $startAt, editAction: $editAction)
         }
         #if os(macOS)
-        .frame(width: 600)
+        .frame(width: 800)
         #endif
     }
 }
@@ -103,6 +106,10 @@ struct ReplacementsListHeader: View {
         
         ZStack {
             HStack(spacing: 0) {
+                Tile(text: "Name", color: Palette.header).frame(width: 200)
+                Divider()
+                    .background(Palette.divider.background)
+                    .frame(width: 2.0)
                 Tile(text: "Token", color: Palette.header).frame(width: 200)
                 Divider()
                     .background(Palette.divider.background)
@@ -139,6 +146,8 @@ struct ReplacementDetail: View {
         VStack(spacing: 0.0) {
             ReplacementDetailHeader(replacement: $replacement, editReplacement: editReplacement, startAt: $startAt, editAction: $editAction)
             
+            Input(title: "Name", field: $editReplacement.name, message: $editReplacement.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: editAction != .none)
+            
             Input(title: "Token", field: $editReplacement.token, message: $editReplacement.tokenError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: editAction != .none)
             
             Input(title: "Replacement Text", field: $editReplacement.replacement, topSpace: 10, isEnabled: editAction != .none)
@@ -149,7 +158,7 @@ struct ReplacementDetail: View {
             
             Spacer()
         }
-        .frame(width: 400, height: 400)
+        .frame(width: 400, height: 500)
     }
 }
 

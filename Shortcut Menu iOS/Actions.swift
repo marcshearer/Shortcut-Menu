@@ -12,6 +12,7 @@ class Actions {
     
     static func shortcut(shortcut: ShortcutViewModel, completion: ((String?,String?)->())? = nil) {
         var message: String?
+        var caption: String?
         var copyText: String = ""
         var copyMessage: String = ""
         var urlString: String = ""
@@ -34,7 +35,8 @@ class Actions {
                 }
 #endif
                 if MyApp.target == .iOS || !urlString.isEmpty {
-                    message = "'\(copyMessage.isEmpty ? copyText : copyMessage)' \n\ncopied to clipboard"
+                    message = "'\(copyMessage.isEmpty ? copyText : copyMessage)'"
+                    caption = "copied to clipboard"
                 }
             }
         }
@@ -87,7 +89,7 @@ class Actions {
         }
         
         // Check expired tokens
-        let expired = ReplacementViewModel.expired(tokens: references).map{"'\($0.token.replacingOccurrences(of: "-", with: " "))'".capitalized}
+        let expired = ReplacementViewModel.expired(tokens: references).map{"'\($0.name)'"}
         if expired.count > 0 {
             let message = "The \(Utility.toString(expired)) \(expired.count > 1 ? "tokens have" : "token has") expired"
             completion?(message, "Update \(expired.count > 1 ? "them" : "it") to continue")
@@ -97,7 +99,7 @@ class Actions {
                 LocalAuthentication.authenticate(reason: "reveal private data", completion: {
                     copyAction()
                     urlAction(wait: true)
-                    completion?(message, nil)
+                    completion?(message, caption)
                 }, failure: {
                     urlAction(wait: false)
                     completion?("\(shortcut.copyMessage) not copied due to incorrect passcode entry", nil)
@@ -105,7 +107,7 @@ class Actions {
             } else {
                 copyAction()
                 urlAction(wait: true)
-                completion?(message, nil)
+                completion?(message, caption)
             }
         }
     }

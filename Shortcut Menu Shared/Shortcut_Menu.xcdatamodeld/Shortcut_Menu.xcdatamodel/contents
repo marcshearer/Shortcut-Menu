@@ -34,6 +34,7 @@
         <attribute name="allowedValues" optional="YES" attributeType="String"/>
         <attribute name="entered" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="expiry" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="replacement" optional="YES" attributeType="String"/>
         <attribute name="token" optional="YES" attributeType="String"/>
     </entity>
