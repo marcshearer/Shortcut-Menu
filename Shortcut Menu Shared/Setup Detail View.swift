@@ -204,84 +204,99 @@ struct SetupDetailView: View {
     }
     
     fileprivate func shortcutForm() -> some View {
-        return VStack(spacing: 0) {
-            let finderVisible = (isEnabled && MyApp.target == .macOS)
-            let hideVisible = (isEnabled && $selection.editShortcut.copyText.wrappedValue != "")
-            let allowedTokens = MasterData.shared.replacements.filter{$0.allowedValues != ""}
-            
-            Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
-        
-            if MyApp.target == .macOS {
-                self.shortcutKey(key: $selection.editShortcut.keyEquivalent, topSpace: 10, notify: shortcutKeyNotify, disabled: {false})
-            }
-            
-            if Settings.shared.shareShortcuts.value {
-                
-                InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, topSpace: 10, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
-                
-            }
-            
-            InputPicker(title: "Shortcut type", field: $selection.editShortcut.SOL  - Div 3 -  v ? - Stanza ?, topSpace: 20, isEnabled: isEnabled, width: 50)
-
-            if selection.editShortcut.action == .urlLink {
-                OverlapButton( {
-                    let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
-                    Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && $selection.editShortcut.canEditUrl.wrappedValue)
-                }, {
-                    if finderVisible {
-                        if $selection.editShortcut.canEditUrl.wrappedValue {
-                            self.finderButton()
-                        } else {
-                            self.clearButton()
-                        }
+        return HStack(spacing: 0) {
+            GeometryReader { (geometry) in
+                VStack(spacing: 0) {
+                    let finderVisible = (isEnabled && MyApp.target == .macOS)
+                    let hideVisible = (isEnabled && $selection.editShortcut.copyText.wrappedValue != "")
+                    let allowedTokens = MasterData.shared.replacements.filter{$0.allowedValues != ""}
+                    
+                    Input(title: "Shortcut name", field: $selection.editShortcut.name, message: $selection.editShortcut.nameError, placeHolder: "Must be non-blank", topSpace: 10, isEnabled: isEnabled)
+                    
+                    if MyApp.target == .macOS {
+                        self.shortcutKey(key: $selection.editShortcut.keyEquivalent, topSpace: 10, notify: shortcutKeyNotify, disabled: {false})
                     }
-                })
-            }
-            
-            if selection.editShortcut.action != .setReplacement {
-                OverlapButton( {
-                    let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
-                    Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
-                          onChange: { (value) in
-                        if value == "" {
-                            selection.editShortcut.copyPrivate = false
-                            refresh.toggle()
-                        }
-                    })
-                }, {
-                    if hideVisible {
-                        self.lockButton()
+                    
+                    if Settings.shared.shareShortcuts.value {
+                        
+                        InputToggle(title: "Share With Other Devices", text: "Shared with other devices", field: $selection.editShortcut.shared, topSpace: 10, isEnabled: isEnabled && selection.editShortcut.canShare && (selection.editShortcut.section?.isShared ?? false))
+                        
                     }
-                })
-                
-                Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
-            }
-            
-            if selection.editShortcut.action == .setReplacement {
-                Spacer().frame(height: 10)
-                InputTitle(title: "Replacement token", isEnabled: isEnabled)
-                Spacer().frame(height: 8)
-                HStack(spacing: 0) {
-                    Spacer().frame(width: 26)
-                    Menu {
-                        ForEach(allowedTokens) { replacement in
-                            Button(action: {
-                                selection.editShortcut.replacementToken = replacement.token
-                                selection.objectWillChange.send()
-                            }, label: {
-                                Text(replacement.name)
+                    
+                    InputPicker(title: "Shortcut type", field: $selection.editShortcut.action, topSpace: 20, isEnabled: isEnabled, width: 50)
+                    
+                    if selection.editShortcut.action == .urlLink {
+                        OverlapButton( {
+                            let messageOffset: CGFloat = (finderVisible ? 20.0 : 0.0)
+                            Input(title: "URL to link to", field: $selection.editShortcut.url, message: $selection.editShortcut.urlError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", height: 80, keyboardType: .URL, autoCapitalize: .none, autoCorrect: false, isEnabled: isEnabled && $selection.editShortcut.canEditUrl.wrappedValue)
+                        }, {
+                            if finderVisible {
+                                if $selection.editShortcut.canEditUrl.wrappedValue {
+                                    self.finderButton()
+                                } else {
+                                    self.clearButton()
+                                }
+                            }
+                        })
+                    }
+                    
+                    if selection.editShortcut.action != .setReplacement {
+                        OverlapButton( {
+                            let messageOffset: CGFloat = (hideVisible ? 20.0 : 0.0)
+                            Input(title: "Text for clipboard", field: $selection.editShortcut.copyText, message: $selection.editShortcut.copyTextError, messageOffset: messageOffset, placeHolder: "URL or text must be non-blank", secure: $selection.editShortcut.copyPrivate.wrappedValue, height: 80, isEnabled: isEnabled,
+                                  onChange: { (value) in
+                                if value == "" {
+                                    selection.editShortcut.copyPrivate = false
+                                    refresh.toggle()
+                                }
                             })
-                        }
-                    } label: {
-                        Text(tokenName(token: selection.editShortcut.replacementToken))
+                        }, {
+                            if hideVisible {
+                                self.lockButton()
+                            }
+                        })
+                        
+                        Input(title: "Description of copied text", field: $selection.editShortcut.copyMessage, placeHolder: ($selection.editShortcut.copyPrivate.wrappedValue ? "Must be non-blank" : "Blank to show copied text"), isEnabled: isEnabled && selection.editShortcut.canEditCopyMessage)
                     }
-                    .menuStyle(.automatic)
-                    .disabled(!isEnabled)
-                    Spacer().frame(width: 24)
+                    
+                    if selection.editShortcut.action == .setReplacement {
+                        Spacer().frame(height: 10)
+                        InputTitle(title: "Replacement token", isEnabled: isEnabled)
+                        Spacer().frame(height: 8)
+                        ZStack(alignment: .leading){
+                            HStack {
+                                Rectangle()
+                                    .foregroundColor(Palette.input.background)
+                                    .cornerRadius(8)
+                            }
+                            HStack(spacing: 0) {
+                                Spacer().frame(width: 26)
+                                Menu {
+                                    ForEach(allowedTokens) { replacement in
+                                        Button(action: {
+                                            selection.editShortcut.replacementToken = replacement.token
+                                            selection.objectWillChange.send()
+                                        }, label: {
+                                            Text(replacement.name)
+                                        })
+                                    }
+                                } label: {
+                                    Text(tokenName(token: selection.editShortcut.replacementToken))
+                                }
+                                .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
+                                    //.frame(minWidth: 100)
+                                .frame(height: 40)
+                                .menuStyle(.automatic)
+                                .disabled(!isEnabled)
+                            }
+                        }
+                        .frame(width: geometry.size.width - 56)
+                        Spacer().frame(width: 24)
+                    }
+                    
+                    Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
                 }
             }
-
-            Spacer().frame(maxHeight: .infinity).layoutPriority(.greatestFiniteMagnitude)
         }
     }
     
