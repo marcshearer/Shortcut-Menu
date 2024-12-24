@@ -217,7 +217,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
         self.additionalStatusItemsSectionId = [:]
         var tag = 0
-        for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && $0.shortcuts.count > 0}).reversed() {
+        for section in master.sections.filter({$0.menuTitle != "" && !$0.isDefault && ($0.shortcuts.count > 0 || $0.quickDrop)}).reversed() {
             let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             statusItem.menu = NSMenu()
             tag += 1
@@ -259,7 +259,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                             self.addSeparator(to: subMenu)
                             addHeading(title: nestedSection.name, to: subMenu)
                         }
-                        self.addShortcuts(section: nestedSection, inset: inset, to: subMenu)
+                        self.addShortcuts(section: nestedSection, inset: 5, to: subMenu)
                     } else {
                         let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
                         self.addShortcuts(section: nestedSection, to: subMenuEntry)
@@ -764,6 +764,8 @@ extension NSStatusBarButton {
                     }
                 }
             }
+        } else {
+            StatusMenu.shared.define()
         }
         return .private
     }
