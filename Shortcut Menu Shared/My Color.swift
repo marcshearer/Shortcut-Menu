@@ -8,7 +8,7 @@
 import SwiftUI
 
 #if canImport(UIKit)
-class MyColor : UIColor {
+class MyColor : UIColor, @unchecked Sendable {
     static override var clear: MyColor { return UIColor.clear as! MyColor}
     static override var black: MyColor { return UIColor.black as! MyColor}
 }

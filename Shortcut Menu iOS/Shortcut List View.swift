@@ -80,7 +80,10 @@ struct ShortcutListView: View {
             if shortcut.url != "" {
                 message = "Linking to\n\(shortcut.name)...\n\n"
             }
-            Actions.shortcut(shortcut: shortcut) { (copyMessage, caption) in
+            Actions.shortcut(shortcut: shortcut) { (copyMessage, caption, refresh) in
+                if refresh {
+                    displayState.refreshNames()
+                }
                 if let copyMessage = copyMessage {
                     message += copyMessage
                 }

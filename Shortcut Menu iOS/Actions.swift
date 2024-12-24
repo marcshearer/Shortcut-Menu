@@ -10,7 +10,7 @@ import SwiftUI
 
 class Actions {
     
-    static func shortcut(shortcut: ShortcutViewModel, completion: ((String?,String?)->())? = nil) {
+    static func shortcut(shortcut: ShortcutViewModel, completion: ((String?,String?,Bool)->())? = nil) {
         var message: String?
         var caption: String?
         var copyText: String = ""
@@ -57,13 +57,13 @@ class Actions {
                             }
                             url.stopAccessingSecurityScopedResource()
                         } catch {
-                            completion?("Unable to access this file",error.localizedDescription)
+                            completion?("Unable to access this file", error.localizedDescription, false)
                             return
                         }
 #endif
                     } else {
                         // Shortcut to a remote url
-                        if let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                        if let url = URL(string: urlString) {
                             Actions.browseUrl(url: url)
                         }
                     }
@@ -92,22 +92,22 @@ class Actions {
         let expired = ReplacementViewModel.expired(tokens: references).map{"'\($0.name)'"}
         if expired.count > 0 {
             let message = "The \(Utility.toString(expired)) \(expired.count > 1 ? "tokens have" : "token has") expired"
-            completion?(message, "Update \(expired.count > 1 ? "them" : "it") to continue")
+            completion?(message, "Update \(expired.count > 1 ? "them" : "it") to continue", true)
         } else {
             // All OK - go ahead and execute
             if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
                 LocalAuthentication.authenticate(reason: "reveal private data", completion: {
                     copyAction()
                     urlAction(wait: true)
-                    completion?(message, caption)
+                    completion?(message, caption, false)
                 }, failure: {
                     urlAction(wait: false)
-                    completion?("\(shortcut.copyMessage) not copied due to incorrect passcode entry", nil)
+                    completion?("\(shortcut.copyMessage) not copied due to incorrect passcode entry", nil, false)
                 })
             } else {
                 copyAction()
                 urlAction(wait: true)
-                completion?(message, caption)
+                completion?(message, caption, false)
             }
         }
     }

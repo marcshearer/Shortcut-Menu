@@ -187,6 +187,8 @@ public class ReplacementViewModel : ObservableObject, Identifiable, Hashable {
                 let validUntil = Date(timeInterval: Double(replacement.expiry * 60 * 60), since: replacement.entered ?? Date(timeIntervalSince1970: 0))
                 if validUntil < now {
                     result.formUnion(Set([replacement]))
+                    replacement.replacement = "Expired"
+                    replacement.save()
                 }
             }
         }

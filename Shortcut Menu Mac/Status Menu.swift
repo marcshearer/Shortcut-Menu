@@ -617,7 +617,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func actionShortcut(shortcut: ShortcutViewModel) {
-        Actions.shortcut(shortcut: shortcut) { (message, caption) in
+        Actions.shortcut(shortcut: shortcut) { (message, caption, refresh) in
+            if refresh {
+                self.refresh(nil)
+            }
             if let message = message {
                 self.whisper(header: message, caption: caption, closeAfter: (caption == nil ? 1 : 5))
             }

@@ -264,13 +264,15 @@ struct SetupDetailView: View {
                         InputTitle(title: "Replacement token", isEnabled: isEnabled)
                         Spacer().frame(height: 8)
                         ZStack(alignment: .leading){
+                            #if canImport(UIKit)
                             HStack {
                                 Rectangle()
                                     .foregroundColor(Palette.input.background)
                                     .cornerRadius(8)
                             }
+                            #endif
                             HStack(spacing: 0) {
-                                Spacer().frame(width: 26)
+                                Spacer().frame(width: (MyApp.target == .iOS ? 10 : 6))
                                 Menu {
                                     ForEach(allowedTokens) { replacement in
                                         Button(action: {
@@ -281,13 +283,22 @@ struct SetupDetailView: View {
                                         })
                                     }
                                 } label: {
-                                    Text(tokenName(token: selection.editShortcut.replacementToken))
+                                    HStack {
+                                        Text(tokenName(token: selection.editShortcut.replacementToken))
+                                        Spacer()
+                                        if MyApp.target == .iOS && isEnabled{
+                                            Image(systemName: "chevron.right").foregroundColor(.blue)
+                                        }
+                                        Spacer().frame(width: 10)
+                                    }
+                                    .contentShape(Rectangle())
                                 }
                                 .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
-                                    //.frame(minWidth: 100)
+                                .background(.clear)
                                 .frame(height: 40)
                                 .menuStyle(.automatic)
                                 .disabled(!isEnabled)
+                                Spacer().frame(width: 8)
                             }
                         }
                         .frame(width: geometry.size.width - 56)
