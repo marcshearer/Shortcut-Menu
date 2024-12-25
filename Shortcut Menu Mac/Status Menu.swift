@@ -18,22 +18,28 @@ class StatusMenuAdditional {
     var statusItem: NSStatusItem
     var section: SectionViewModel
     
-    init(statusItem: NSStatusItem, section: SectionViewModel, tag: Int) {
+    init(statusItem: NSStatusItem, section: SectionViewModel, tag: Int? = nil) {
         self.statusItem = statusItem
-        self.statusItem.button?.tag = tag
+        if let tag = tag {
+            self.statusItem.button?.tag = tag
+        }
         self.section = section
     }
 }
 
 class StatusMenuInfo {
-    var menuTag: Int
+    var statusItem: NSStatusItem
+    var menuTag: Int?
     var shortcut: ShortcutViewModel?
-    var menuItem: NSMenuItem
+    var menuItem: NSMenuItem?
+    var menu: NSMenu?
     
-    init(menuTag: Int, shortcut: ShortcutViewModel?, menuItem: NSMenuItem) {
+    init(statusItem: NSStatusItem, menuTag: Int? = nil, shortcut: ShortcutViewModel?, menuItem: NSMenuItem? = nil, menu: NSMenu? = nil) {
+        self.statusItem = statusItem
         self.menuTag = menuTag
         self.shortcut = shortcut
         self.menuItem = menuItem
+        self.menu = menu
     }
 }
 
@@ -48,10 +54,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     public var statusMenu: NSMenu
     public var statusMenuButton: NSButton
     public var statusMenuRefreshMenuItem: NSMenuItem?
-
-    private var menuItemList: [Int: StatusMenuInfo] = [:] // Tag / MenuInfo
+    
+    private var menuItemListTag: [Int: StatusMenuInfo] = [:] // Tag / MenuInfo
     private var menuItemReplace: [StatusMenuInfo] = []
     private var lastTag: Int = 0
+    private var menuSectionInfo: [UUID: StatusMenuInfo] = [:] // Section Id / MenuInfo
     
     private var currentSection: String = ""
     fileprivate var whisperPopover: NSPopover!
@@ -142,14 +149,15 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var othersAdded = false
         
         self.statusMenu.removeAllItems()
-        self.menuItemList = [:]
+        self.menuItemListTag = [:]
         self.menuItemReplace = []
+        self.menuSectionInfo = [:]
         lastTag = 0
         
         if self.currentSection != "" {
             if let section = self.master.sections.first(where: { $0.name == self.currentSection }) {
                 if section.shortcuts.count > 0 {
-                    if self.addShortcuts(section: section, title: String(self.currentSection == "" ? "Shortcuts" : self.currentSection), inset: 5) > 0 {
+                    if self.addShortcuts(statusItem: self.statusItem, section: section, title: String(self.currentSection == "" ? "Shortcuts" : self.currentSection), inset: 5) > 0 {
                         optionsAdded = true
                         self.addSeparator()
                     }
@@ -158,7 +166,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
        
         if let defaultSection = master.defaultSection {
-            let added = self.addShortcuts(section: defaultSection, title: "Shortcuts", inset: 5)
+            let added = self.addShortcuts(statusItem: self.statusItem, section: defaultSection, title: "Shortcuts", inset: 5)
             if added > 0 {
                 optionsAdded = true
                 othersAdded = true
@@ -170,7 +178,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         
         if otherSections {
             
-            if self.addOtherShortcuts(inline: !optionsAdded, inset: 5) > 0 {
+            if self.addOtherShortcuts(statusItem: self.statusItem, inline: !optionsAdded, inset: 5) > 0 {
                 othersAdded = true
             }
             if othersAdded {
@@ -178,26 +186,26 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
         }
         
-        addHeading(title: "Admin")
+        addHeading(statusItem: self.statusItem, title: "Admin")
         
         if otherSections {
-            let sectionMenu = self.addSubmenu("Choose section", inset: 5)
+            let sectionMenu = self.addSubmenu(statusItem: self.statusItem, "Choose section", inset: 5)
             _ = self.addSections(to: sectionMenu)
         }
         
-        let adminMenu = self.addSubmenu("Configuration", inset: 5)
-        self.addItem("Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d", to: adminMenu)
+        let adminMenu = self.addSubmenu(statusItem: self.statusItem, "Configuration", inset: 5)
+        self.addItem(statusItem: self.statusItem, "Define shortcuts", action: #selector(StatusMenu.define(_:)), keyEquivalent: "d", to: adminMenu)
         
         if Settings.shared.shareShortcuts.value {
-            self.addItem("Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
+            self.addItem(statusItem: self.statusItem, "Show shared shortcuts", action: #selector(StatusMenu.showShared(_:)), keyEquivalent: "", to: adminMenu)
         }
         
-        self.addItem("Replacements", action: #selector(StatusMenu.replacements(_:)), keyEquivalent: "r", to: adminMenu)
-        self.addItem("Preferences", action: #selector(StatusMenu.settings(_:)), keyEquivalent: "p", to: adminMenu)
-        self.statusMenuRefreshMenuItem = self.addItem("Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
-        self.addItem("About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
+        self.addItem(statusItem: self.statusItem, "Replacements", action: #selector(StatusMenu.replacements(_:)), keyEquivalent: "r", to: adminMenu)
+        self.addItem(statusItem: self.statusItem, "Preferences", action: #selector(StatusMenu.settings(_:)), keyEquivalent: "p", to: adminMenu)
+        self.statusMenuRefreshMenuItem = self.addItem(statusItem: self.statusItem, "Refresh Shortcuts", action: #selector(StatusMenu.refresh(_:)), keyEquivalent: "r", to: adminMenu)
+        self.addItem(statusItem: self.statusItem, "About Shortcuts", action: #selector(StatusMenu.about(_:)), keyEquivalent: "", to: adminMenu)
         
-        self.addItem("Quit Shortcuts", inset: 5, action: #selector(StatusMenu.quit(_:)), keyEquivalent: "q")
+        self.addItem(statusItem: self.statusItem, "Quit Shortcuts", inset: 5, action: #selector(StatusMenu.quit(_:)), keyEquivalent: "q")
 
         self.setupAdditionalMenus()
 
@@ -205,8 +213,8 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     func updateReplacements() {
         for statusMenuInfo in menuItemReplace {
-            if let title = statusMenuInfo.shortcut?.name.replacingTokens() {
-                statusMenuInfo.menuItem.title = title
+            if let title = statusMenuInfo.shortcut?.name.replacingTokens(), let menuItem = statusMenuInfo.menuItem {
+                menuItem.title = title
             }
         }
     }
@@ -231,22 +239,22 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             if !(section.shortcuts.first?.nestedSection?.inline ?? false) {
                 title = section.name
             }
-            self.addShortcuts(section: section, title: title, inset: 5, to: statusItem.menu)
+            self.addShortcuts(statusItem: statusItem, section: section, title: title, inset: 5, to: statusItem.menu)
             if section.temporary {
                 self.addSeparator(to: statusItem.menu)
-                addHeading(title: "Maintenance", to: statusItem.menu)
-                let menuItem = self.addItem("Edit \(section.name) shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
+                addHeading(statusItem: statusItem, title: "Maintenance", to: statusItem.menu)
+                let menuItem = self.addItem(statusItem: statusItem, "Edit \(section.name) shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
                 menuItem.tag = tag
             }
         }
     }
     
-    @discardableResult private func addShortcuts(section: SectionViewModel, title: String? = nil, inset fixedInset: Int? = nil, to subMenu: NSMenu? = nil) -> Int {
+    @discardableResult private func addShortcuts(statusItem: NSStatusItem, section: SectionViewModel, title: String? = nil, inset fixedInset: Int? = nil, to subMenu: NSMenu? = nil) -> Int {
         var added = 0
         var inset: Int
         
         if let title = title {
-            addHeading(title: title, to: subMenu)
+            addHeading(statusItem: statusItem, title: title, to: subMenu)
             inset = fixedInset ?? 5
         } else {
             inset = fixedInset ?? 0
@@ -257,41 +265,45 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                     if nestedSection.inline || nestedSection.shortcuts.count == 1 {
                         if nestedSection.inline {
                             self.addSeparator(to: subMenu)
-                            addHeading(title: nestedSection.name, to: subMenu)
+                            addHeading(statusItem: statusItem, title: nestedSection.name, to: subMenu)
                         }
-                        self.addShortcuts(section: nestedSection, inset: 5, to: subMenu)
+                        self.addShortcuts(statusItem: statusItem, section: nestedSection, inset: 5, to: subMenu)
                     } else {
-                        let subMenuEntry = self.addSubmenu(String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
-                        self.addShortcuts(section: nestedSection, to: subMenuEntry)
+                        let subMenuEntry = self.addSubmenu(statusItem: statusItem, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                        // Index data
+                        let statusMenuInfo = StatusMenuInfo(statusItem: statusItem,  shortcut: shortcut, menu: subMenuEntry)
+                        self.menuSectionInfo[nestedSection.id] = statusMenuInfo
+                        // Add in shortcuts
+                        self.addShortcuts(statusItem: statusItem, section: nestedSection, to: subMenuEntry)
                     }
                 }
             } else {
-                self.addShortcut(shortcut: shortcut, inset: inset, to: subMenu)
+                self.addShortcut(statusItem: statusItem, shortcut: shortcut, inset: inset, to: subMenu)
                 added += 1
             }
         }
         return added
     }
     
-    func addHeading(title: String, to subMenu: NSMenu? = nil) {
+    func addHeading(statusItem: NSStatusItem, title: String, to subMenu: NSMenu? = nil) {
         let attrString = NSAttributedString(string: title.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1)])
-        self.addItem(attributedText: attrString, to: subMenu)
+        self.addItem(statusItem: statusItem, attributedText: attrString, to: subMenu)
     }
     
-    @discardableResult private func addShortcut(shortcut: ShortcutViewModel, inset: Int = 5, to subMenu: NSMenu?) -> Int {
+    @discardableResult private func addShortcut(statusItem: NSStatusItem, shortcut: ShortcutViewModel, inset: Int = 5, to subMenu: NSMenu?) -> Int {
         var added = 0
         
         if shortcut.action != .setReplacement {
-            self.addItem(shortcut: shortcut, shortcut.name, inset: inset, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
+            self.addItem(statusItem: statusItem, shortcut: shortcut, shortcut.name, inset: inset, action: #selector(StatusMenu.actionShortcut(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenu)
             added += 1
         } else {
             if let replacement = MasterData.shared.replacements.first(where: {$0.token == shortcut.replacementToken}) {
                 let allowed = replacement.allowedValues.split(at: ",")
                 if allowed.count > 1 {
-                    let subMenuEntry = self.addSubmenu(shortcut: shortcut, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                    let subMenuEntry = self.addSubmenu(statusItem: statusItem, shortcut: shortcut, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
                     added += 1
                     for value in allowed {
-                        self.addItem(shortcut: shortcut, value, inset: 0, action: #selector(StatusMenu.actionReplacement(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenuEntry)
+                        self.addItem(statusItem: statusItem, shortcut: shortcut, value, inset: 0, action: #selector(StatusMenu.actionReplacement(_:)), keyEquivalent: shortcut.keyEquivalent, to: subMenuEntry)
                         added += 1
                     }
                 }
@@ -304,32 +316,32 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         var added = 0
         for section in master.sections.filter({ $0.name != currentSection && (($0.shortcuts.count > 0 && $0.menuTitle == "") || $0.isDefault) }).sorted(by: {$0.sequence < $1.sequence}) {
             if section.isDefault || master.shortcuts.firstIndex(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id}) == nil {
-                self.addItem(section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
+                self.addItem(statusItem: statusItem, section.menuName, action: #selector(StatusMenu.changeSection(_:)), to: subMenu)
                 added += 1
             }
         }
         return added
     }
     
-    private func addOtherShortcuts(inline: Bool, inset: Int) -> Int {
+    private func addOtherShortcuts(statusItem: NSStatusItem, inline: Bool, inset: Int) -> Int {
         var added = 0
         var subMenu: NSMenu
         var inset = inset
         
         if !inline {
-            subMenu = self.addSubmenu("Other shortcuts", inset: 5)
+            subMenu = self.addSubmenu(statusItem: statusItem, "Other shortcuts", inset: 5)
             inset = 0
         } else {
             subMenu = self.statusMenu
         }
         
-        for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0  && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
+        for section in master.sections.filter({ $0.name != currentSection && !$0.isDefault && $0.shortcuts.count > 0 && $0.menuTitle == "" }).sorted(by: {$0.sequence < $1.sequence}) {
             if master.shortcuts.firstIndex(where: {$0.action == .nestedSection && $0.nestedSection?.id == section.id}) == nil {
                 if section.shortcuts.count > 1 {
-                    let sectionMenu = self.addSubmenu(section.menuName, inset: inset, keyEquivalent: section.keyEquivalent, to: subMenu)
-                    added += self.addShortcuts(section: section, to: sectionMenu)
+                    let sectionMenu = self.addSubmenu(statusItem: statusItem, section.menuName, inset: inset, keyEquivalent: section.keyEquivalent, to: subMenu)
+                    added += self.addShortcuts(statusItem: statusItem, section: section, to: sectionMenu)
                 } else {
-                    added += self.addShortcut(shortcut: section.shortcuts.first!, inset: inset, to: subMenu)
+                    added += self.addShortcut(statusItem: statusItem, shortcut: section.shortcuts.first!, inset: inset, to: subMenu)
                 }
             }
         }
@@ -448,7 +460,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     // MARK: - Helper routines for the popup menu =========================================================== -
 
-    @discardableResult private func addItem(shortcut: ShortcutViewModel? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, inset: Int = 0, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
+    @discardableResult private func addItem(statusItem: NSStatusItem, shortcut: ShortcutViewModel? = nil, _ text: String = "", attributedText: NSAttributedString? = nil, inset: Int = 0, action: Selector? = nil, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenuItem {
         var menu = menu
         var replaced = false
         if menu == nil {
@@ -466,12 +478,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             menuItem.view!.addSubview(text, anchored: .bottom, .trailing)
             Constraint.anchor(view: menuItem.view!, control: text, constant: 15.0, attributes: .leading)
         }
-        if keyEquivalent != "" {
-            if let (characters, modifiers) = ShortcutKeyMonitor.shared.decompose(key: keyEquivalent) {
-                menuItem.keyEquivalent = characters
-                menuItem.keyEquivalentModifierMask = (modifiers.isEmpty ? [.command] : modifiers)
-            }
-        }
+        setKeyEquivalent(menuItem: menuItem, keyEquivalent: keyEquivalent)
 
         if action == nil {
             menuItem.isEnabled = false
@@ -480,8 +487,10 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         }
         if shortcut != nil {
             lastTag += 1
-            let statusMenuInfo = StatusMenuInfo(menuTag: lastTag, shortcut: shortcut, menuItem: menuItem)
-            self.menuItemList[lastTag] = statusMenuInfo
+            // Index data
+            let statusMenuInfo = StatusMenuInfo(statusItem: statusItem, menuTag: lastTag, shortcut: shortcut, menuItem: menuItem)
+            // Set up link by tag
+            self.menuItemListTag[lastTag] = statusMenuInfo
             if replaced {
                 self.menuItemReplace.append(statusMenuInfo)
             }
@@ -490,7 +499,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         return menuItem
     }
     
-    private func addSubmenu(shortcut: ShortcutViewModel? = nil, _ text: String, inset: Int = 0, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenu {
+    private func setKeyEquivalent(menuItem: NSMenuItem, keyEquivalent: String) {
+        if keyEquivalent != "" {
+            if let (characters, modifiers) = ShortcutKeyMonitor.shared.decompose(key: keyEquivalent) {
+                menuItem.keyEquivalent = characters
+                menuItem.keyEquivalentModifierMask = (modifiers.isEmpty ? [.command] : modifiers)
+            }
+        }
+    }
+    
+    private func addSubmenu(statusItem: NSStatusItem, shortcut: ShortcutViewModel? = nil, _ text: String, inset: Int = 0, keyEquivalent: String = "", to menu: NSMenu? = nil) -> NSMenu {
         var menu = menu
         if menu == nil {
             menu = self.statusMenu
@@ -500,7 +518,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         let menuItem = menu!.addItem(withTitle: String(repeating: " ", count: inset) + replacedText, action: nil, keyEquivalent: keyEquivalent)
         menu!.setSubmenu(subMenu, for: menuItem)
         if text != replacedText {
-            menuItemReplace.append(StatusMenuInfo(menuTag: 0, shortcut: shortcut, menuItem: menuItem))
+            menuItemReplace.append(StatusMenuInfo(statusItem: statusItem, menuTag: 0, shortcut: shortcut, menuItem: menuItem))
         }
         return subMenu
     }
@@ -597,7 +615,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc private func actionShortcut(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            if let statusMenuInfo = menuItemList[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
+            if let statusMenuInfo = menuItemListTag[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
                 self.actionShortcut(shortcut: shortcut)
             }
         }
@@ -605,7 +623,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     
     @objc private func actionReplacement(_ sender: Any?) {
         if let menuItem = sender as? NSMenuItem {
-            if let statusMenuInfo = menuItemList[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
+            if let statusMenuInfo = menuItemListTag[menuItem.tag], let shortcut = statusMenuInfo.shortcut {
                 if let replacement = MasterData.shared.replacements.first(where: {$0.token == shortcut.replacementToken}) {
                     replacement.replacement = menuItem.title
                     replacement.entered = Date()
@@ -702,14 +720,24 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func shortcutKeyNotify(_ id: Any?) {
-        if let (source, shortcutId) = id as? (Source, UUID) {
+        if let (source, sourceId) = id as? (Source, UUID) {
             switch source {
             case .section:
-                if let statusItem = additionalStatusItemsSectionId[shortcutId] {
-                    statusItem.statusItem.button?.performClick(self)
+                if let sectionInfo = additionalStatusItemsSectionId[sourceId] {
+                    // Additional status item
+                    sectionInfo.statusItem.button?.performClick(self)
+                } else if let sectionInfo = menuSectionInfo[sourceId] {
+                    // Shortcut to a section - open the menu on the parent status item
+                    if let menu = sectionInfo.menu {
+                        let statusItem = sectionInfo.statusItem
+                        let normalMenu = statusItem.menu
+                        statusItem.menu = menu
+                        statusItem.button?.performClick(statusItem)
+                        statusItem.menu = normalMenu
+                    }
                 }
             case .shortcut:
-                if let shortcut = master.shortcut(withId: shortcutId) {
+                if let shortcut = master.shortcut(withId: sourceId) {
                     actionShortcut(shortcut: shortcut)
                 }
             case .mainMenu:

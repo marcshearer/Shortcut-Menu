@@ -95,19 +95,16 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
             .assign(to: \.canSave, on: self)
             .store(in: &cancellableSet)
         
-        $menuTitle
+        Publishers.CombineLatest($menuTitle, $inline)
             .receive(on: RunLoop.main)
-            .map { (menuTitle) in
-                return (menuTitle != "")
-            }
-            .sink { (canEditKeyEquivalent) in
-                if !canEditKeyEquivalent && (self.keyEquivalent != "" || self.canEditKeyEquivalent) {
+            .map { (menuTitle, inline) in
+                let canEditKeyEquivalent = (menuTitle != "" || !inline)
+                if !canEditKeyEquivalent {
                     self.keyEquivalent = ""
-                    self.canEditKeyEquivalent = false
-                } else {
-                    self.canEditKeyEquivalent = canEditKeyEquivalent
                 }
+                return canEditKeyEquivalent
             }
+            .assign(to: \.canEditKeyEquivalent, on: self)
             .store(in: &cancellableSet)
         
         $shared
