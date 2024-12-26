@@ -267,7 +267,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                             self.addSeparator(to: subMenu)
                             addHeading(statusItem: statusItem, title: nestedSection.name, to: subMenu)
                         }
-                        self.addShortcuts(statusItem: statusItem, section: nestedSection, inset: 5, to: subMenu)
+                        self.addShortcuts(statusItem: statusItem, section: nestedSection, inset: inset, to: subMenu)
                     } else {
                         let subMenuEntry = self.addSubmenu(statusItem: statusItem, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
                         // Index data
