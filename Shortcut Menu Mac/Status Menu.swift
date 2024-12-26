@@ -243,7 +243,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             if section.temporary {
                 self.addSeparator(to: statusItem.menu)
                 addHeading(statusItem: statusItem, title: "Maintenance", to: statusItem.menu)
-                let menuItem = self.addItem(statusItem: statusItem, "Edit \(section.name) shortcuts", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
+                let menuItem = self.addItem(statusItem: statusItem, "Edit \(section.name)", inset: 5, action: #selector(StatusMenu.define(_:)), to: statusItem.menu)
                 menuItem.tag = tag
             }
         }
@@ -259,27 +259,32 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         } else {
             inset = fixedInset ?? 0
         }
-        for shortcut in section.shortcuts.sorted(by: {$0.sequence < $1.sequence}) {
-            if shortcut.action == .nestedSection, let nestedSection = shortcut.nestedSection {
-                if nestedSection.shortcuts.count > 0 {
-                    if nestedSection.inline || nestedSection.shortcuts.count == 1 {
-                        if nestedSection.inline {
-                            self.addSeparator(to: subMenu)
-                            addHeading(statusItem: statusItem, title: nestedSection.name, to: subMenu)
+        if section.quickDrop && section.shortcuts.count == 0 {
+            // Empty quick-drop menu
+            addItem(statusItem: statusItem, "No shortcuts defined", inset: 5, to: subMenu)
+        } else {
+            for shortcut in section.shortcuts.sorted(by: {$0.sequence < $1.sequence}) {
+                if shortcut.action == .nestedSection, let nestedSection = shortcut.nestedSection {
+                    if nestedSection.shortcuts.count > 0 {
+                        if nestedSection.inline || nestedSection.shortcuts.count == 1 {
+                            if nestedSection.inline {
+                                self.addSeparator(to: subMenu)
+                                addHeading(statusItem: statusItem, title: nestedSection.name, to: subMenu)
+                            }
+                            self.addShortcuts(statusItem: statusItem, section: nestedSection, inset: inset, to: subMenu)
+                        } else {
+                            let subMenuEntry = self.addSubmenu(statusItem: statusItem, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
+                                // Index data
+                            let statusMenuInfo = StatusMenuInfo(statusItem: statusItem,  shortcut: shortcut, menu: subMenuEntry)
+                            self.menuSectionInfo[nestedSection.id] = statusMenuInfo
+                                // Add in shortcuts
+                            self.addShortcuts(statusItem: statusItem, section: nestedSection, to: subMenuEntry)
                         }
-                        self.addShortcuts(statusItem: statusItem, section: nestedSection, inset: inset, to: subMenu)
-                    } else {
-                        let subMenuEntry = self.addSubmenu(statusItem: statusItem, String(repeating: " ", count: inset) + shortcut.name, to: subMenu)
-                        // Index data
-                        let statusMenuInfo = StatusMenuInfo(statusItem: statusItem,  shortcut: shortcut, menu: subMenuEntry)
-                        self.menuSectionInfo[nestedSection.id] = statusMenuInfo
-                        // Add in shortcuts
-                        self.addShortcuts(statusItem: statusItem, section: nestedSection, to: subMenuEntry)
                     }
+                } else {
+                    self.addShortcut(statusItem: statusItem, shortcut: shortcut, inset: inset, to: subMenu)
+                    added += 1
                 }
-            } else {
-                self.addShortcut(statusItem: statusItem, shortcut: shortcut, inset: inset, to: subMenu)
-                added += 1
             }
         }
         return added
