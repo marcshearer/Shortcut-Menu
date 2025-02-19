@@ -25,12 +25,13 @@ class MyColor: NSColor, @unchecked Sendable {
 }
 
 class MyTraitCollection {
+    
     enum UserInterfaceStyle {
         case dark
         case light
     }
 
-    public var userInterfaceStyle: UserInterfaceStyle { NSApp?.appearance?.name ?? NSAppearance.Name.aqua == NSAppearance.Name.darkAqua ? .dark : .light }
+    public var userInterfaceStyle: UserInterfaceStyle { UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark" ? .dark : .light }
 }
 
 #endif

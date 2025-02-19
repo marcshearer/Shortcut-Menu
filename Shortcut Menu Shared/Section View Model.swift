@@ -203,8 +203,10 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     
     public func cascadeShared(shared: Bool) {
         for shortcut in self.shortcuts {
-            shortcut.shared = shared
-            shortcut.save()
+            if shortcut.shared != shared {
+                shortcut.shared = shared
+                shortcut.save()
+            }
             if shortcut.action == .nestedSection {
                 if let nested = shortcut.nestedSection {
                     if nested.shared != shared {

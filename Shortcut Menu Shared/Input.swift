@@ -75,7 +75,8 @@ struct Input : View {
                                     if isEnabled && !isReadOnly {
                                         TextEditor(text: $field)
                                             .font(inputFont)
-                                            .onChange(of: field, initial: false) { (_, value) in onChange?(value)
+                                            .onChange(of: field, initial: false) { (_, value) in
+                                                onChange?(value)
                                             }
                                             .disabled(!isEnabled || isReadOnly)
                                             .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct StandardView <Content> : View where Content : View {
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject private var messageBox = MessageBox.shared
     var navigation: Bool
     var animate = false

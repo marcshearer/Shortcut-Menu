@@ -21,23 +21,31 @@ class MessageBox : ObservableObject {
     public var buttons: Buttons = .close
     public var confirmButton = false
     public var showIcon = true
+    public var iconName: String? = nil
     public var showVersion = false
     public var completion: ((Bool)->())? = nil
     public var fontSize: CGFloat = 15.0
+    public var condition: (()->(Bool))? = nil
 
     public var isShown: Bool { MessageBox.shared.text != nil }
     
-    public func show(_ text: String, fontSize: CGFloat = 15.0, buttons: Buttons = .close, showVersion: Bool = false, showIcon: Bool = true, hideAfter: TimeInterval? = nil, completion: ((Bool)->())? = nil) {
-        MessageBox.shared.text = text
-        MessageBox.shared.fontSize = fontSize
-        MessageBox.shared.buttons = buttons
-        MessageBox.shared.showVersion = showVersion
-        MessageBox.shared.showIcon = showIcon
-        MessageBox.shared.completion = completion
-        if let hideAfter = hideAfter {
-            Utility.executeAfter(delay: hideAfter) {
-                self.hide()
+    public func show(_ text: String, if condition: (()->(Bool))? = nil, fontSize: CGFloat = 15.0, buttons: Buttons = .close, showVersion: Bool = false, icon iconName: String? = nil, showIcon: Bool = true, hideAfter: TimeInterval? = nil, completion: ((Bool)->())? = nil) {
+        if condition?() ?? true {
+            MessageBox.shared.text = text
+            MessageBox.shared.fontSize = fontSize
+            MessageBox.shared.buttons = buttons
+            MessageBox.shared.showVersion = showVersion
+            MessageBox.shared.showIcon = showIcon
+            MessageBox.shared.iconName = iconName
+            MessageBox.shared.condition = condition
+            MessageBox.shared.completion = completion
+            if let hideAfter = hideAfter {
+                Utility.executeAfter(delay: hideAfter) {
+                    self.hide()
+                }
             }
+        } else {
+            completion?(true)
         }
     }
     
@@ -69,7 +77,13 @@ struct MessageBoxView: View {
                             Spacer()
                             HStack {
                                 Spacer()
-                                Image("shortcut").resizable().frame(width: 60, height: 60)
+                                HStack {
+                                    if let iconName = values.iconName {
+                                        Image(systemName: iconName).resizable()
+                                    } else {
+                                        Image("shortcut").resizable()
+                                    }
+                                }.frame(width: 60, height: 60)
                                 Spacer()
                             }
                             Spacer()

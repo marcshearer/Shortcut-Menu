@@ -1,4 +1,11 @@
+To Do
+======
 There seems to be a bug where drop (not insert) is not working on iOS
+
+
+
+For Info
+========
 
 To switch between Development and Production need to set 
     1. MyApp.expectedDatabase in MyApp.swift
@@ -10,14 +17,15 @@ To distribute Mac version, just archive Shortcut Menu Mac. The Copy it and move 
     TestFlight doesn't work as blocks hot keys
 
 
-================================
 If everything goes badly wrong
+================================
 
-In MyApp.swift replace the backup with a restore (find location by searching for existing one in comment)
+In MyApp.swift replace the backup with a restore (find location by searching for existing one in comment or using the shortcut!)
 Comment out rest of function
 Run and wait for 5 mins.
 Then stop that version, revert MyApp.swift and re-run
 
+To add a new column
 ================================
 To add a new column to a synchronised table you also need to create it on CloudKit (with CD_ prefix) and make it Queryable and Sortable
 

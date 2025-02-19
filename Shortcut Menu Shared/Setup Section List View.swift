@@ -65,9 +65,13 @@ struct SetupSectionListView: View {
             HStack{
                 Spacer()
                 if self.selection.editAction == .none {
-                    if panel == .all && self.selection.selectedSection != nil && !(self.selection.selectedSection?.isDefault ?? true) {
+                    if let section = self.selection.selectedSection, (panel == .all && !section.isDefault) {
                         ToolbarButton("minus.circle.fill") {
-                            selection.removeSection(section: self.selection.selectedSection!)
+                            MessageBox.shared.show("You are deleting a section that contains shortcuts!\n\n If you delete it then the section and all its shortcuts will be removed.", if: {!section.shortcuts.isEmpty}, buttons: .confirmCancel, icon: "exclamationmark.triangle") { (confirmed) in
+                                if confirmed {
+                                    selection.removeSection(section: section)
+                                }
+                            }
                         }
                     }
                     

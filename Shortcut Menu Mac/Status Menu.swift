@@ -291,7 +291,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     func addHeading(statusItem: NSStatusItem, title: String, to subMenu: NSMenu? = nil) {
-        let attrString = NSAttributedString(string: title.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1)])
+        let attrString = NSAttributedString(string: title.uppercased(), attributes: [NSAttributedString.Key.font : NSFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: NSColor(Palette.background.themeText)])
         self.addItem(statusItem: statusItem, attributedText: attrString, to: subMenu)
     }
     
@@ -663,7 +663,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
                         default:
                             break
                         }
-                        createShortcut(section: section, name: urlName, url: urlString, action: .urlLink)
+                        createShortcut(section: section, name: urlName, url: urlString, shared: true, action: .urlLink)
                     }
                 })
             }
@@ -680,11 +680,11 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
             }
         } else if let copyText = pasteboard.string(forType: NSPasteboard.PasteboardType.string) {
             // Plain String
-            self.createShortcut(section: section, name: copyText, copyText: copyText, action: .clipboardText)
+            self.createShortcut(section: section, name: copyText, copyText: copyText, shared: true, action: .clipboardText)
         }
     }
     
-    private func createShortcut(section: SectionViewModel, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "", action: ShortcutAction) {
+    private func createShortcut(section: SectionViewModel, name: String, url: String = "", urlSecurityBookmark: Data? = nil, copyText: String = "", shared: Bool = false, action: ShortcutAction) {
         let shortcut = ShortcutViewModel()
         shortcut.section = section
         shortcut.name = name
@@ -692,6 +692,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
         shortcut.urlSecurityBookmark = urlSecurityBookmark
         shortcut.copyText = copyText
         shortcut.action = action
+        shortcut.shared = (shared ? section.shared : false)
         shortcut.sequence = (section.shortcuts.last?.sequence ?? 0) + 1
         master.shortcuts.append(shortcut)
         shortcut.save()
