@@ -57,15 +57,17 @@ class MyApp {
         
         // Uncomment to backup / restore
         Utility.executeAfter(delay: 10) {
-            Backup.shared.backup()/*.restore(dateString: "2024-12-21-07-27-47-591")*/ ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
+            Backup.shared.backup()/*.restore(dateString: "2025-06-07-18-10-58-850")*/ ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
         }
+        // When restoring fill in backup to restore above comment out below /*
         MasterData.shared.load()
         MasterData.purgeTransactionHistory()
-        Themes.selectTheme(.standard)
         UserDefault.registerDefaults()
         Version.current.load()
         self.setupDatabase()
-        
+        // To here - run and wait a few minutes - then remove and restart */
+
+        Themes.selectTheme(.standard)
         #if canImport(UIKit)
         UITextView.appearance().backgroundColor = .clear
         UITextField.appearance().backgroundColor = .clear
