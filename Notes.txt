@@ -21,7 +21,7 @@ If everything goes badly wrong
 ================================
 
 In MyApp.swift replace the backup with a restore (find location by searching for existing one in comment or using the shortcut!)
-Comment out rest of function
+Comment out rest of function down to Themes
 Run and wait for 5 mins.
 Then stop that version, revert MyApp.swift and re-run
 
