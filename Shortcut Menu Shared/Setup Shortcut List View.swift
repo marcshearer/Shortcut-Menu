@@ -132,6 +132,7 @@ struct SetupShortcutListView: View, DropDelegate {
                         ToolbarButton("folder.fill.badge.minus") {
                             if let section = selection.selectedSection {
                                 selection.removeShortcut(shortcut: shortcut)
+                                shortcut.remove()
                                 if section.inline {
                                     // Can't be inline if not nested
                                     section.inline = false
