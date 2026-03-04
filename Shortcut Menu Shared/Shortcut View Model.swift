@@ -17,6 +17,7 @@ public enum ShortcutAction: Int, PickerEnum, Hashable, Identifiable {
         self
     }
     
+    case undefined = -1
     case urlLink = 0
     case clipboardText = 1
     case setReplacement = 2
@@ -25,6 +26,8 @@ public enum ShortcutAction: Int, PickerEnum, Hashable, Identifiable {
     
     public var string: String {
         switch self {
+        case .undefined:
+            "Undefined"
         case .urlLink:
             "URL link"
         case .clipboardText:
@@ -92,10 +95,11 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
         var hasher = Hasher()
         hasher.combine(self.id)
         hasher.combine(self.shared)
+        hasher.combine(self.nestedSection?.name ?? "")
         return hasher.finalize()
     }
     
-    init(id: UUID, name: String, action: ShortcutAction = .urlLink, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", replacementToken: String = "", shared: Bool = false, sequence: Int = 0) {
+    init(id: UUID, name: String, action: ShortcutAction = .undefined, url: String, urlSecurityBookmark: Data? = nil, copyText: String = "", copyMessage: String = "", copyPrivate: Bool = false, section: SectionViewModel? = nil, nestedSection: SectionViewModel? = nil, keyEquivalent: String = "", replacementToken: String = "", shared: Bool = false, sequence: Int = 0) {
         self.id = id
         self.name = name
         self.url = url
@@ -147,6 +151,8 @@ public class ShortcutViewModel: ObservableObject, Identifiable, Hashable {
             .receive(on: RunLoop.main)
             .sink(receiveValue: { (action) in
                 switch action {
+                case .undefined:
+                    break
                 case .urlLink:
                     self.replacementToken = ""
                     self.nestedSection = nil

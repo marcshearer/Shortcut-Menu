@@ -51,7 +51,7 @@ struct SetupShortcutListView: View, DropDelegate {
                 .environment(\.defaultMinListRowHeight, defaultRowHeight)
             } else {
                 List {
-                    ForEach (selection.shortcuts, id: \.self.listHasher) { (shortcut) in
+                    ForEach (selection.shortcuts, id: \.listHasher) { (shortcut) in
                         if selection.editAction != .none {
                             self.shortcutRow(shortcut)
                         } else {
@@ -137,6 +137,7 @@ struct SetupShortcutListView: View, DropDelegate {
                                     section.inline = false
                                     section.save()
                                 }
+                                selection.updateSection(section: section)
                                 selection.selectSection(section: section)
                             }
                         }
