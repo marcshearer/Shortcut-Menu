@@ -196,9 +196,9 @@ struct SetupShortcutListView: View, DropDelegate {
                 if let fromIndex = selection.sections.firstIndex(where: {$0.id == section.id}) {
                     let nestedSection = selection.sections[fromIndex]
                     if currentSection.id != nestedSection.id {
+                        selection.sections.remove(at: fromIndex)
                         selection.newNestedSectionShortcut(in: currentSection, to: nestedSection, at: at)
                         selection.selectSection(section: nestedSection, updateShortcuts: false)
-                        selection.sections.remove(at: fromIndex)
                     }
                 }
             }

@@ -89,15 +89,15 @@ class MyApp {
                     let cloudDatabase: Database = Database(rawValue: database ?? "") ?? .unknown
                     
                     if cloudDatabase != MyApp.expectedDatabase {
-                        MessageBox.shared.show("Attached to the \(cloudDatabase.name) database but expected to be connected to the \(MyApp.expectedDatabase.name) database") { (_) in
+                        MessageBox.shared.show("Attached to the \(cloudDatabase.name) database but expected to be connected to the \(MyApp.expectedDatabase.name) database", completion:  { (_) in
                             exit(1)
-                        }
+                        })
                     }
                     
                     if MyApp.database != .unknown && MyApp.database != cloudDatabase {
-                        MessageBox.shared.show("This device was connected to the \(MyApp.database) database and is now trying to connect to the \(cloudDatabase) database") { (_) in
+                        MessageBox.shared.show("This device was connected to the \(MyApp.database) database and is now trying to connect to the \(cloudDatabase) database", completion:  { (_) in
                             exit(1)
-                        }
+                        })
                     }
                     
                     MyApp.database = cloudDatabase
