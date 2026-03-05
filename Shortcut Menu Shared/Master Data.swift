@@ -100,7 +100,7 @@ public class MasterData : ObservableObject {
         self.replacementMOs = MasterData.fetch(from: ReplacementMO.tableName,
                                                sort: [(key: "token", ascending: true),
                                                       (key: "replacement", ascending: true)])
-                
+        
         // Remove local copy if already in cloud
         for (index, sectionMO) in sectionMOs.enumerated().reversed() {
             if cloudSectionMOs.contains(where: {$0.id == sectionMO.id}) {
@@ -108,6 +108,16 @@ public class MasterData : ObservableObject {
                 MasterData.context.delete(sectionMO)
             }
         }
+        
+        /* Removes duplicate sections from local list - remove from cloud list in portal
+        for name in ["Parkrun", "New Golf Club", "Other Shortcuts"] {
+            if let index = sectionMOs.firstIndex(where: {$0.name == name}) {
+                let sectionMO = sectionMOs[index]
+                sectionMOs.remove(at: index)
+                MasterData.context.delete(sectionMO)
+            }
+        }
+         */
         
         // Build section list
         sections = []
@@ -121,6 +131,33 @@ public class MasterData : ObservableObject {
             sections.append(SectionViewModel(sectionMO: sectionMO, shared: true))
         }
         sections.sort(by: {$0.sequence < $1.sequence})
+        
+        // Remove local copy if already in cloud
+        for (index, shortcutMO) in shortcutMOs.enumerated().reversed() {
+            if cloudShortcutMOs.contains(where: {$0.id == shortcutMO.id}) {
+                shortcutMOs.remove(at: index)
+                MasterData.context.delete(shortcutMO)
+            }
+        }
+        
+        
+        let combined = shortcutMOs + cloudShortcutMOs
+        for shortcutMO in (combined) {
+            let count = combined.filter{$0.name == shortcutMO.name}.count
+            if count > 1 {
+                print(shortcutMO.name)
+            }
+        }
+        
+        /* Remove duplicate from local shortcuts - remove from cloud list in portal
+        for name in ["26 Nelson St"] {
+            if let index = shortcutMOs.firstIndex(where: {$0.name == name}) {
+                let shortcutMO = shortcutMOs[index]
+                shortcutMOs.remove(at: index)
+                MasterData.context.delete(shortcutMO)
+            }
+        }
+        */
         
         // Build shortcut list
         shortcuts = []

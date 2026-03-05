@@ -9,6 +9,7 @@
 import Cocoa
 import SwiftUI
 import UniformTypeIdentifiers
+import SwiftUI
 
 protocol StatusMenuPopoverDelegate {
     var popover: NSPopover? {get set}
@@ -383,23 +384,19 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func showPopover(button: NSButton, popover: inout NSPopover?, view: AnyView, size: NSSize? = nil, backgroundColor: Color = Palette.background.background) {
+        let positioningView = NSView(frame: button.bounds)
         if popover == nil {
             let newPopover = NSPopover()
             newPopover.behavior = .transient
             newPopover.contentSize = size ?? NSSize(width: 400, height: 500)
             newPopover.delegate = self
             popover = newPopover
+            button.addSubview(positioningView)
         }
+        popover?.setValue(true, forKeyPath: "shouldHideAnchor")
         popover?.contentViewController = NSHostingController(rootView: view)
-        popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
-        if let frameView = popover?.contentViewController?.view.superview {
-            // Make the triangle callout background color
-            let backgroundView = NSView(frame: frameView.bounds)
-            backgroundView.wantsLayer = true
-            backgroundView.layer?.backgroundColor = backgroundColor.cgColor
-            backgroundView.autoresizingMask = [.width, .height]
-            frameView.addSubview(backgroundView, positioned: .below, relativeTo: frameView)
-        }
+        popover?.show(relativeTo: positioningView.bounds, of: positioningView, preferredEdge: .maxY)
+        button.bounds = button.bounds.offsetBy(dx: 0, dy: -1)
         popover?.contentViewController?.view.window?.makeKeyAndOrderFront(self)
     }
     

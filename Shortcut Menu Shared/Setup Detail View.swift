@@ -273,7 +273,7 @@ struct SetupDetailView: View {
                         }
                         #endif
                         HStack(spacing: 0) {
-                            Spacer().frame(width: (MyApp.target == .iOS ? 10 : 6))
+                            Spacer().frame(width: (MyApp.target == .iOS ? 10 : 16))
                             Menu {
                                 ForEach(allowedTokens) { replacement in
                                     Button(action: {
@@ -281,13 +281,16 @@ struct SetupDetailView: View {
                                         selection.objectWillChange.send()
                                     }, label: {
                                         Text(replacement.name)
+                                            .frame(width: 200)
                                     })
                                 }
                             } label: {
                                 HStack {
-                                    Text(tokenName(token: selection.editShortcut.replacementToken))
-                                    Spacer()
+                                    let name = tokenName(token: selection.editShortcut.replacementToken)
+                                    Text(name == "" ? "Choose token" : name)
+                                        .frame(width: 200)
                                     if MyApp.target == .iOS && isEnabled{
+                                        Spacer()
                                         Image(systemName: "chevron.right").foregroundColor(.blue)
                                     }
                                     Spacer().frame(width: 10)
@@ -296,10 +299,11 @@ struct SetupDetailView: View {
                             }
                             .foregroundColor(isEnabled ? Palette.input.text : Palette.input.faintText)
                             .background(.clear)
-                            .frame(height: 40)
+                            .fixedSize()
+                            .frame(width: 200, height: 40)
                             .menuStyle(.automatic)
                             .disabled(!isEnabled)
-                            Spacer().frame(width: 8)
+                            Spacer()
                         }
                     }
                     Spacer().frame(width: 24)
