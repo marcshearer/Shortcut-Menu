@@ -234,11 +234,13 @@ class DisplayStateViewModel: ObservableObject {
     
     private func setupList(section: String?) -> [Entry] {
         var list: [Entry] = []
+        
         if let section = section {
             if let selectedSection = MasterData.shared.section(named: section) {
                 if !selectedSection.isDefault {
                     add(list: &list, section: selectedSection)
                 }
+
             }
         }
         
@@ -246,7 +248,7 @@ class DisplayStateViewModel: ObservableObject {
             add(list: &list, section: defaultSection)
         }
         
-        let parent = add(list: &list, action: .nestedSection, id: nil, text: "Other Shortcuts", depth: 0)
+        let parent = add(list: &list, action: .nestedSection, id: nil, text: (section == "All Sections" ? section! : "Other Shortcuts"), depth: 0)
         for section in MasterData.shared.getSections(withShortcuts: true, excludeSections: [selectedSection ?? ""], excludeDefault: true, excludeNested: true) {
             add(list: &list, section: section, depth: 1, expanded: false, parent: parent)
         }

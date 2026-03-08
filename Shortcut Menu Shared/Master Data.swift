@@ -220,7 +220,7 @@ public class MasterData : ObservableObject {
             }
         }
         
-        return self.sections.filter( { $0.shortcuts.count > 0 && (!excludeSections.contains($0.name)) && (!descendents.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
+        return self.sections.filter( { ($0.isDefault || $0.shortcuts.count > 0) && (!excludeSections.contains($0.name)) && (!descendents.contains($0.name)) && (!excludeDefault || !$0.isDefault) && (!excludeNested || !isNested($0)) })
     }
     
     public func descendents(section: SectionViewModel) -> [String] {

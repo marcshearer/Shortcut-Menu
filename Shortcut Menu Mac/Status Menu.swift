@@ -65,6 +65,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     fileprivate var whisperPopover: NSPopover!
     private var aboutPopover: NSPopover!
     private var showSharedPopover: NSPopover!
+    private var positioningView: NSView!
     
     private var defineWindowController: MenubarWindowController!
     private var settingsWindowController: MenubarWindowController!
@@ -384,14 +385,16 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
     }
     
     private func showPopover(button: NSButton, popover: inout NSPopover?, view: AnyView, size: NSSize? = nil, backgroundColor: Color = Palette.background.background) {
-        let positioningView = NSView(frame: button.bounds)
+        if positioningView == nil {
+            positioningView = NSView(frame: button.bounds)
+            button.addSubview(positioningView)
+        }
         if popover == nil {
             let newPopover = NSPopover()
             newPopover.behavior = .transient
             newPopover.contentSize = size ?? NSSize(width: 400, height: 500)
             newPopover.delegate = self
             popover = newPopover
-            button.addSubview(positioningView)
         }
         popover?.setValue(true, forKeyPath: "shouldHideAnchor")
         popover?.contentViewController = NSHostingController(rootView: view)
