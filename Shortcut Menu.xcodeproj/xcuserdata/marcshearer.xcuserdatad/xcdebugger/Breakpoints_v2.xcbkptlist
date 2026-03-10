@@ -34,6 +34,36 @@
             endingLineNumber = "104"
             landmarkName = "shortcutHeading()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6E47B0FF-A1FA-4E0A-B323-EC2F1CD12CB7 - 5296843a356e4cb3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(width: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, height: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, Swift.Optional&lt;&lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, &lt;&lt;opaque return type of SwiftUI.View.minimumScaleFactor(CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, SwiftUI.Spacer, &lt;&lt;opaque return type of Shortcut_Menu_iOS.SetupShortcutListView.toolbarButtons() -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.frame(width: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, height: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0)&gt; in Shortcut_Menu_iOS.SetupShortcutListView.shortcutHeading() -&gt; some"
+                  moduleName = "Shortcut Menu iOS.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+               <Location
+                  uuid = "6E47B0FF-A1FA-4E0A-B323-EC2F1CD12CB7 - 4c50f42701866eb5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(width: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, height: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, Swift.Optional&lt;&lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, &lt;&lt;opaque return type of SwiftUI.View.minimumScaleFactor(CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, SwiftUI.Spacer, &lt;&lt;opaque return type of Shortcut_Menu_Mac.SetupShortcutListView.toolbarButtons() -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.frame(width: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, height: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0)&gt; in Shortcut_Menu_Mac.SetupShortcutListView.shortcutHeading() -&gt; some"
+                  moduleName = "Shortcut Menu Mac.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -130,6 +160,36 @@
             endingLineNumber = "200"
             landmarkName = "onInsertSectionAction(at:section:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7DC292B7-6258-48E9-9B09-F622F49EBFBE - f0b38bbaf5acf924"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Shortcut_Menu_iOS.SetupShortcutListView.onInsertSectionAction(at: Swift.Int, section: Shortcut_Menu_iOS.SectionViewModel) -&gt; ()"
+                  moduleName = "Shortcut Menu iOS.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "200"
+                  endingLineNumber = "200">
+               </Location>
+               <Location
+                  uuid = "7DC292B7-6258-48E9-9B09-F622F49EBFBE - 5337f2c11d086d28"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Shortcut_Menu_Mac.SetupShortcutListView.onInsertSectionAction(at: Swift.Int, section: Shortcut_Menu_Mac.SectionViewModel) -&gt; ()"
+                  moduleName = "Shortcut Menu Mac.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/marcshearer/Documents/Xcode%20projects/Shortcut%20Menu/Shortcut%20Menu%20Shared/Setup%20Shortcut%20List%20View.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "200"
+                  endingLineNumber = "200">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

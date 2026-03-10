@@ -56,7 +56,7 @@ class MyApp {
         MasterData.backgroundContext = container.newBackgroundContext()
         
         if true {
-            // Uncomment to backup / restore - Then run and wait for 2 minutes
+            // Switch true / false to backup / restore - Then run and wait for 2 minutes
             Utility.executeAfter(delay: 10) {
                 Backup.shared.backup() ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
             }
