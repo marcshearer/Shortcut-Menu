@@ -67,7 +67,7 @@ class MyApp {
         //      Run and wait for 2 minutes
         //      Then change back and rerun
         
-        let action: Action = .restore
+        let action: Action = .backup
         let restoreFile = "2026-03-20-05-28-26-787"
         
         if action == .backup {
@@ -75,10 +75,12 @@ class MyApp {
                 Backup.shared.backup() ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
             }
         }
+        
         if action == .restore {
             Utility.executeAfter(delay: 1) {
                 Backup.shared.restore(dateString: restoreFile) ; self.sound()
             }
+            
         } else {
             // When restoring fill in backup to restore above comment out below /*
             MasterData.shared.load()
