@@ -24,6 +24,12 @@ class MyApp {
         case phone
     }
     
+    enum Action {
+        case backup
+        case restore
+        case none
+    }
+    
     enum Database: String {
         case development = "Development"
         case production = "Production"
@@ -55,23 +61,32 @@ class MyApp {
         MasterData.context = container.viewContext
         MasterData.backgroundContext = container.newBackgroundContext()
         
-        if true {
-            // Switch true / false to backup / restore - Then run and wait for 2 minutes
+        // Switch action below
+        // For restore:
+        //      Change restore filename for restore
+        //      Run and wait for 2 minutes
+        //      Then change back and rerun
+        
+        let action: Action = .restore
+        let restoreFile = "2026-03-20-05-28-26-787"
+        
+        if action == .backup {
             Utility.executeAfter(delay: 10) {
                 Backup.shared.backup() ; self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() ; Utility.executeAfter(delay: 1.5) { self.sound() }}
             }
-                // When restoring fill in backup to restore above comment out below /*
+        }
+        if action == .restore {
+            Utility.executeAfter(delay: 1) {
+                Backup.shared.restore(dateString: restoreFile) ; self.sound()
+            }
+        } else {
+            // When restoring fill in backup to restore above comment out below /*
             MasterData.shared.load()
             MasterData.purgeTransactionHistory()
             UserDefault.registerDefaults()
             Version.current.load()
             self.setupDatabase()
-        } else {
-            Utility.executeAfter(delay: 1) {
-                Backup.shared.restore(dateString: "2026-03-08-11-40-46-867") ; self.sound()
-            }
         }
-
         Themes.selectTheme(.standard)
         #if canImport(UIKit)
         UITextView.appearance().backgroundColor = .clear
