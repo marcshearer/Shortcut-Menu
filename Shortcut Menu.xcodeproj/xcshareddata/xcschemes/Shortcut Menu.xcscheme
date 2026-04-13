@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B28D41E42443538B00C2577E"
-               BuildableName = "Shortcut Menu iOS.app"
+               BuildableName = "Shortcut Menu.app"
                BlueprintName = "Shortcut Menu iOS"
                ReferencedContainer = "container:Shortcut Menu.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B28D41E42443538B00C2577E"
-            BuildableName = "Shortcut Menu iOS.app"
+            BuildableName = "Shortcut Menu.app"
             BlueprintName = "Shortcut Menu iOS"
             ReferencedContainer = "container:Shortcut Menu.xcodeproj">
          </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B28D41E42443538B00C2577E"
-            BuildableName = "Shortcut Menu iOS.app"
+            BuildableName = "Shortcut Menu.app"
             BlueprintName = "Shortcut Menu iOS"
             ReferencedContainer = "container:Shortcut Menu.xcodeproj">
          </BuildableReference>

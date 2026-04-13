@@ -145,14 +145,14 @@
 		B2860AB3260CD18D001E6E7D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		B2860AB8260CEC05001E6E7D /* Settings View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Settings View.swift"; sourceTree = "<group>"; };
 		B2860ABD260CF433001E6E7D /* Shortcut Key View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Key View.swift"; sourceTree = "<group>"; };
-		B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D41E52443538B00C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D41ED2443538B00C2577E /* Shortcut_Menu.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shortcut_Menu.xcdatamodel; sourceTree = "<group>"; };
 		B28D41F92443538D00C2577E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B28D41FF2443562C00C2577E /* Section Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420124435DF300C2577E /* Shortcut Managed Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut Managed Object.swift"; sourceTree = "<group>"; };
 		B28D420324435F8500C2577E /* Section View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Section View Model.swift"; sourceTree = "<group>"; };
 		B28D420524437C3B00C2577E /* Shortcut View Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shortcut View Model.swift"; sourceTree = "<group>"; };
-		B28D42652447515100C2577E /* Shortcut Menu Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28D42652447515100C2577E /* Shortcut Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shortcut Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28D42812447542C00C2577E /* Declarations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Declarations.swift; sourceTree = "<group>"; };
 		B28D428824475BB000C2577E /* Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		B29D46C9244D718F0001F984 /* Master Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Master Data.swift"; sourceTree = "<group>"; };
@@ -369,8 +369,8 @@
 		B28D41E62443538B00C2577E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */,
-				B28D42652447515100C2577E /* Shortcut Menu Mac.app */,
+				B28D41E52443538B00C2577E /* Shortcut Menu.app */,
+				B28D42652447515100C2577E /* Shortcut Menu.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -521,7 +521,7 @@
 			);
 			name = "Shortcut Menu iOS";
 			productName = "Shortcut Menu";
-			productReference = B28D41E52443538B00C2577E /* Shortcut Menu iOS.app */;
+			productReference = B28D41E52443538B00C2577E /* Shortcut Menu.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B28D42642447515100C2577E /* Shortcut Menu Mac */ = {
@@ -538,7 +538,7 @@
 			);
 			name = "Shortcut Menu Mac";
 			productName = "Shortcut Menu Mac";
-			productReference = B28D42652447515100C2577E /* Shortcut Menu Mac.app */;
+			productReference = B28D42652447515100C2577E /* Shortcut Menu.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -573,8 +573,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B28D41E42443538B00C2577E /* Shortcut Menu iOS */,
 				B28D42642447515100C2577E /* Shortcut Menu Mac */,
+				B28D41E42443538B00C2577E /* Shortcut Menu iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -889,7 +889,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Shortcut Menu";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -913,7 +913,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Shortcut Menu";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -940,8 +940,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu-Mac";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu";
+				PRODUCT_NAME = "Shortcut Menu";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -968,8 +968,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu-Mac";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "MarcShearer.Shortcut-Menu";
+				PRODUCT_NAME = "Shortcut Menu";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
