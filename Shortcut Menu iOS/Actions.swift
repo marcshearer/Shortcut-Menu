@@ -95,8 +95,18 @@ class Actions {
             completion?(message, "Update \(expired.count > 1 ? "them" : "it") to continue", true)
         } else {
             // All OK - go ahead and execute
+            var skipAuthentication: Bool = false
             if !shortcut.copyText.isEmpty && shortcut.copyPrivate {
+                if let lastAuthentication = shortcut.section?.lastAuthentication {
+                        // Check if we have authenticated a shortcut in this section recently
+                    if Float(Date().timeIntervalSince(lastAuthentication)) < Settings.shared.authTimeout.value {
+                        skipAuthentication = true
+                    }
+                }
+            }
+            if !shortcut.copyText.isEmpty && shortcut.copyPrivate && !skipAuthentication {
                 LocalAuthentication.authenticate(reason: "reveal private data", completion: {
+                    shortcut.section?.lastAuthentication = Date()
                     copyAction()
                     urlAction(wait: true)
                     completion?(message, caption, false)

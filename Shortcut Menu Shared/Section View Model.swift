@@ -28,6 +28,7 @@ public class SectionViewModel : ObservableObject, Identifiable, Hashable {
     @Published public var shared: Bool
     @Published public var temporary: Bool
     @Published public var quickDrop: Bool
+    @Published public var lastAuthentication: Date?
 
     // Linked managed objects
     private var sectionMO: SectionMO?

@@ -12,9 +12,10 @@ class Settings : ObservableObject {
     
     public static let shared = Settings()
     
-    @Published var shareShortcuts   = Setting(false,    name: "shareShortcuts")
-    @Published var menuTitle        = Setting("",       name: "menuTitle")
-    @Published var shortcutKey      = Setting("",       name: "shortcutKey")
+    @Published var shareShortcuts   = Setting(false,            name: "shareShortcuts")
+    @Published var menuTitle        = Setting("",               name: "menuTitle")
+    @Published var shortcutKey      = Setting("",               name: "shortcutKey")
+    @Published var authTimeout      = Setting(Float(60),        name: "authTimeout")
 }
 
 class Setting<Value> : ObservableObject {

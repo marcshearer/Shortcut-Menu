@@ -60,9 +60,13 @@ struct SettingsView : View {
                     if MyApp.target == .macOS {
                         
                         Input(title: "Menu bar title", field: $settings.menuTitle.value, placeHolder: "􀉑", width: 100, isEnabled: true)
+                            .help("Charcter / symbol to appear in the menu bar for this app")
                         
                         ShortcutKeyView(key: $settings.shortcutKey.value, isSettingShortcutKey: $isSettingShortcutKey)
                     }
+                    
+                    InputFloat(title: "Authentication timeout", field: $settings.authTimeout.value, width: 100)
+                        .help("Authentication will not be required within this number of seconds for other shortcuts in the same section")
                     
                     Spacer()
                 }

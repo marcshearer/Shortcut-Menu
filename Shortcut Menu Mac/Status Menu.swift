@@ -582,7 +582,7 @@ class StatusMenu: NSObject, NSMenuDelegate, NSPopoverDelegate, NSWindowDelegate 
 
             // Display view
             let contentView = SettingsView()
-            self.showMenubarWindow(menubarWindowController: &self.settingsWindowController, view: AnyView(contentView), title: "Preferences", saveName: "Shortcuts Settings Window", size: CGSize(width: 600, height: 300))
+            self.showMenubarWindow(menubarWindowController: &self.settingsWindowController, view: AnyView(contentView), title: "Preferences", saveName: "Shortcuts Settings Window", size: CGSize(width: 600, height: 350))
             self.settingsWindowController.contentViewController?.view.window?.becomeKey()
             self.settingsAlways(onTop: true)
             self.changeImage(close: true)
