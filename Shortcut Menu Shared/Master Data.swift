@@ -170,7 +170,7 @@ public class MasterData : ObservableObject {
             shortcuts.append(shortcut)
         }
         shortcuts.sort(by: {Utility.lessThan([$0.section?.sequence ?? 0, $0.sequence], [ $1.section?.sequence ?? 0, $1.sequence])})
-
+        
         // Build replacement list
         replacements = []
         for replacementMO in replacementMOs {

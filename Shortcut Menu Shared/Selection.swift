@@ -239,6 +239,7 @@ public class Selection : ObservableObject, Identifiable {
     func removeShortcut(shortcut: ShortcutViewModel) {
         if let removeIndex = self.master.shortcuts.firstIndex(where: {$0.id == shortcut.id}) {
             self.master.shortcuts.remove(at: removeIndex)
+            shortcut.remove()
             self.deselectShortcut()
             if self.selectedSection != nil {
                 self.selectSection(section: self.selectedSection!)

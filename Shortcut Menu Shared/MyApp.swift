@@ -68,7 +68,7 @@ class MyApp {
         //      Then change back and rerun
         
         let action: Action = .backup
-        let restoreFile = "2026-03-20-05-28-26-787"
+        let restoreFile = "2026-08-04-11-13-28-965"
         
         if action == .backup {
             Utility.executeAfter(delay: 10) {
@@ -82,7 +82,6 @@ class MyApp {
             }
             
         } else {
-            // When restoring fill in backup to restore above comment out below /*
             MasterData.shared.load()
             MasterData.purgeTransactionHistory()
             UserDefault.registerDefaults()

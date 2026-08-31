@@ -1,7 +1,7 @@
 To Do
 ======
 There seems to be a bug where drop (not insert) is not working on iOS
-
+There is a bug whereby if you try to drag a nested section elsewhere, you end up with 2 shortcuts pointing to the nested section
 
 
 For Info
